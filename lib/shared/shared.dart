@@ -1,0 +1,1 @@
+// Colocar alguna función o clase que sean necesarios de compartir
