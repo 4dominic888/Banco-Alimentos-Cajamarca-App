@@ -14,6 +14,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.18.1
+  signature: ^5.4.1
 
 flutter_launcher_icons:
   android: "launcher_icon"
