@@ -31,10 +31,22 @@ class DateTimeFieldState extends State<DateTimeField> {
         return Theme(data: ThemeData.light(), child: child!);
       }
     );
+
     if(picked != null && picked != _fecha){
-      setState(() {
-        _fecha = picked;
-      });
+      // ignore: use_build_context_synchronously
+      final TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now()
+      );
+
+      if(selectedTime != null){
+        setState(() {
+          _fecha = DateTime(
+            picked.year, picked.month, picked.day,
+            selectedTime.hour, selectedTime.minute
+          );
+        }); 
+      }
     }
   }
 
@@ -50,7 +62,7 @@ class DateTimeFieldState extends State<DateTimeField> {
               prefixIcon: const Icon(Icons.date_range)
             ),
             controller: TextEditingController(
-              text: DateFormat('yyyy-MM-dd').format(_fecha)
+              text: DateFormat('yyyy-MM-dd  HH:mm').format(_fecha)
             ),
           ),
         ),
