@@ -1,22 +1,19 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:bancalcaj_app/shared/field_validate.dart';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 
 class SignatureField extends StatefulWidget {
-  const SignatureField({super.key, required this.titleModal, required this.title, this.emtpyValidate = "Empty signature\n"});
+  const SignatureField({super.key, required this.titleModal, required this.title});
 
   final String titleModal;
   final String title;
-  final String? emtpyValidate;
 
   @override
   State<SignatureField> createState() => SignatureFieldState();
 }
 
-class SignatureFieldState extends State<SignatureField> implements FieldValidate {
+class SignatureFieldState extends State<SignatureField>{
 
   Uint8List? _signatureImage;
 
@@ -73,46 +70,46 @@ class SignatureFieldState extends State<SignatureField> implements FieldValidate
     return const SizedBox.shrink();
   }
 
-
-  @override
-  String? get validator {
-    if(_signatureImage == null) return "${widget.emtpyValidate}\n";
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return InputDecorator(
-            decoration: InputDecoration(
-                labelText: widget.title,
-                labelStyle: const TextStyle(fontSize: 22),
-                border: InputBorder.none
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () async {
-                    _signatureImage = await _showSignatureDialog(context);
-                    setState(() {});
-                  },                  
-                  child: Container(
-                          width: 300,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 2
-                            )
-                          ),
-                          child: _showImageSignature(),
-                    ),
+    return FormField<Uint8List>(
+      validator: (value) {
+        if(_signatureImage == null) return "No se ha ingresado la firma";
+        return null;
+      },
+      builder: (field) => 
+      InputDecorator(
+        decoration: InputDecoration(
+            labelText: widget.title,
+            labelStyle: const TextStyle(fontSize: 22),
+            border: InputBorder.none
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () async {
+                _signatureImage = await _showSignatureDialog(context);
+                setState(() {});
+              },                  
+              child: Container(
+                      width: 300,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 2
+                        )
+                      ),
+                      child: _showImageSignature(),
                 ),
-              ],
             ),
-      );
+          ],
+        ),
+        ),
+    );
   }
 
 }

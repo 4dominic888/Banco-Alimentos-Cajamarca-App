@@ -1,4 +1,3 @@
-import 'package:bancalcaj_app/shared/field_validate.dart';
 import 'package:flutter/material.dart';
 
 class _Pair {
@@ -7,21 +6,22 @@ class _Pair {
   _Pair(this.index, this.value);
 }
 
+//! Widget en deshuso, arreglar luego
+@deprecated
 class SelectMultipleField extends StatefulWidget {
-  const SelectMultipleField({super.key, required this.label, required this.titleModalCustom, required this.hintModalCustom, required this.hintSelectElements, required this.list, this.emtpyValidate = "no elements selected\n"});
+  const SelectMultipleField({super.key, required this.label, required this.titleModalCustom, required this.hintModalCustom, required this.hintSelectElements, required this.list});
 
   final String label;
   final String titleModalCustom;
   final String hintModalCustom;
   final String hintSelectElements;
   final List<String> list;
-  final String? emtpyValidate;
 
   @override
   State<SelectMultipleField> createState() => SelectMultipleFieldState();
 }
 
-class SelectMultipleFieldState extends State<SelectMultipleField> implements FieldValidate {
+class SelectMultipleFieldState extends State<SelectMultipleField> {
 
   List<String> get products  => _listWrap.map((e) => e.value!).toList();
 
@@ -30,12 +30,6 @@ class SelectMultipleFieldState extends State<SelectMultipleField> implements Fie
   final List<_Pair> _listWrap = [];
   final List<_Pair> _listSelect = []; // or list of dropdownbutton
   final String _other = "Otros";
-
-  @override
-  String? get validator {
-    if(_listWrap.isEmpty) return "${widget.emtpyValidate}\n";
-    return ""; 
-  }
 
   //? Sirve a modo de validador del texto del customOption
   String? get _errorTextCustomOption {
@@ -95,7 +89,7 @@ class SelectMultipleFieldState extends State<SelectMultipleField> implements Fie
   }
 
   //? Contenedor de los productos
-  Widget _warpProducts(){
+  Widget _warpElements(){
     return Wrap(
       runSpacing: 10,
       spacing: 13,
@@ -119,7 +113,7 @@ class SelectMultipleFieldState extends State<SelectMultipleField> implements Fie
   }
 
   //? Vista de lista desplegable
-  Widget _dropDownProducts(){
+  Widget _dropDownList(){
     return DropdownButton(
       hint: Text(widget.hintSelectElements),
       items: _listSelect.map<DropdownMenuItem<_Pair>>((e) => 
@@ -178,11 +172,11 @@ class SelectMultipleFieldState extends State<SelectMultipleField> implements Fie
 
             const SizedBox(height: 10),
 
-            _listWrap.isEmpty ? Container() : _warpProducts(),
+            _listWrap.isEmpty ? Container() : _warpElements(),
             
             const SizedBox(height: 10),
 
-            _dropDownProducts(),
+            _dropDownList(),
             
           ],
         ),
