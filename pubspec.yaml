@@ -16,6 +16,7 @@ dependencies:
     sdk: flutter
   intl: ^0.18.1
   mongo_dart: ^0.10.0
+  mqtt_client: ^10.2.0
   signature: ^5.4.1
 
 flutter_launcher_icons:
