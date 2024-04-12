@@ -7,7 +7,6 @@ environment:
   sdk: '>=3.2.3 <4.0.0'
 
 dependencies:
-  autocomplete_textfield: ^2.0.1
   encrypt: ^5.0.3
   flutter:
     sdk: flutter
@@ -15,8 +14,8 @@ dependencies:
   flutter_localization: ^0.2.0
   flutter_localizations:
     sdk: flutter
-  gsheets: ^0.5.0
   intl: ^0.18.1
+  mongo_dart: ^0.10.0
   signature: ^5.4.1
 
 flutter_launcher_icons:
