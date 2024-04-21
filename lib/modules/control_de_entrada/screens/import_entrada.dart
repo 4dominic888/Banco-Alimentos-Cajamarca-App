@@ -7,15 +7,15 @@ import 'package:bancalcaj_app/modules/control_de_entrada/widgets/datetime_field.
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
 import 'package:flutter/material.dart';
 
-class ControlEntradaScreen extends StatefulWidget {
-  const ControlEntradaScreen({super.key, required this.dbContext});
+class ImportEntradaScreen extends StatefulWidget {
+  const ImportEntradaScreen({super.key, required this.dbContext});
   final DataBaseService dbContext;
 
   @override
-  State<ControlEntradaScreen> createState() => _ControlEntradaScreenState();
+  State<ImportEntradaScreen> createState() => _ImportEntradaScreenState();
 }
 
-class _ControlEntradaScreenState extends State<ControlEntradaScreen> {
+class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
 
   final formkey = GlobalKey<FormState>();
 
@@ -51,6 +51,7 @@ class _ControlEntradaScreenState extends State<ControlEntradaScreen> {
     final comentario = _keyFieldComentario.currentState!.value.toString();
 
     if(formkey.currentState!.validate()){
+      /*
       final Entrada p = Entrada(
         fecha: fecha,
         cantidad: cantidad,
@@ -58,12 +59,13 @@ class _ControlEntradaScreenState extends State<ControlEntradaScreen> {
         productos: productos,
         comentario: comentario
       );
-
-      //entradaRepo.add(p);
+      
+      entradaRepo.add(p);
+      */
       
     }
 
-    /* //? codigo para validar que el dato ha sido registrado a la bd
+    /* //? codigo para validar que el dato ha sido registrado a la bd, para cambiar
       entradaRepo.add(data).then(
         (value){
           _showAlert(
@@ -106,6 +108,10 @@ class _ControlEntradaScreenState extends State<ControlEntradaScreen> {
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
             title: const Text("Entrada de alimentos"),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
           body: SingleChildScrollView(
             child: Form(

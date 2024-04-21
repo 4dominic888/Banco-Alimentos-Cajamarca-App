@@ -1,12 +1,16 @@
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class MongoDBService implements DataBaseService {
+class JsonServerService implements DataBaseService {
 
-  //TODO: Borrar más tarde
+  final _httpEntradaURL = Uri.https('my-json-server.typicode.com', '/4dominic888/MyJsonServer/entradas');
+  late String _json;
+
 
   @override
-  Future init(){
-    throw UnimplementedError();
+  Future<void> init() async{
+    _json = await http.read(_httpEntradaURL);
   }
 
   @override
@@ -20,8 +24,8 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getAll() {
-    throw UnimplementedError();
+  Future<List<dynamic>> getAll() async {
+    return json.decode(_json);
   }
 
   @override

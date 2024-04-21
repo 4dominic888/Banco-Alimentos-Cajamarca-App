@@ -8,16 +8,20 @@ environment:
 
 dependencies:
   encrypt: ^5.0.3
+  excel: ^4.0.2
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
   flutter_localization: ^0.2.0
   flutter_localizations:
     sdk: flutter
+  flutter_svg: ^2.0.10+1
+  http: ^1.2.1
   intl: ^0.18.1
   mongo_dart: ^0.10.0
   mqtt_client: ^10.2.0
   signature: ^5.4.1
+  syncfusion_flutter_pdf: ^25.1.40
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -40,3 +44,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/pdf/
+    - assets/font/
+    - assets/svg/
+    - assets/excel/
