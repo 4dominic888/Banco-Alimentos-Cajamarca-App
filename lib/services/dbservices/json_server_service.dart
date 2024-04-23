@@ -4,13 +4,14 @@ import 'dart:convert';
 
 class JsonServerService implements DataBaseService {
 
-  final _httpEntradaURL = Uri.https('my-json-server.typicode.com', '/4dominic888/MyJsonServer/entradas');
-  late String _json;
+  @override
+  String table = "entradas";
 
+  late String _json;
 
   @override
   Future<void> init() async{
-    _json = await http.read(_httpEntradaURL);
+    _json = await http.read(Uri.https('my-json-server.typicode.com', '/4dominic888/MyJsonServer/$table'));
   }
 
   @override
@@ -25,6 +26,8 @@ class JsonServerService implements DataBaseService {
 
   @override
   Future<List<dynamic>> getAll() async {
+    final _httpEntradaURL = Uri.https('my-json-server.typicode.com', '/4dominic888/MyJsonServer/$table');
+    _json = await http.read(_httpEntradaURL);
     return json.decode(_json);
   }
 

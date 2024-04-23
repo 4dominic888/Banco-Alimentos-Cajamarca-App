@@ -26,6 +26,7 @@ class PDFService {
   Future<void> init() async{
     _pdfBytes = await _readDocumentData("entrada_template.pdf");
     _calibriBold = await _loadFont("calibri-bold.ttf", 14);
+    _document = PdfDocument(inputBytes: _pdfBytes);
   }
 
   Future<void> printEntradaPDF(Entrada entrada) async{
@@ -40,7 +41,7 @@ class PDFService {
     drawText(entrada.cantidadStr, 189, 208, page, _standarFont);
 
     // Proveedor
-    drawText(entrada.proveedor, 90, 254, page, _standarFont);
+    drawText(entrada.proveedor.nombre, 90, 254, page, _standarFont);
 
     // Tipo alimento
     Iterable<String> typeFood = entrada.productos.keys;

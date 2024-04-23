@@ -1,11 +1,12 @@
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
 import 'package:intl/intl.dart';
 
 class Entrada {
     DateTime _fecha;
     double _cantidad;
-    String _proveedor;
+    Proveedor _proveedor;
     Map<String, List<Producto>> _productos;
     String? _comentario;
     Almacenero _almacenero;
@@ -13,7 +14,7 @@ class Entrada {
     Entrada({
       DateTime? fecha,
       required double cantidad,
-      required String proveedor,
+      required Proveedor proveedor,
       required Map<String, List<Producto>> productos,
       String? comentario,
       required Almacenero almacenero
@@ -28,7 +29,7 @@ class Entrada {
 
     DateTime get fecha => _fecha;
     double get cantidad => _cantidad;
-    String get proveedor => _proveedor;
+    Proveedor get proveedor => _proveedor;
     Map<String, List<Producto>> get productos => _productos;
     String? get comentario =>_comentario;
     Almacenero get almacenero =>_almacenero;
@@ -38,7 +39,7 @@ class Entrada {
 
     set fecha(DateTime fecha) => _fecha = fecha;
     set cantidad(double cantidad) => _cantidad = cantidad;
-    set proveedor(String proveedor) => _proveedor = proveedor;
+    set proveedor(Proveedor proveedor) => _proveedor = proveedor;
     set comentario(String? comentario) => _comentario = comentario;
 
     Map<String, dynamic> toJson(){
@@ -49,7 +50,7 @@ class Entrada {
         "id": 0,
         "fecha" : _fecha,
         "cantidad": _cantidad,
-        "proveedor": _proveedor,
+        "proveedor": _proveedor.toJson(),
         "productos": productos,
         "comentario": _comentario,
         "almacenero": _almacenero.toJson()

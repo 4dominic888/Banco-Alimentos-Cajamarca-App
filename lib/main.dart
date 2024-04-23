@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bancalcaj_app/modules/control_de_entrada/screens/export_entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/screens/import_entrada.dart';
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
@@ -5,12 +7,12 @@ import 'package:bancalcaj_app/services/dbservices/json_server_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-Future main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    final dbContext = DataBaseService.getInstance(JsonServerService());
-    await dbContext.init();
+Future<void> main() async {
+  final dbContext = DataBaseService.getInstance(JsonServerService());
+  await dbContext.init();
 
-    runApp(MainApp(dbContext: dbContext));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MainApp(dbContext: dbContext));
 }
 
 class MainApp extends StatelessWidget {
@@ -37,7 +39,7 @@ class MainApp extends StatelessWidget {
 
 //? Screen temporal, solo para testeo
 class _RouterScreen extends StatelessWidget {
-  const _RouterScreen({super.key, required this.dbContext});
+  const _RouterScreen({required this.dbContext});
 
   final DataBaseService dbContext;
 

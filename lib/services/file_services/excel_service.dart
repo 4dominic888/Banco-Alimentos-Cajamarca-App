@@ -47,7 +47,7 @@ class ExcelService{
     final sheet = _excel.tables['Categoria alimentos'];
 
     // Default data
-    sheet?.cell(CellIndex.indexByString('A1')).value = TextCellValue(entrada.proveedor);
+    sheet?.cell(CellIndex.indexByString('A1')).value = TextCellValue(entrada.proveedor.nombre);
     sheet?.cell(CellIndex.indexByString('D1')).value = TextCellValue("Fecha: ${entrada.fechaStr}");
 
     // fill fields products
