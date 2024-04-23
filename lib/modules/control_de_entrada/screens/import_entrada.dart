@@ -1,4 +1,7 @@
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/repositories/proveedor_repository.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/widgets/auto_completed_field.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/select_products.dart';
 
 import 'package:bancalcaj_app/modules/control_de_entrada/repositories/entrada_alimentos_repository.dart';
@@ -20,11 +23,12 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
   final formkey = GlobalKey<FormState>();
 
   final GlobalKey<DateTimeFieldState> _keyFieldFecha = GlobalKey();
-  final GlobalKey<FormFieldState> _keyFieldProveedor = GlobalKey();
+  final GlobalKey<AutoCompleteFieldState> _keyFieldProveedor = GlobalKey();
   final GlobalKey<SelectProductsFieldState> _keyFieldProductos = GlobalKey();
   final GlobalKey<FormFieldState> _keyFieldComentario = GlobalKey();
 
   late final EntradaAlimentosRepository entradaRepo;
+  late final ProveedorRepository proveedorRepo;
   bool _onLoad = false;
   
   //TODO: La lista deberia llamarse de alguna base de datos o similar, de momento esto sirve para testear.
@@ -46,7 +50,7 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
 
     final fecha = _keyFieldFecha.currentState!.fecha;
     final cantidad = _keyFieldProductos.currentState!.cantidadTotal;
-    final proveedor = _keyFieldProveedor.currentState!.value.toString();
+    final proveedor = _keyFieldProveedor.currentState!.text;
     final productos = _keyFieldProductos.currentState!.listProducts;
     final comentario = _keyFieldComentario.currentState!.value.toString();
 
@@ -98,7 +102,13 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
   @override
   void initState() {
     entradaRepo = EntradaAlimentosRepository(widget.dbContext);
+    proveedorRepo = ProveedorRepository(widget.dbContext);
     super.initState();
+  }
+
+  Future<List<String>> getProveedores() async{
+    final list = await proveedorRepo.getAll() ?? [];
+    return list.map((e) => e.nombre).toList();
   }
 
   @override
@@ -130,16 +140,20 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
                     // Campo de proveedor o nombre de la organzación
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: TextFormField(
-                        key: _keyFieldProveedor,
-                        validator: (value) {
-                          if(value!.trim().isEmpty) return "El proveedor no ha sido ingresado";
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: "Proveedor",
-                          prefixIcon: Icon(Icons.person)
-                        ),
+                      child: FutureBuilder<List<String>>(
+                        future: getProveedores(),
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            return AutoCompleteField(
+                              key: _keyFieldProveedor,
+                              title: "Proveedor",
+                              recommends: snapshot.data ?? [],
+                            );
+                          }
+                          else{
+                            return const CircularProgressIndicator();
+                          }
+                        }
                       ),
                     ),
               

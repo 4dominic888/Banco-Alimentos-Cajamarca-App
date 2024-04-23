@@ -14,18 +14,20 @@ class AutoCompleteFieldState extends State<AutoCompleteField> {
 
   String _text = "";
   String get text => _text;
+  Iterable<String> list = [];
+
+  @override
+  void initState() {
+    list = widget.recommends;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return FormField<String>(
       builder: (field) => Autocomplete<String>(
         optionsBuilder: (textEditingValue) {
-            if(textEditingValue.text.isEmpty){
-              return const Iterable<String>.empty();
-            }
-            else{
-              return widget.recommends.where((element) => element.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-            }
+          return list.where((element) => element.toLowerCase().contains(textEditingValue.text.toLowerCase())).take(6);
         },
         fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) => TextFormField(
           onChanged: (value) {

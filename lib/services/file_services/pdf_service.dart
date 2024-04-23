@@ -41,7 +41,7 @@ class PDFService {
     drawText(entrada.cantidadStr, 189, 208, page, _standarFont);
 
     // Proveedor
-    drawText(entrada.proveedor, 90, 254, page, _standarFont);
+    drawText(entrada.proveedor.nombre, 90, 254, page, _standarFont);
 
     // Tipo alimento
     Iterable<String> typeFood = entrada.productos.keys;
