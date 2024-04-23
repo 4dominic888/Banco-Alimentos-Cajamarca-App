@@ -26,6 +26,7 @@ class PDFService {
   Future<void> init() async{
     _pdfBytes = await _readDocumentData("entrada_template.pdf");
     _calibriBold = await _loadFont("calibri-bold.ttf", 14);
+    _document = PdfDocument(inputBytes: _pdfBytes);
   }
 
   Future<void> printEntradaPDF(Entrada entrada) async{
