@@ -2,7 +2,7 @@ import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class JsonServerService implements DataBaseService {
+class MongoDBService implements DataBaseService {
 
   @override
   String table = "entradas";
@@ -11,7 +11,7 @@ class JsonServerService implements DataBaseService {
 
   @override
   Future<void> init() async{
-    _json = await http.read(Uri.https('my-json-server.typicode.com', '/4dominic888/MyJsonServer/$table'));
+    _json = await http.read(Uri.https('localhost:9000', '/api/$table'));
   }
 
   @override
@@ -26,8 +26,8 @@ class JsonServerService implements DataBaseService {
 
   @override
   Future<List<dynamic>> getAll() async {
-    final _httpEntradaURL = Uri.https('my-json-server.typicode.com', '/4dominic888/MyJsonServer/$table');
-    _json = await http.read(_httpEntradaURL);
+    final httpEntradaURL = Uri.https('localhost:9000', '/api/$table');
+    _json = await http.read(httpEntradaURL);
     return json.decode(_json);
   }
 
