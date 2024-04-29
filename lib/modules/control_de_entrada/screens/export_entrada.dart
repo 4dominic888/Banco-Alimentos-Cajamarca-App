@@ -24,8 +24,7 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
   bool _isLoading = true;
 
   Future<List<Entrada>> initList() async {
-    List<Entrada> list = await entradaRepo.getAll() ?? [];
-
+    final list = await entradaRepo.getAll();
     return list;
   }
 
@@ -56,7 +55,7 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
           itemBuilder: (context, index) {
             final Producto p = list[index];
             return ListTile(
-              title: Text(p.grupoAlimentos),
+              title: Text(p.nombre),
               subtitle: Text('${p.pesoStr} kg'),
             );
           },
@@ -87,12 +86,12 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
-            ),),
+            )),
         
         body: FutureBuilder<List<Entrada>>(
           future: initList(),
           builder: (context, snapshot) {
-            if(snapshot.hasData){
+            if(snapshot.hasData && snapshot.data!.isNotEmpty){
                 return SingleChildScrollView(
                               child: ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -109,14 +108,14 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                                             direction: Axis.horizontal,
                                             spacing: 10,
                                             runSpacing: 10,
-                                            children: entrada.productos.keys.map((e) => InputChip(
+                                            children: entrada.tiposProductos.map((e) => InputChip(
                                               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                              label: Text(e, 
+                                              label: Text(e.nombre, 
                                                 style: const TextStyle(
                                                   fontSize: 12
                                                 ),
                                               ),
-                                              onPressed: () async => await _showSubProducts(context, e, entrada.productos[e]!),                          
+                                              onPressed: () async => await _showSubProducts(context, e.nombre, e.productos),                          
                                             )).toList(),
                                           ),
                                       ),

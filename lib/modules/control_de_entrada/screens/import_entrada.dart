@@ -1,7 +1,7 @@
+import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/repositories/proveedor_repository.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/widgets/auto_completed_field.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/widgets/proveedor_field.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/select_products.dart';
 
 import 'package:bancalcaj_app/modules/control_de_entrada/repositories/entrada_alimentos_repository.dart';
@@ -23,12 +23,11 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
   final formkey = GlobalKey<FormState>();
 
   final GlobalKey<DateTimeFieldState> _keyFieldFecha = GlobalKey();
-  final GlobalKey<AutoCompleteFieldState> _keyFieldProveedor = GlobalKey();
+  final GlobalKey<ProveedorFieldState> _keyFieldProveedor = GlobalKey();
   final GlobalKey<SelectProductsFieldState> _keyFieldProductos = GlobalKey();
   final GlobalKey<FormFieldState> _keyFieldComentario = GlobalKey();
 
   late final EntradaAlimentosRepository entradaRepo;
-  late final ProveedorRepository proveedorRepo;
   bool _onLoad = false;
   
   //TODO: La lista deberia llamarse de alguna base de datos o similar, de momento esto sirve para testear.
@@ -40,58 +39,92 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
         title: Text(title),
         content: Text(content),
         actions: [
-          TextButton(onPressed: onPressed, child: const Text("Ok"))
+          TextButton(onPressed: (){
+            onPressed.call();
+            Navigator.of(context).pop();
+          }, child: const Text("Ok"))
         ],
       );
     });
   }
 
-  Future _onSubmit() async{
+  Future _showAlertChoice(BuildContext context, {required String title, required String content, required void Function() onYes, required void Function() onNo}){
+    return showDialog(context: context, builder: (context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(onPressed: (){
+            onYes.call();
+            Navigator.of(context).pop();
+          }, child: const Text("Aceptar")),
+          TextButton(onPressed: (){
+            onNo.call();
+            Navigator.of(context).pop();
+          }, child: const Text("Cancelar"))
+        ],
+      );
+    });
+  }
+
+  Future<void> _onSubmit() async{
 
     final fecha = _keyFieldFecha.currentState!.fecha;
     final cantidad = _keyFieldProductos.currentState!.cantidadTotal;
-    final proveedor = _keyFieldProveedor.currentState!.text;
+    final proveedor = _keyFieldProveedor.currentState!.proveedor;
     final productos = _keyFieldProductos.currentState!.listProducts;
     final comentario = _keyFieldComentario.currentState!.value.toString();
 
     if(formkey.currentState!.validate()){
-      /*
-      final Entrada p = Entrada(
-        fecha: fecha,
-        cantidad: cantidad,
-        proveedor: proveedor,
-        productos: productos,
-        comentario: comentario
-      );
-      
-      entradaRepo.add(p);
-      */
-      
-    }
-
-    /* //? codigo para validar que el dato ha sido registrado a la bd, para cambiar
-      entradaRepo.add(data).then(
-        (value){
-          _showAlert(
-            context,
-            title: "Exito",
-            content: "Se ha registrado la entrada de alimentos correctamente ${value.toString()}",
-            onPressed: () async {
-              Navigator.of(context).pop();
-              //TODO limpiar los campos
-            },
-          );
-        }
-      ).catchError((error){
-        if(error is http.ClientException){
-          _showAlert(context, title: "Error", content: "Compruebe su conexión a internet e inténtelo nuevamente", onPressed: ()=>Navigator.of(context).pop());
-        }
-      }).whenComplete(() {
-        setState(() {
-          _onLoad = false;
-        });
+      final List<TipoProductos> tiposProductos = [];
+      productos.forEach((key, value) {
+        tiposProductos.add(
+          TipoProductos(
+            nombre: key,
+            productos: value
+          )
+        );
       });
-      */
+
+      bool isAdd = true;
+
+      if(proveedor.id == "0"){
+        await _showAlertChoice(context, 
+        title: "Advertencia",
+        content: "El proveedor ingresado no está registrado actualmente, ¿Desea registrar dicho proveedor de todas maneras?",
+        onYes: () => isAdd = true,
+        onNo: () => isAdd = false
+        );
+      }
+
+      if(isAdd){
+        await _registerEntrada(Entrada(
+          fecha: fecha,
+          cantidad: cantidad,
+          proveedor: proveedor,
+          productos: tiposProductos,
+          comentario: comentario,
+          almacenero: Almacenero(nombre: "almacenero test", dni: "12345678")
+        ));
+      }
+    }
+  }
+
+  Future<void> _registerEntrada(Entrada e) async{
+    setState(() {
+      _onLoad = true;
+    });
+    await entradaRepo.add(e).then((value) {
+      setState(() {
+        _onLoad = false;
+      });      
+      _showAlert(context, 
+        title: "Exito",
+        content: "Se ha registrado la entrada de alimentos correctamente",
+        onPressed: () async {
+          //TODO limpiar los campos
+        });
+    });
   }
 
   @override
@@ -102,13 +135,7 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
   @override
   void initState() {
     entradaRepo = EntradaAlimentosRepository(widget.dbContext);
-    proveedorRepo = ProveedorRepository(widget.dbContext);
     super.initState();
-  }
-
-  Future<List<String>> getProveedores() async{
-    final list = await proveedorRepo.getAll() ?? [];
-    return list.map((e) => e.nombre).toList();
   }
 
   @override
@@ -140,21 +167,7 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
                     // Campo de proveedor o nombre de la organzación
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: FutureBuilder<List<String>>(
-                        future: getProveedores(),
-                        builder: (context, snapshot) {
-                          if(snapshot.hasData){
-                            return AutoCompleteField(
-                              key: _keyFieldProveedor,
-                              title: "Proveedor",
-                              recommends: snapshot.data ?? [],
-                            );
-                          }
-                          else{
-                            return const CircularProgressIndicator();
-                          }
-                        }
-                      ),
+                      child: ProveedorField(key: _keyFieldProveedor, dbContext: widget.dbContext)
                     ),
               
                     // Campo de selección de productos
@@ -186,7 +199,7 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
                       child: Row(
                         children: [
                           ElevatedButton(
-                            onPressed: _onSubmit,
+                            onPressed: () async => await _onSubmit(),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
                               foregroundColor: Colors.white
