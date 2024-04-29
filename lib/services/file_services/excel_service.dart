@@ -1,5 +1,6 @@
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
+import 'package:bancalcaj_app/services/file_services/save_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/services.dart';
 
@@ -51,22 +52,22 @@ class ExcelService{
     sheet?.cell(CellIndex.indexByString('D1')).value = TextCellValue("Fecha: ${entrada.fechaStr}");
 
     // fill fields products
-    final alimentos = entrada.productos;
+    final tipoProductos = entrada.tiposProductos;
     int iColI = 1;
     int iRowI = 2;
     int cellMerge1 = 0;
     int cellMerge2 = 0;
     late Data? initCell;
 
-    alimentos.forEach((key, value) {
+    for (var tp in tipoProductos) {
       initCell = sheet?.cell(CellIndex.indexByColumnRow(columnIndex: iColI, rowIndex: iRowI));
-      initCell?.value = TextCellValue(key);
+      initCell?.value = TextCellValue(tp.nombre);
       initCell?.cellStyle = _cellStyleTypeProduct;
       cellMerge1 = iRowI;
-      for (Producto p in value) {
+      for(Producto p in tp.productos){
         iColI = 2;
         initCell = sheet?.cell(CellIndex.indexByColumnRow(columnIndex: iColI, rowIndex: iRowI));
-        initCell?.value = TextCellValue(p.grupoAlimentos);
+        initCell?.value = TextCellValue(p.nombre);
         initCell?.cellStyle = _cellStyleAlimento;
         iColI++;
         initCell = sheet?.cell(CellIndex.indexByColumnRow(columnIndex: iColI, rowIndex: iRowI));
@@ -80,7 +81,8 @@ class ExcelService{
         sheet?.merge(CellIndex.indexByString('B${cellMerge1+1}'), CellIndex.indexByString('B${cellMerge2+1}'));
       }
       sheet?.setMergedCellStyle(CellIndex.indexByString('B${cellMerge1+1}'), _cellStyleTypeProduct);
-    });
+    }
+
     iRowI++;
     initCell = sheet?.cell(CellIndex.indexByString('C$iRowI'));
     initCell?.value = const TextCellValue("Total");
@@ -95,8 +97,12 @@ class ExcelService{
     sheet?.setColumnWidth(2, 62.29);
     sheet?.setColumnWidth(3, 20.86);
 
-    // sheet?.merge(CellIndex.indexByString('B2'), CellIndex.indexByString('C2'));
-    _excel.save(fileName: 'entrada_${entrada.proveedor}.xlsx');
+    final bytes = _excel.save();
+    SaveDialog.onDownloadDir(bytes!, 
+      dialogTitle: 'Guardar entrada excel',
+      filename: 'entrada_${entrada.proveedor.nombre}_${entrada.hashCode}',
+      ext: 'xlsx'
+    );
 
   }
 
