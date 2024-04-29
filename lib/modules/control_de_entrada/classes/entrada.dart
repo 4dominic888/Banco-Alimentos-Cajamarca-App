@@ -29,7 +29,7 @@ class Entrada {
       factory Entrada.fromJson(Map<String, dynamic> json){
         final products = json["tipoProductos"] as List<dynamic>;
         return Entrada(
-          fecha: DateTime.parse(json["fecha"]),
+          fecha: DateFormat('dd-MM-yyyy HH:mm').parse(json["fecha"]),
           cantidad: double.parse(json["cantidad"]),
           proveedor: Proveedor.fromJson(json["proveedor"]),
           productos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
