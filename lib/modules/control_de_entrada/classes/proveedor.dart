@@ -4,6 +4,10 @@ class Proveedor{
 
   Proveedor({required this.id, required this.nombre});
 
+  factory Proveedor.fromJson(Map<String, dynamic> json){
+    return Proveedor(id: json["idp"], nombre: json["nombre"]);
+  }
+
   Map<String, dynamic> toJson(){
     return {
       "idp": id,
