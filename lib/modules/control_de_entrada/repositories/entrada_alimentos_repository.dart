@@ -20,9 +20,12 @@ class EntradaAlimentosRepository extends Repository<Entrada> {
   }
 
   @override
-  Future<Iterable<Entrada>?> getAll() async {
-    final json = await _context.getAll(table) as List<Map<String, dynamic>>;
-    return json.map((e) => Entrada.fromJson(e));
+  Future<List<Entrada>> getAll() async {
+    final data = await _context.getAll(table);
+    if(data != null){
+      return List<Entrada>.from(data.map((e) => Entrada.fromJson(e)));
+    }
+    return [];
   }
 
   @override

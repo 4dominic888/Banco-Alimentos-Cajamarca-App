@@ -21,9 +21,12 @@ class ProveedorRepository extends Repository<Proveedor>{
   }
 
   @override
-  Future<Iterable<Proveedor>?> getAll() async {
-    final json = (await _context.getAll(table))?.toList() ?? [];
-    return json.map((e) => Proveedor.fromJson(e));
+  Future<List<Proveedor>> getAll() async {
+    final data = await _context.getAll(table);
+    if(data != null){
+      return List<Proveedor>.from(data.map((e) => Proveedor.fromJson(e)));
+    }
+    return [];
   }
 
   @override
