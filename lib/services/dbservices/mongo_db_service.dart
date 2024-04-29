@@ -4,45 +4,47 @@ import 'dart:convert';
 
 class MongoDBService implements DataBaseService {
 
-  @override
-  String table = "entradas";
+  Map<String, String> headers = {
+      'Content-Type': 'application/json',
+  };
 
-  late String _json;
+  static String domain = 'backend-test-bacalcaj.onrender.com';
 
   @override
   Future<void> init() async{
-    _json = await http.read(Uri.https('localhost:9000', '/api/$table'));
+    
   }
 
   @override
-  Future add(Map<String, dynamic> data) async {
+  Future<http.Response> add(Map<String, dynamic> data, String table) async {
+    final httpEntradaURL = Uri.https(domain, 'api/$table');
+    return await http.post(httpEntradaURL, headers: headers, body: jsonEncode(data));
+  }
+
+  @override
+  Future delete(int id, String table) {
     throw UnimplementedError();
   }
 
   @override
-  Future delete(int id) {
+  Future<List<dynamic>> getAll(String table) async {
+    final httpEntradaURL = Uri.https(domain, 'api/$table');
+    final response = await http.get(httpEntradaURL, headers: headers);
+    return json.decode(response.body);
+  }
+
+  @override
+  Future<Map<String, dynamic>> getById(int id, String table) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<dynamic>> getAll() async {
-    final httpEntradaURL = Uri.https('localhost:9000', '/api/$table');
-    _json = await http.read(httpEntradaURL);
-    return json.decode(_json);
-  }
-
-  @override
-  Future<Map<String, dynamic>> getById(int id) {
+  Future insert(int id, Map<String, dynamic> data, String table) {
     throw UnimplementedError();
   }
 
   @override
-  Future insert(int id, Map<String, dynamic> data) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future update(int id, Map<String, dynamic> newData) {
+  Future update(int id, Map<String, dynamic> newData, String table) {
     throw UnimplementedError();
   }
   
