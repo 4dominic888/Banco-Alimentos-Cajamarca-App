@@ -2,13 +2,11 @@ import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart'
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
 import 'package:bancalcaj_app/services/dbservices/repository.dart';
 
-class ProveedorRepository implements Repository<Proveedor>{
+class ProveedorRepository extends Repository<Proveedor>{
 
   final DataBaseService _context;
 
-  ProveedorRepository(DataBaseService context): _context = context{
-    _context.table = "proveedor";
-  }
+  ProveedorRepository(DataBaseService context): _context = context, super('proveedores');
 
   @override
   Future add(Proveedor item) {
@@ -23,10 +21,9 @@ class ProveedorRepository implements Repository<Proveedor>{
   }
 
   @override
-  Future<List<Proveedor>>? getAll() async {
-    final json = await _context.getAll();
-    if(json == null) return [];
-    return json.map((e) => Proveedor(id: e["idp"], nombre: e["nombre"])).toList();
+  Future<Iterable<Proveedor>?> getAll() async {
+    final json = (await _context.getAll(table))?.toList() ?? [];
+    return json.map((e) => Proveedor.fromJson(e));
   }
 
   @override
