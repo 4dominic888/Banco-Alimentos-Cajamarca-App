@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
@@ -33,14 +35,14 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
   //TODO: La lista deberia llamarse de alguna base de datos o similar, de momento esto sirve para testear.
   List<String> defaultList = ["Carnes", "Frutas", "Verduras", "Abarrotes", "Embutidos"];
 
-  Future _showAlert(BuildContext context, {required String title, required String content, required void Function() onPressed}){
+  Future _showAlert(BuildContext context, {required String title, required String content, void Function()? onPressed}){
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
         title: Text(title),
         content: Text(content),
         actions: [
           TextButton(onPressed: (){
-            onPressed.call();
+            onPressed?.call();
             Navigator.of(context).pop();
           }, child: const Text("Ok"))
         ],
@@ -114,17 +116,37 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
     setState(() {
       _onLoad = true;
     });
-    await entradaRepo.add(e).then((value) {
+    try{
+      await entradaRepo.add(e).then((value) {
+        setState(() {
+          _onLoad = false;
+        });      
+        _showAlert(context, 
+          title: "Exito",
+          content: "Se ha registrado la entrada de alimentos correctamente",
+          onPressed: () async {
+            //TODO limpiar los campos
+          });
+      });
+    } on HttpException catch (exception){
       setState(() {
         _onLoad = false;
-      });      
-      _showAlert(context, 
-        title: "Exito",
-        content: "Se ha registrado la entrada de alimentos correctamente",
-        onPressed: () async {
-          //TODO limpiar los campos
-        });
-    });
+      });
+      _showAlert(
+        context,
+        title: 'Ha ocurrido un error con el servidor',
+        content: exception.message,
+      );
+    } on FormatException catch (exception){
+      setState(() {
+        _onLoad = false;
+      });   
+      _showAlert(
+        context,
+        title: 'Ha ocurrido un error interno',
+        content: exception.message,
+      );
+    }
   }
 
   @override

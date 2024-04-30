@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,6 +12,8 @@ class MongoDBService implements DataBaseService {
 
   static String domain = 'backend-test-bacalcaj.onrender.com';
 
+
+
   @override
   Future<void> init() async{
     
@@ -17,8 +21,16 @@ class MongoDBService implements DataBaseService {
 
   @override
   Future<http.Response> add(Map<String, dynamic> data, String table) async {
-    final httpEntradaURL = Uri.https(domain, 'api/$table');
-    return await http.post(httpEntradaURL, headers: headers, body: jsonEncode(data));
+    final uri = Uri.https(domain, 'api/$table');
+    final response = await http.post(uri, headers: headers, body: jsonEncode(data));
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      if(data.containsKey('message')){
+        throw FormatException('Error al realizar solicitud post: ${data['message']['errorResponse']['errmsg']}');
+      }
+      return response;
+    }
+    throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }
 
   @override
@@ -28,9 +40,14 @@ class MongoDBService implements DataBaseService {
 
   @override
   Future<List<dynamic>> getAll(String table) async {
-    final httpEntradaURL = Uri.https(domain, 'api/$table');
-    final response = await http.get(httpEntradaURL, headers: headers);
-    return json.decode(response.body);
+    final uri = Uri.https(domain, 'api/$table');
+    final response = await http.get(uri, headers: headers);
+    if(response.statusCode == 200){
+      return json.decode(response.body);
+    }
+    else{
+      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+    }
   }
 
   @override
