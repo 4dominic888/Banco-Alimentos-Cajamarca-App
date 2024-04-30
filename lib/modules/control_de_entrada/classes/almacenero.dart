@@ -7,10 +7,17 @@ class Almacenero {
     String get nombre => _nombre;
     String get dni => _dni;
 
+    factory Almacenero.fromJson(Map<String, dynamic> json){
+      return Almacenero(
+        nombre: json["nombre"],
+        dni: json["dni"]
+      );
+    }
+
     Map<String, dynamic> toJson(){
       return {
-        "nombre": _nombre,
-        "dni": _dni 
+        "dni": _dni,
+        "nombre": _nombre
       };
     }
 }

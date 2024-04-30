@@ -46,7 +46,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
             itemBuilder: (context, index) {
               final element = lista[index];
               return ListTile(
-                title: Text(element.grupoAlimentos),
+                title: Text(element.nombre),
                 subtitle: Text("${element.peso.toString()} kg"),
                 trailing: IconButton(
                   icon: const Icon(Icons.close),

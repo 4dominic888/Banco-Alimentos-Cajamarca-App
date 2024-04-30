@@ -1,17 +1,16 @@
 abstract class DataBaseService{
 
   static DataBaseService? _instance;
-  late final String table;
 
   factory DataBaseService.getInstance(DataBaseService dbContext){
     return _instance ??= dbContext;
   }
 
   Future init();
-  Future add(Map<String, dynamic> data);
-  Future insert(int id, Map<String, dynamic> data);
-  Future<List<dynamic>?> getAll();
-  Future<Map<String, dynamic>> getById(int id);
-  Future update(int id, Map<String, dynamic> newData);
-  Future delete(int id);
+  Future add(Map<String, dynamic> data, String table);
+  Future insert(int id, Map<String, dynamic> data, String table);
+  Future<List<dynamic>?> getAll(String table);
+  Future<Map<String, dynamic>> getById(int id, String table);
+  Future update(int id, Map<String, dynamic> newData, String table);
+  Future delete(int id, String table);
 }

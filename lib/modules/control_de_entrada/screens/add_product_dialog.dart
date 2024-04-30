@@ -130,7 +130,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 ));
                 
                 Navigator.of(context).pop(Producto(
-                  grupoAliementos: keyProductName.currentState!.text,
+                  nombre: keyProductName.currentState!.text,
                   peso: keyFieldPeso.currentState!.cantidad
                 ));
               }

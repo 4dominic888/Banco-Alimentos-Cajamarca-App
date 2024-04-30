@@ -1,8 +1,6 @@
-import 'dart:convert';
-// TODO: Android tendrá problemas con el código de descargar PDF.
-import 'dart:html';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
+import 'package:bancalcaj_app/services/file_services/save_dialog.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
@@ -44,15 +42,15 @@ class PDFService {
     drawText(entrada.proveedor.nombre, 90, 254, page, _standarFont);
 
     // Tipo alimento
-    Iterable<String> typeFood = entrada.productos.keys;
+    Iterable<String> typeFood = entrada.tiposProductos.map((e) => e.nombre);
     for (String type in typeFood) {
       drawTypeFood(type, page);
     }
 
     // Otros
-    final List<Producto>? otrosProduct = entrada.productos["Otros"];
-    if(otrosProduct !=  null){
-      final String otrosProductString = otrosProduct.map((e) => e.grupoAlimentos).join(', ');
+    final otrosTipoProduct = entrada.tiposProductos.firstWhere((element) => element.nombre == "Otros", orElse: () => TipoProductos(nombre: "none", productos: []));
+    if(otrosTipoProduct.productos.isNotEmpty){
+      final String otrosProductString = otrosTipoProduct.productos.map((e) => e.nombre).join(', ');
       drawLongText(otrosProductString, 85.05, 388.395, 460.120, 67.473, page);
     }
   
@@ -66,10 +64,11 @@ class PDFService {
     drawText("DNI: ${entrada.almacenero.dni}", 82.844, 695.709, page, _calibriBold);
 
     List<int> bytes = await _document.save();
-    AnchorElement(
-      href: "data:application/octet-stream;charset=utf-16le;base64, ${base64.encode(bytes)}")
-      ..setAttribute("download", "entrada_${entrada.proveedor}.pdf")
-      ..click();
+    SaveDialog.onDownloadDir(bytes, 
+      dialogTitle: 'Guardar entrada pdf',
+      filename: 'entrada_${entrada.proveedor.nombre}_${entrada.hashCode}',
+      ext: 'pdf'
+    );
   }
 
   void dispose(){
