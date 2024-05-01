@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
@@ -91,11 +92,21 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
       bool isAdd = true;
 
       if(proveedor.id == "0"){
-        await _showAlertChoice(context, 
-        title: "Advertencia",
-        content: "El proveedor ingresado no está registrado actualmente, ¿Desea registrar dicho proveedor de todas maneras?",
-        onYes: () => isAdd = true,
-        onNo: () => isAdd = false
+        await _showAlertChoice(
+          context, 
+          title: "Advertencia",
+          content: "El proveedor ingresado no está registrado actualmente, ¿Desea registrar dicho proveedor de todas maneras?",
+          onYes: () => isAdd = true,
+          onNo: () => isAdd = false
+        );
+      }
+
+      if(proveedor.id == "-1"){
+        isAdd = false;
+        await _showAlert(
+          context,
+          title: "Error",
+          content: "Se ha detectado el ingreso de un proveedor no definido, verifique la conexión con el servidor"
         );
       }
 
@@ -146,6 +157,15 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
         title: 'Ha ocurrido un error interno',
         content: exception.message,
       );
+    } on TimeoutException{
+      setState(() {
+        _onLoad = false;
+      });   
+      _showAlert(
+        context,
+        title: 'Ha ocurrido un error de conexión',
+        content: "Verifique su conexión a internet o el estado del servidor e inténtelo nuevamente",
+      );      
     }
   }
 
