@@ -6,13 +6,13 @@ import 'dart:convert';
 
 class MongoDBService implements DataBaseService {
 
+  static Duration timeLimit = const Duration(seconds: 15);
+
   Map<String, String> headers = {
       'Content-Type': 'application/json',
   };
 
   static String domain = 'backend-test-bacalcaj.onrender.com';
-
-
 
   @override
   Future<void> init() async{
@@ -22,7 +22,7 @@ class MongoDBService implements DataBaseService {
   @override
   Future<http.Response> add(Map<String, dynamic> data, String table) async {
     final uri = Uri.https(domain, 'api/$table');
-    final response = await http.post(uri, headers: headers, body: jsonEncode(data));
+    final response = await http.post(uri, headers: headers, body: jsonEncode(data)).timeout(timeLimit);
     if(response.statusCode == 200){
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       if(data.containsKey('message')){
@@ -41,7 +41,7 @@ class MongoDBService implements DataBaseService {
   @override
   Future<List<dynamic>> getAll(String table) async {
     final uri = Uri.https(domain, 'api/$table');
-    final response = await http.get(uri, headers: headers);
+    final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
       return json.decode(response.body);
     }

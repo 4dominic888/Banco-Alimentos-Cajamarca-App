@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/repositories/entrada_alimentos_repository.dart';
@@ -22,9 +24,17 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
   late final PDFService _pdfService;
   late final ExcelService _excelService;
   bool _isLoading = true;
+  bool _isAvalaibleConnection = false;
 
   Future<List<Entrada>> initList() async {
-    final list = await entradaRepo.getAll();
+    List<Entrada> list;
+    try{
+      list = await entradaRepo.getAll();
+      _isAvalaibleConnection = true;
+    } on TimeoutException{
+      list = [];
+      _isAvalaibleConnection = false;
+    }
     return list;
   }
 
@@ -155,8 +165,14 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                               )
                             ); 
             }
+            else if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(child: CircularProgressIndicator());
+            }
             else{
-              return const Center(child: Text("No hay entradas"));
+              if(!_isAvalaibleConnection){
+                return const Center(child: Text("Ha ocurrido un error de conexión"));
+              }
+              return const Center(child: Text("No hay entradas registradas por el momento"));
             }
           }
         ),
