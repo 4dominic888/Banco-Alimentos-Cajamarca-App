@@ -23,7 +23,7 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
   late final EntradaAlimentosRepository entradaRepo = EntradaAlimentosRepository(widget.dbContext);
   late final PDFService _pdfService;
   late final ExcelService _excelService;
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _isAvalaibleConnection = false;
 
   Future<List<Entrada>> initList() async {
@@ -45,7 +45,7 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
     await Future.wait([
       _pdfService.init(),
       _excelService.init()
-    ]);
+    ]).then((value) => setState(() {_isLoading = false;}));
 
     setState(() {
       _isLoading = false;
@@ -103,72 +103,72 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
           builder: (context, snapshot) {
             if(snapshot.hasData && snapshot.data!.isNotEmpty){
                 return SingleChildScrollView(
-                              child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: snapshot.data?.length,
-                                itemBuilder: (context, index) { 
-                                  final entrada = snapshot.data![index];
-                                  return Card(
-                                    child: ListTile(
-                                      title: Text("${entrada.proveedor.nombre} / ${entrada.cantidadStr} kg \n${DateFormat("dd/MM/yyyy HH:mm").format(entrada.fecha)}"),
-                                      leading: Column(
-                                        children: [
-                                          const Icon(Icons.account_box_sharp),
-                                          Text(entrada.almacenero.nombre)
-                                        ],
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (context, index) { 
+                        final entrada = snapshot.data![index];
+                        return Card(
+                          child: ListTile(
+                            title: Text("${entrada.proveedor.nombre} / ${entrada.cantidadStr}kg\n${DateFormat("dd/MM/yyyy HH:mm").format(entrada.fecha)}"),
+                            leading: Column(
+                              children: [
+                                const Icon(Icons.account_box_sharp),
+                                Text(entrada.almacenero.nombre)
+                              ],
+                            ),
+                            subtitle: SizedBox(
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  spacing: 10,
+                                  runSpacing: 10,
+                                  children: entrada.tiposProductos.map((e) => InputChip(
+                                    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                                    label: Text(e.nombre, 
+                                      style: const TextStyle(
+                                        fontSize: 12
                                       ),
-                                      subtitle: SizedBox(
-                                          child: Wrap(
-                                            direction: Axis.horizontal,
-                                            spacing: 10,
-                                            runSpacing: 10,
-                                            children: entrada.tiposProductos.map((e) => InputChip(
-                                              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                              label: Text(e.nombre, 
-                                                style: const TextStyle(
-                                                  fontSize: 12
-                                                ),
-                                              ),
-                                              onPressed: () async => await _showSubProducts(context, e.nombre, e.productos),                          
-                                            )).toList(),
-                                          ),
-                                      ),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          ElevatedButton(
-                                            onPressed: _isLoading ? null : () async => await _excelService.printEntradaExcel(entrada),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  'assets/svg/microsoft_excel_icon.svg',
-                                                  width: 24,
-                                                  height: 24,
-                                                ),
-                                                const Text("Excel", style: TextStyle(color: Colors.black))
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          ElevatedButton(
-                                            onPressed: _isLoading ? null : () async => await _pdfService.printEntradaPDF(entrada),
-                                            child: const Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(Icons.picture_as_pdf, color: Colors.black),
-                                                Text("PDF", style: TextStyle(color: Colors.black))
-                                              ],
-                                            )
-                                          ),
-                                        ],
-                                      )
                                     ),
-                                  );
-                                },
-                              )
-                            ); 
+                                    onPressed: () async => await _showSubProducts(context, e.nombre, e.productos),                          
+                                  )).toList(),
+                                ),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: _isLoading ? null : () async => await _excelService.printEntradaExcel(entrada),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/svg/microsoft_excel_icon.svg',
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                      const Text("Excel", style: TextStyle(color: Colors.black))
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                ElevatedButton(
+                                  onPressed: _isLoading ? null : () async => await _pdfService.printEntradaPDF(entrada),
+                                  child: const Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.picture_as_pdf, color: Colors.black),
+                                      Text("PDF", style: TextStyle(color: Colors.black))
+                                    ],
+                                  )
+                                ),
+                              ],
+                            )
+                          ),
+                        );
+                      },
+                    )
+                  ); 
             }
             else if(snapshot.connectionState == ConnectionState.waiting){
               return const Center(child: CircularProgressIndicator());
