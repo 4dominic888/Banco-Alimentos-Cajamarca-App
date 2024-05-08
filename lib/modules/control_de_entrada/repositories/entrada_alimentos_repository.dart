@@ -10,7 +10,7 @@ class EntradaAlimentosRepository extends Repository<Entrada> {
 
   @override
   Future<dynamic> add(Entrada item) async {
-    return await _context.add(item.toJson(), table);
+    return await _context.add(item.toJsonEntry(), table);
   }
 
   @override
