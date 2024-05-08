@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AutoCompleteField extends StatefulWidget {
-  const AutoCompleteField({super.key, required this.recommends, required this.title} );
+  const AutoCompleteField({super.key, required this.recommends, required this.title, this.validate} );
 
   final Iterable<String> recommends;
   final String title;
+  final String? Function(String?)? validate;
 
   @override
   State<AutoCompleteField> createState() => AutoCompleteFieldState();
@@ -36,10 +37,7 @@ class AutoCompleteFieldState extends State<AutoCompleteField> {
             });
           },
           controller: textEditingController,
-          validator: (value) {
-            if(value == null || value.trim().isEmpty) return "El campo está vacio";
-            return null;
-          },
+          validator: widget.validate,
           focusNode: focusNode,
           onEditingComplete: onFieldSubmitted,
           decoration: InputDecoration(

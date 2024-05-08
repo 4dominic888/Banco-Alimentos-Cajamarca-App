@@ -89,37 +89,22 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
         );
       });
 
-      bool isAdd = true;
-
       if(proveedor.id == "0"){
-        await _showAlertChoice(
+        await _showAlert(
           context, 
           title: "Advertencia",
           content: "El proveedor ingresado no está registrado actualmente, ¿Desea registrar dicho proveedor de todas maneras?",
-          onYes: () => isAdd = true,
-          onNo: () => isAdd = false
         );
       }
 
-      if(proveedor.id == "-1"){
-        isAdd = false;
-        await _showAlert(
-          context,
-          title: "Error",
-          content: "Se ha detectado el ingreso de un proveedor no definido, verifique la conexión con el servidor"
-        );
-      }
-
-      if(isAdd){
-        await _registerEntrada(Entrada(
-          fecha: fecha,
-          cantidad: cantidad,
-          proveedor: proveedor,
-          productos: tiposProductos,
-          comentario: comentario,
-          almacenero: Almacenero(nombre: "almacenero test", dni: "12345678")
-        ));
-      }
+      await _registerEntrada(Entrada(
+        fecha: fecha,
+        cantidad: cantidad,
+        proveedor: proveedor,
+        productos: tiposProductos,
+        comentario: comentario,
+        almacenero: Almacenero(nombre: "almacenero test", dni: "12345678")
+      ));
     }
   }
 

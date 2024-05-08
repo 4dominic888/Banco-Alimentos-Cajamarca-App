@@ -50,7 +50,6 @@ class Entrada {
 
 
     Map<String, dynamic> toJson(){
-
       return{
         "fecha" : fechaStr,
         "cantidad": cantidadStr,
@@ -58,6 +57,17 @@ class Entrada {
         "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
         "comentario": _comentario,
         "almacenero": _almacenero.toJson()
+      };
+    }
+
+    Map<String, dynamic> toJsonEntry(){
+      return{
+        "fecha" : fechaStr,
+        "cantidad": cantidadStr,
+        "proveedor": _proveedor.id.toString(),
+        "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
+        "comentario": _comentario,
+        "almacenero": _almacenero.dni.toString()
       };
     }
 }
