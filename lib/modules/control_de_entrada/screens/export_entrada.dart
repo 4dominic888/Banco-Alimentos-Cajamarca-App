@@ -111,8 +111,13 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                                   final entrada = snapshot.data![index];
                                   return Card(
                                     child: ListTile(
-                                      title: Text("${entrada.proveedor.nombre} / ${entrada.cantidadStr} kg \n ${DateFormat("dd/MM/yyyy HH:mm").format(entrada.fecha)}"),
-                                      leading: const Icon(Icons.foggy),
+                                      title: Text("${entrada.proveedor.nombre} / ${entrada.cantidadStr} kg \n${DateFormat("dd/MM/yyyy HH:mm").format(entrada.fecha)}"),
+                                      leading: Column(
+                                        children: [
+                                          const Icon(Icons.account_box_sharp),
+                                          Text(entrada.almacenero.nombre)
+                                        ],
+                                      ),
                                       subtitle: SizedBox(
                                           child: Wrap(
                                             direction: Axis.horizontal,
@@ -170,7 +175,7 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
             }
             else{
               if(!_isAvalaibleConnection){
-                return const Center(child: Text("Ha ocurrido un error de conexión"));
+                return const Center(child: Text("Ha ocurrido un error de conexión, intentelo nuevamente"));
               }
               return const Center(child: Text("No hay entradas registradas por el momento"));
             }
