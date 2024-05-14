@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bancalcaj_app/modules/control_de_entrada/screens/export_entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/screens/import_entrada.dart';
+import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
 import 'package:bancalcaj_app/services/dbservices/mongo_db_service.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +50,9 @@ class _RouterScreen extends StatelessWidget {
         appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
         body: Column(children: [
           TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ImportEntradaScreen(dbContext: dbContext))), child: const Text("Entrada alimentos Import")),
-          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ExportEntradaScreen(dbContext: dbContext))), child: const Text("Entrada alimentos Export"))
-        ],),
+          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ExportEntradaScreen(dbContext: dbContext))), child: const Text("Entrada alimentos Export")),
+          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProveedorRegisterScreen())), child: const Text('Proveedor register'))
+        ])
     );
   }
 }
