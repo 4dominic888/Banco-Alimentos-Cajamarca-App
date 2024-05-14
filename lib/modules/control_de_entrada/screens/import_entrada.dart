@@ -7,7 +7,7 @@ import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/proveedor_field.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/select_products.dart';
 
-import 'package:bancalcaj_app/modules/control_de_entrada/repositories/entrada_alimentos_repository.dart';
+import 'package:bancalcaj_app/shared/repositories/entrada_alimentos_repository.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/datetime_field.dart';
 
 import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
