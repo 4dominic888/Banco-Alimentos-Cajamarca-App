@@ -1,6 +1,6 @@
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
-import 'package:bancalcaj_app/services/db_services/repository.dart';
+import 'package:bancalcaj_app/shared/repositories/repository.dart';
 
 class EntradaAlimentosRepository extends Repository<Entrada> {
   
