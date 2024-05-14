@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/repositories/proveedor_repository.dart';
+import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/auto_completed_field.dart';
-import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
+import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:flutter/material.dart';
 
 class ProveedorField extends StatefulWidget {

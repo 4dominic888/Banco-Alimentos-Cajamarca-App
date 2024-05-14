@@ -9,7 +9,7 @@ class Producto {
     Producto({required String nombre, required double peso}) : _nombre = nombre, _peso = peso;
 
     factory Producto.fromJson(Map<String, dynamic> json){
-      return Producto(nombre: json["nombre"], peso: double.parse(json["peso"]));
+      return Producto(nombre: json["nombre"], peso: double.parse(json["peso"].toString()));
     }
 
     @override
