@@ -10,7 +10,7 @@ import 'package:bancalcaj_app/modules/control_de_entrada/widgets/select_products
 import 'package:bancalcaj_app/shared/repositories/entrada_alimentos_repository.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/datetime_field.dart';
 
-import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
+import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:flutter/material.dart';
 
 class ImportEntradaScreen extends StatefulWidget {

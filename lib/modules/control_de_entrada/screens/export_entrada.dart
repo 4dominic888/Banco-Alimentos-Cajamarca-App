@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
 import 'package:bancalcaj_app/shared/repositories/entrada_alimentos_repository.dart';
-import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
+import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/services/file_services/excel_service.dart';
 import 'package:bancalcaj_app/services/file_services/pdf_service.dart';
 import 'package:flutter/material.dart';
