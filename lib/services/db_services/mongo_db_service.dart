@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
+import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

@@ -1,10 +1,9 @@
 import 'dart:async';
-
-import 'package:bancalcaj_app/modules/control_de_entrada/screens/export_entrada.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/screens/import_entrada.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/screens/export_entrada_screen.dart';
+import 'package:bancalcaj_app/modules/control_de_entrada/screens/import_entrada_screen.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
-import 'package:bancalcaj_app/services/dbservices/data_base_service.dart';
-import 'package:bancalcaj_app/services/dbservices/mongo_db_service.dart';
+import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
+import 'package:bancalcaj_app/services/db_services/mongo_db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
