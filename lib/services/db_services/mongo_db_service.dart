@@ -6,13 +6,13 @@ import 'dart:convert';
 
 class MongoDBService implements DataBaseService {
 
-  static Duration timeLimit = const Duration(seconds: 15);
+  static const Duration timeLimit = Duration(seconds: 15);
 
-  Map<String, String> headers = {
+  static const Map<String, String> headers = {
       'Content-Type': 'application/json',
   };
 
-  static String domain = 'backend-test-bacalcaj.onrender.com';
+  static const String domain = 'backend-test-bacalcaj.onrender.com';
 
   @override
   Future<void> init() async{
