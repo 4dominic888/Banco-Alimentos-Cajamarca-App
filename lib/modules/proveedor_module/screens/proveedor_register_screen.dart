@@ -1,3 +1,4 @@
+import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/ubication_form_field.dart';
 import 'package:flutter/material.dart';
@@ -53,13 +54,14 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
 
   void onSubmit() {
     if (_formkey.currentState!.validate()) {
-      final proveedorName = _proveedorNameKey.currentState?.value;
-      final proveedorType = _proveedorTypeKey.currentState?.value;
-      final proveedorUbication = _proveedorUbicationKey.currentState?.value;
 
-      print(proveedorName);
-      print(proveedorType);
-      print(proveedorUbication);
+      final Proveedor proveedor = Proveedor.toSend(
+        nombre: _proveedorNameKey.currentState?.value,
+        typeProveedor: _proveedorTypeKey.currentState?.value,
+        ubication: _proveedorUbicationKey.currentState!.value!
+      );
+
+      print(proveedor.toJson());
     }
   }
 
@@ -110,7 +112,7 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
                   menuMaxHeight: 280,
                   items: ProveedorRegisterScreen.tipoProveedorSelects.map<DropdownMenuItem<String>>((String value) =>
                     DropdownMenuItem<String>(
-                      value: value,
+                      value: ProveedorRegisterScreen.tipoProveedorSelects.indexOf(value).toString(),
                       child: Text(value),
                     )
                   ).toList(),
