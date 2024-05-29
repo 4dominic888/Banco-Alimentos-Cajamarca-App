@@ -1,6 +1,7 @@
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/repository.dart';
+import 'package:bancalcaj_app/shared/util/result.dart';
 
 class ProveedorRepository extends Repository<Proveedor>{
 
@@ -9,9 +10,13 @@ class ProveedorRepository extends Repository<Proveedor>{
   ProveedorRepository(DataBaseService context): _context = context, super('proveedores');
 
   @override
-  Future add(Proveedor item) {
-    // TODO: implement add
-    throw UnimplementedError();
+  Future<Result<String>> add(Proveedor item) async {
+    try {
+      await _context.add(item.toJson(), table);
+      return Result.success(data: "Proveedor guardado con exito");   
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
 
   @override
