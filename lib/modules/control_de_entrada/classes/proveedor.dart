@@ -14,7 +14,7 @@ class Proveedor{
     return Proveedor(
       id: json['idp'],
       nombre: json['nombre'],
-      typeProveedor: TypeProveedor(name: json['type']['nombre']),
+      typeProveedor: TypeProveedor.fromJson(json['type']),
       ubication: Ubication.fromJson(json['ubication'])
     );
   }
@@ -22,6 +22,14 @@ class Proveedor{
   Map<String, dynamic> toJson(){
     return {
       'idp': id,
+      'nombre': nombre,
+      'type': typeProveedor.id,
+      'ubication': ubication.toJson()
+    };
+  }
+
+  Map<String, dynamic> toJsonSend(){
+    return {
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()

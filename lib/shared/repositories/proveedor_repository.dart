@@ -12,7 +12,7 @@ class ProveedorRepository extends Repository<Proveedor>{
   @override
   Future<Result<String>> add(Proveedor item) async {
     try {
-      await _context.add(item.toJson(), table);
+      await _context.add(item.toJsonSend(), table);
       return Result.success(data: "Proveedor guardado con exito");   
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');

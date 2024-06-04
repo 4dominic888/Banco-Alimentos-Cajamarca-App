@@ -30,7 +30,7 @@ class Ubication {
       "subPlaces": subPlaces?.map(
         (element) => {
           "group": element.keys.first,
-          "subPlaceCode" : element.values.first
+          "subPlaceCode" : element.values.first.keys.first
         },
       ).toList() ?? []
     };

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bancalcaj_app/shared/util/result.dart';
 import 'package:dartx/dartx.dart';
 import 'package:http/http.dart';
 
@@ -55,54 +56,74 @@ abstract class UbicationAPI{
   };
 
 
-  static Future<List<dynamic>> _getAllData(Map<String, String> query, String rest) async{
+  static Future<Result<List<dynamic>>> _getAllData(Map<String, String> query, String rest) async{
     final uri = Uri.https(_domain, _path+rest, query);
     final response = await get(uri, headers: _headers);
-    if(response.statusCode == 200){
-      return json.decode(response.body)["results"] as List<dynamic>;
+
+    try {
+      if(response.statusCode == 200){
+        return Result.success(data: json.decode(response.body)["results"] as List<dynamic>);
+      }
+      else{
+        throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+      }
+    } on SocketException catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error de conexion ${e.message}');
     }
-    else{
-      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+    catch (e){
+      return Result.onError(message: e.toString());
     }
   }
 
-  static Future<List<Map<String,String>>> get departamentos async{
-    final data = await _getAllData(_queryDepartamentos, _national);
-    return data.map((e) => 
-      {
-        'codigo':e['ccdd'] as String,
-        'nombre':(e['nombdep'] as String).toLowerCase().capitalize()
-      }
-    ).toList();
+  static Future<Result<List<Map<String,String>>>> get departamentos async{
+    final result = await _getAllData(_queryDepartamentos, _national);
+    if(result.success){
+      return Result.success(data: result.data!.map((e) => 
+        {
+          'codigo':e['ccdd'] as String,
+          'nombre':(e['nombdep'] as String).toLowerCase().capitalize()
+        }
+      ).toList());
+    }
+    return Result.onError(message: result.message);
   }
 
-  static Future<List<Map<String,String>>> provincias(String ccdd) async{
-    final data = await _getAllData(_queryProvincias(ccdd), _national);
-    return data.map((e) => 
-      {
-        'codigo':e['ccpp'] as String,
-        'nombre':(e['nombprov'] as String).toLowerCase().capitalize()
-      }
-    ).toList();
+  static Future<Result<List<Map<String,String>>>> provincias(String ccdd) async{
+    final result = await _getAllData(_queryProvincias(ccdd), _national);
+    if(result.success){
+      return Result.success(data: result.data!.map((e) => 
+        {
+          'codigo':e['ccpp'] as String,
+          'nombre':(e['nombprov'] as String).toLowerCase().capitalize()
+        }
+      ).toList());
+    }
+    return Result.onError(message: result.message);
   }
 
-  static Future<List<Map<String,String>>> distritos(String ccdd, String ccdi) async{
-    final data = await _getAllData(_queryDistritos(ccdd, ccdi), _national);
-    return data.map((e) => 
-      {
-        'codigo':e['ccdi'] as String,
-        'nombre':(e['nombdist'] as String).toLowerCase().capitalize()
-      }
-    ).toList();
+  static Future<Result<List<Map<String,String>>>> distritos(String ccdd, String ccdi) async{
+    final result = await _getAllData(_queryDistritos(ccdd, ccdi), _national);
+    if(result.success){
+      return Result.success(data: result.data!.map((e) => 
+        {
+          'codigo':e['ccdi'] as String,
+          'nombre':(e['nombdist'] as String).toLowerCase().capitalize()
+        }
+      ).toList());
+    }
+    return Result.onError(message: result.message);
   }  
 
-  static Future<List<Map<String,String>>> paises(String? search) async {
-    final data = await _getAllData(_queryCountries(search, 7), _international);
-    return data.map((e) => 
-      {
-        'codigo':e['iso_numeric'] as String,
-        'nombre':e['impact_country'] as String
-      }
-    ).toList();
+  static Future<Result<List<Map<String,String>>>> paises(String? search) async {
+    final result = await _getAllData(_queryCountries(search, 7), _international);
+    if(result.success){
+      return Result.success(data: result.data!.map((e) => 
+        {
+          'codigo':e['iso_numeric'] as String,
+          'nombre':e['impact_country'] as String
+        }
+      ).toList());
+    }
+    return Result.onError(message: result.message);
   }
 }

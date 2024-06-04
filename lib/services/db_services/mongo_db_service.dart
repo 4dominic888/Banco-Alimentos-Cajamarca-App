@@ -26,7 +26,7 @@ class MongoDBService implements DataBaseService {
     if(response.statusCode == 200){
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       if(data.containsKey('message')){
-        throw FormatException('Error al realizar solicitud post: ${data['message']['errorResponse']['errmsg']}');
+        throw FormatException('Error al realizar solicitud post: $data');
       }
       return response;
     }
