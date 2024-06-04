@@ -50,7 +50,7 @@ class _RouterScreen extends StatelessWidget {
         body: Column(children: [
           TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ImportEntradaScreen(dbContext: dbContext))), child: const Text("Entrada alimentos Import")),
           TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ExportEntradaScreen(dbContext: dbContext))), child: const Text("Entrada alimentos Export")),
-          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProveedorRegisterScreen())), child: const Text('Proveedor register'))
+          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProveedorRegisterScreen(dbContext: dbContext,))), child: const Text('Proveedor register'))
         ])
     );
   }

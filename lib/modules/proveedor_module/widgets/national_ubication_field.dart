@@ -32,7 +32,7 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
     return DropdownButtonFormField<String>(
       onChanged: onChanged,
       menuMaxHeight: 280,
-      items: snapshot.data!.map<DropdownMenuItem<String>>((value) =>
+      items: snapshot.data?.map<DropdownMenuItem<String>>((value) =>
         DropdownMenuItem<String>(
           value: value["codigo"],
           child: Text(value["nombre"] as String),
@@ -59,7 +59,7 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
   @override
   void initState() {
     super.initState();
-    _departamentosList = UbicationAPI.departamentos;
+    _departamentosList = UbicationAPI.departamentos.then((value) => value.data ?? []);
   }
 
   @override
@@ -72,14 +72,14 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
             future: _departamentosList,
             initialData: const [],
             builder: (context, snapshot) {
-              return snapshot.data!.isNotEmpty ? _normalDropDown('Departamento', snapshot, (value) async{
+              return snapshot.data != null && snapshot.data!.isNotEmpty ? _normalDropDown('Departamento', snapshot, (value) async{
                 codigoProvincia = null;
                 codigoDistrito = null;
                 _provinciaController.sink.add(const []);
                 _distritoController.sink.add(const []);
     
                 codigoDepartamento = value;
-                _provinciaController.sink.add(await UbicationAPI.provincias(codigoDepartamento!));
+                _provinciaController.sink.add(await UbicationAPI.provincias(codigoDepartamento!).then((value) => value.data!));
 
                 widget.controller?.setValue = null;
               }) : _defaultDropDown('Departamento');
@@ -98,7 +98,7 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
                 _distritoController.sink.add(const []);
                 
                 codigoProvincia = value;
-                _distritoController.sink.add(await UbicationAPI.distritos(codigoDepartamento!, codigoProvincia!));
+                _distritoController.sink.add(await UbicationAPI.distritos(codigoDepartamento!, codigoProvincia!).then((value) => value.data!));
 
                 widget.controller?.setValue = null;
               }) : _defaultDropDown('Provincia');

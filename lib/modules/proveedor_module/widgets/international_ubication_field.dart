@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bancalcaj_app/modules/proveedor_module/classes/international_ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
 import 'package:bancalcaj_app/services/api_readonly_services/ubication_api.dart';
@@ -29,8 +31,18 @@ class _InternationalUbicationFieldState extends State<InternationalUbicationFiel
           labelText: 'Pais'
         )
       ),
+      errorBuilder: (context, error) => 
+        ExpansionTile(
+          title: const Text('Se ha producido un error',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.red)
+          ),
+          subtitle: Text('Ha ocurrido un error de conexion: ${(error as SocketException).message}', style: const TextStyle(color: Colors.red)),
+        ),
+          //contentPadding: const EdgeInsets.only(left: 20)),
 
-      suggestionsCallback: (pattern) => UbicationAPI.paises(pattern),
+      suggestionsCallback: (pattern) => UbicationAPI.paises(pattern).then((value) => value.data!),
       itemBuilder: (context, itemData) => ListTile(title: Text(itemData['nombre']!)),
       transitionBuilder: (context, suggestionsBox, controller) => suggestionsBox,
       loadingBuilder: (context) => const ListTile(leading: CircularProgressIndicator(color: Colors.red)),

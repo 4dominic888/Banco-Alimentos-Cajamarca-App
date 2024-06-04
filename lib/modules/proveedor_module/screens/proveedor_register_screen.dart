@@ -1,67 +1,74 @@
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
+import 'package:bancalcaj_app/modules/proveedor_module/classes/type_proveedor.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/ubication_form_field.dart';
+import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
+import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
+import 'package:bancalcaj_app/shared/repositories/type_proveedor_repository.dart';
 import 'package:flutter/material.dart';
 
 class ProveedorRegisterScreen extends StatefulWidget {
-  const ProveedorRegisterScreen({super.key});
-
-  static List<String> tipoProveedorSelects = [
-    'Supermercado',
-    'Comida Rápida',
-    'Consecionario Comedores Mineros',
-    'Centro de Abastos',
-    'Persona Natural',
-    'Medio de Comunicación',
-    'Proyecto Parroquial',
-    'Centro de Catequesis',
-    'Cooperativa de Ahorro y Crédito',
-    'Asociación Sin fines de Lucro',
-    'Diócesis',
-    'Programa',
-    'Mayorista',
-    'Agroexportadora',
-    'Servicios agrícolas',
-    'Asociación',
-    'Colecta',
-    'Institución Pública',
-    'Institución Educativa',
-    'Consorcio',
-    'Agroindustria',
-    'Minería',
-    'Colecta Navideña',
-    'Distribuidor Logístico',
-    'Programa del BACAJ',
-    'Actividad/Oficina Municipal',
-    'Comerciante Cárnico',
-    'ONG',
-    'Derrama Magisterial',
-    'I.E.P.',
-    'Organismo Público'
-  ];
+  final DataBaseService dbContext;
+  const ProveedorRegisterScreen({super.key, required this.dbContext});
 
   @override
   State<ProveedorRegisterScreen> createState() => _ProveedorRegisterScreenState();
 }
 
 class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
-
+  
+  late final ProveedorRepository _proveedorRepo;
+  late final TypeProveedorRepository _typeProveedorRepo;
 
   final _formkey = GlobalKey<FormState>();
-  static final _proveedorNameKey = GlobalKey<FormFieldState>();
-  static final _proveedorTypeKey = GlobalKey<FormFieldState>();
-  static final _proveedorUbicationKey = GlobalKey<FormFieldState<Ubication>>();
+  final _proveedorNameKey = GlobalKey<FormFieldState>();
+  final _proveedorTypeKey = GlobalKey<FormFieldState>();
+  final _proveedorUbicationKey = GlobalKey<FormFieldState<Ubication>>();
 
-  void onSubmit() {
+  bool _onLoad = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _proveedorRepo = ProveedorRepository(widget.dbContext);
+    _typeProveedorRepo = TypeProveedorRepository(widget.dbContext);
+  }
+
+  void onSubmit() async {
     if (_formkey.currentState!.validate()) {
 
+      setState(() => _onLoad = true);
       final Proveedor proveedor = Proveedor.toSend(
         nombre: _proveedorNameKey.currentState?.value,
         typeProveedor: _proveedorTypeKey.currentState?.value,
         ubication: _proveedorUbicationKey.currentState!.value!
       );
 
-      print(proveedor.toJson());
+      final result = await _proveedorRepo.add(proveedor);
+      setState(() => _onLoad = false);
+
+      if(!mounted) return;
+      if(result.success){
+        showDialog(context: context, builder: (context) => 
+          AlertDialog(
+            title: const Text('Exito'),
+            content: Text(result.data!),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok'))
+            ],
+          )
+        );
+        return;
+      }
+      showDialog(context: context, builder: (context) => 
+        AlertDialog(
+          title: const Text('Error'),
+          content: Text(result.message!),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok'))
+          ],
+        )
+      );
     }
   }
 
@@ -95,10 +102,14 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
                     icon: Icon(Icons.person),
                   ),
                   validator: (value) {
-                    if(value != null && value.trim().isNotEmpty){
-                      return null;
+                    if(value == null || value.trim().isEmpty){
+                      return 'No se ha proporcionado un nombre';
                     }
-                    return 'No se ha proporcionado un nombre';
+                    value = value.trim();
+                    if(value.length <= 2){
+                      return 'El nombre es demasiado corto';
+                    }
+                    return null;
                   },
                 ),
               ),
@@ -106,26 +117,35 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
               //* Tipo de proveedor
               Padding(
                 padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                child: DropdownButtonFormField<String>(
-                  key: _proveedorTypeKey,
-                  onChanged: (_) {},
-                  menuMaxHeight: 280,
-                  items: ProveedorRegisterScreen.tipoProveedorSelects.map<DropdownMenuItem<String>>((String value) =>
-                    DropdownMenuItem<String>(
-                      value: ProveedorRegisterScreen.tipoProveedorSelects.indexOf(value).toString(),
-                      child: Text(value),
-                    )
-                  ).toList(),
-                  decoration: const InputDecoration(
-                    label: Text("Tipo de proveedor"),
-                    icon: Icon(Icons.category)
-                  ),
-                  validator: (value) {
-                    if (value != null) {
-                      return null;
+                child: FutureBuilder<Iterable<TypeProveedor?>>(
+                  future: _typeProveedorRepo.getAll(),
+                  initialData: const [],
+                  builder: (context, snapshot) {
+                    if(snapshot.data != null || snapshot.data!.isNotEmpty){
+                      return DropdownButtonFormField<TypeProveedor?>(
+                        key: _proveedorTypeKey,
+                        onChanged: (_) {},
+                        menuMaxHeight: 280,
+                        items: snapshot.data!.map<DropdownMenuItem<TypeProveedor?>>((value) =>
+                          DropdownMenuItem<TypeProveedor?>(
+                            value: value,
+                            child: Text(value!.name),
+                          )
+                        ).toList(),
+                        decoration: const InputDecoration(
+                          label: Text("Tipo de proveedor"),
+                          icon: Icon(Icons.category)
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'No se ha seleccionado una opcion';
+                          }
+                          return null;
+                        },
+                      );
                     }
-                    return 'No se ha seleccionado una opcion';
-                  },
+                    return const Text('No hay informacion de los tipos de proveedor');
+                  }
                 )
               ),
         
@@ -146,13 +166,21 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
               //* Button
               Padding(
                 padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                child: ElevatedButton(
-                  onPressed: onSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white
-                  ),  
-                  child: const Text("Registrar")
+                child: Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: !_onLoad ? onSubmit : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white
+                      ),  
+                      child: const Text("Registrar")
+                    ),
+
+                    const SizedBox(width: 30),
+                    
+                    _onLoad ? const CircularProgressIndicator(color: Colors.red) : const SizedBox.shrink()
+                  ],
                 ),
               )
             ],
