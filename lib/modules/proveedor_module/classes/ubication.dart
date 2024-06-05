@@ -17,6 +17,23 @@ class Ubication {
     );
   }
 
+  set countryName(String name) => country['nombre'] = name;
+  
+  set departamentoName(String name) =>
+    subPlaces?.firstWhere((element) => element.keys.first == 'departamento').content.values.first['nombre'] = name;
+
+  set provinciaName(String name) =>
+    subPlaces?.firstWhere((element) => element.keys.first == 'provincia').content.values.first['nombre'] = name;
+
+  set distritoName(String name) =>
+    subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['nombre'] = name;
+  
+
+  String get countryCode => country['codigo']!;
+  String? get departamentoCode => subPlaces?.firstWhere((element) => element.keys.first == 'departamento').content.values.first['codigo'];
+  String? get provinciaCode =>    subPlaces?.firstWhere((element) => element.keys.first == 'provincia').content.values.first['codigo'];
+  String? get distritoCode =>     subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['codigo'];
+
   @override
   String toString() {
     return """country: ${country['codigo']}-${country['nombre']}
