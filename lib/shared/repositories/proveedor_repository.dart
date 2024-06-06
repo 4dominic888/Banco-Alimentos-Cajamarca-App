@@ -49,7 +49,7 @@ class ProveedorRepository extends Repository<Proveedor>{
     retorno.ubication.countryName = (await UbicationAPI.paisById(retorno.ubication.countryCode)).data!['nombre']!;
 
     //* Premature performance... =(
-    if(retorno.ubication.type == 'international'){
+    if(retorno.ubication.type == 'national'){
       retorno.ubication.departamentoName = (await UbicationAPI.departamentoById(retorno.ubication.departamentoCode!)).data!['nombre']!;
       
       retorno.ubication.provinciaName = (await UbicationAPI.provinciaById(
@@ -64,7 +64,7 @@ class ProveedorRepository extends Repository<Proveedor>{
       )).data!['nombre']!;
     }
 
-    return Proveedor.fromJson(data);
+    return retorno;
   }
 
   @override

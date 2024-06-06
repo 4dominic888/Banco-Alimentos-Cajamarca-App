@@ -2,13 +2,13 @@ import 'package:bancalcaj_app/modules/proveedor_module/classes/type_proveedor.da
 import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
 
 class Proveedor{
-  final String id;
+  final int id;
   final String nombre;
   final TypeProveedor typeProveedor;
   final Ubication ubication;
 
   Proveedor({required this.id, required this.nombre, required this.typeProveedor, required this.ubication});
-  Proveedor.toSend({required this.nombre, required this.typeProveedor, required this.ubication}) : id = "0";
+  Proveedor.toSend({required this.nombre, required this.typeProveedor, required this.ubication}) : id = 0;
 
   factory Proveedor.fromJson(Map<String, dynamic> json){
     return Proveedor(

@@ -34,6 +34,11 @@ class Ubication {
   String? get provinciaCode =>    subPlaces?.firstWhere((element) => element.keys.first == 'provincia').content.values.first['codigo'];
   String? get distritoCode =>     subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['codigo'];
 
+  String? get getCountryName => country['nombre'];
+  String? get getDepartamentoName => subPlaces?.firstWhere((element) => element.keys.first == 'departamento').content.values.first['nombre'];
+  String? get getProvinciaName =>    subPlaces?.firstWhere((element) => element.keys.first == 'provincia').content.values.first['nombre'];
+  String? get getDistritoName =>     subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['nombre'];
+
   @override
   String toString() {
     return """country: ${country['codigo']}-${country['nombre']}
