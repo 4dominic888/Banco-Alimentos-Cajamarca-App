@@ -68,8 +68,16 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future update(int id, Map<String, dynamic> newData, String table) {
-    throw UnimplementedError();
+  Future update(int id, Map<String, dynamic> newData, String table) async {
+    final uri = Uri.https(domain, 'api/$table/$id');
+    final response = await http.put(uri, headers: headers, body: jsonEncode(newData)).timeout(timeLimit);
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      if(data.containsKey('message')){
+        throw FormatException('Error al realizar solicitud put: $data');
+      }
+      return response;
+    }
+    throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }
-  
 }

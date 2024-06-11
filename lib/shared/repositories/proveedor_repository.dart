@@ -63,14 +63,17 @@ class ProveedorRepository extends Repository<Proveedor>{
         retorno.ubication.distritoCode!
       )).data!['nombre']!;
     }
-
     return retorno;
   }
 
   @override
-  Future update(int id, Proveedor item) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<Result<String>> update(int id, Proveedor item) async {
+    try {
+      await _context.update(id, item.toJsonSend(), table);
+      return Result.success(data: 'Se ha actualizado el elemento con exito');
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
   
 }
