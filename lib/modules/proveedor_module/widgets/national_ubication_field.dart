@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bancalcaj_app/modules/proveedor_module/classes/national_ubication.dart';
+import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
 import 'package:bancalcaj_app/services/api_readonly_services/ubication_api.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,8 @@ import 'package:flutter/material.dart';
 class NationalUbicationField extends StatefulWidget {
 
   final UbicationFieldController? controller;
-
-  const NationalUbicationField({super.key, this.controller});
+  final Ubication? initialData;
+  const NationalUbicationField({super.key, this.controller, this.initialData});
 
   @override
   State<NationalUbicationField> createState() => _NationalUbicationFieldState();
@@ -28,10 +29,11 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
     );
   }
 
-  Widget _normalDropDown(String title, AsyncSnapshot<List<Map<String, String?>>> snapshot, void Function(String?)? onChanged){
+  Widget _normalDropDown(String title, AsyncSnapshot<List<Map<String, String?>>> snapshot, void Function(String?)? onChanged, [String? initialValue]){
     return DropdownButtonFormField<String>(
       onChanged: onChanged,
       menuMaxHeight: 280,
+      value: initialValue,
       items: snapshot.data?.map<DropdownMenuItem<String>>((value) =>
         DropdownMenuItem<String>(
           value: value["codigo"],
@@ -60,11 +62,27 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
   void initState() {
     super.initState();
     _departamentosList = UbicationAPI.departamentos.then((value) => value.data ?? []);
+    _preLoad();
+  }
+
+  Future _preLoad() async{
+    codigoDepartamento = widget.initialData?.departamentoCode;
+    if(codigoDepartamento == null) return;
+    _provinciaController.sink.add(await UbicationAPI.provincias(codigoDepartamento!).then((value) => value.data!));
+
+    codigoProvincia = widget.initialData?.provinciaCode;
+    if(codigoProvincia == null) return;
+    _distritoController.sink.add(await UbicationAPI.distritos(codigoDepartamento!, codigoProvincia!).then((value) => value.data!));
+
+    codigoDistrito = widget.initialData?.distritoCode;
+
+    widget.controller?.setValue = widget.initialData;
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
+    return Row(
       children: [
         //? Departamento
         Expanded(
@@ -80,13 +98,13 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
     
                 codigoDepartamento = value;
                 _provinciaController.sink.add(await UbicationAPI.provincias(codigoDepartamento!).then((value) => value.data!));
-
+    
                 widget.controller?.setValue = null;
-              }) : _defaultDropDown('Departamento');
+              }, codigoDepartamento) : _defaultDropDown('Departamento');
             }
           ),
         ),
-
+    
         //? Provincia
         Expanded(
           child: StreamBuilder<List<Map<String, String?>>>(
@@ -99,13 +117,13 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
                 
                 codigoProvincia = value;
                 _distritoController.sink.add(await UbicationAPI.distritos(codigoDepartamento!, codigoProvincia!).then((value) => value.data!));
-
+    
                 widget.controller?.setValue = null;
-              }) : _defaultDropDown('Provincia');
+              }, codigoProvincia) : _defaultDropDown('Provincia');
             }
           ),
         ),
-
+    
         //? Distrito
         Expanded(
           child: StreamBuilder<List<Map<String, String?>>>(
@@ -114,13 +132,13 @@ class _NationalUbicationFieldState extends State<NationalUbicationField> {
             builder: (context, snapshot) {
               return snapshot.data!.isNotEmpty ? _normalDropDown('Distrito', snapshot, (value) {
                 codigoDistrito = value;
-
+    
                 widget.controller?.setValue = NationalUbication([
-                  { "departamento": {codigoDepartamento!.toString() :null}},
-                  { "provincia":    {codigoProvincia!.toString()    :null}},
-                  { "distrito":     {codigoDistrito!.toString()     :null}}
+                  { "departamento": {"codigo": codigoDepartamento!.toString(), "nombre" :null}},
+                  { "provincia":    {"codigo": codigoProvincia!.toString(),    "nombre" :null}},
+                  { "distrito":     {"codigo": codigoDistrito!.toString(),     "nombre" :null}}
                 ]);
-              }) : _defaultDropDown('Distrito');
+              }, codigoDistrito) : _defaultDropDown('Distrito');
             }
           ),
         )

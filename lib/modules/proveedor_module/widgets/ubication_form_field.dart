@@ -10,8 +10,9 @@ class UbicationFormField extends StatefulWidget {
   
   final String? Function(Ubication?)? validator;
   final Key formFieldKey;
+  final Ubication? initialData;
 
-  const UbicationFormField({super.key, this.validator, required this.formFieldKey});
+  const UbicationFormField({super.key, this.validator, required this.formFieldKey, this.initialData});
 
   @override
   State<UbicationFormField> createState() => _UbicationFormFieldState();
@@ -19,14 +20,24 @@ class UbicationFormField extends StatefulWidget {
 
 class _UbicationFormFieldState extends State<UbicationFormField> {
 
-  final RadioButtonListController _radioButtonListController = RadioButtonListController();
-  final UbicationFieldController _ubicationFieldController = UbicationFieldController();
+  late final RadioButtonListController _radioButtonListController;
+  late final UbicationFieldController _ubicationFieldController;
 
   late void Function() _listener;
 
   @override
+  void initState() {
+    super.initState();
+    _ubicationFieldController = UbicationFieldController();
+    _radioButtonListController = RadioButtonListController(
+      widget.initialData?.type == 'international' ? 1 : 0
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FormField<Ubication>(
+      initialValue: widget.initialData,
       key: widget.formFieldKey,
       builder: (formState) {
         _listener = () {
@@ -48,6 +59,7 @@ class _UbicationFormFieldState extends State<UbicationFormField> {
           child: Column(
             children: [
               RadioButtonList(
+                initialIndexValue: _radioButtonListController.selectedIndex,
                 controller: _radioButtonListController,
                 options: const ['Nacional', 'Internacional'],
                 onChanged: () {
@@ -58,8 +70,8 @@ class _UbicationFormFieldState extends State<UbicationFormField> {
                 },
               ),
           
-              if(_radioButtonListController.selectedIndex == 0) NationalUbicationField(controller: _ubicationFieldController)
-              else InternationalUbicationField(controller: _ubicationFieldController)
+              if(_radioButtonListController.selectedIndex == 0) NationalUbicationField(controller: _ubicationFieldController, initialData: widget.initialData)
+              else InternationalUbicationField(controller: _ubicationFieldController, initialData: widget.initialData)
             ],
           ),
         );

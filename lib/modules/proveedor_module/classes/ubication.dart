@@ -52,7 +52,7 @@ class Ubication {
       "subPlaces": subPlaces?.map(
         (element) => {
           "group": element.keys.first,
-          "subPlaceCode" : element.values.first.keys.first
+          "subPlaceCode" : element.values.first.values.first
         },
       ).toList() ?? []
     };

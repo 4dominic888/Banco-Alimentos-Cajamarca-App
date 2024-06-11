@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 class RadioButtonList extends StatefulWidget {
 
+  final int? initialIndexValue;
   final List<String> options;
   final RadioButtonListController? controller;
   final void Function()? onChanged;
-  const RadioButtonList({super.key, required this.options, this.controller, this.onChanged});
+  const RadioButtonList({super.key, required this.options, this.controller, this.onChanged, this.initialIndexValue});
 
   @override
   State<RadioButtonList> createState() => _RadioButtonListState();
@@ -14,7 +15,9 @@ class RadioButtonList extends StatefulWidget {
 
 class _RadioButtonListState extends State<RadioButtonList> {
   
-  late int currentOption = widget.options.indexOf(widget.options.first);
+  late int currentOption = widget.initialIndexValue != null ? 
+    widget.initialIndexValue! :
+    widget.options.indexOf(widget.options.first);
   
   @override
   Widget build(BuildContext context) {

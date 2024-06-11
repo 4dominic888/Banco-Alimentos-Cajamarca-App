@@ -4,7 +4,6 @@ import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart'
 import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
-import 'package:bancalcaj_app/shared/repositories/type_proveedor_repository.dart';
 import 'package:flutter/material.dart';
 
 class ProveedorViewScreen extends StatefulWidget {
@@ -18,7 +17,6 @@ class ProveedorViewScreen extends StatefulWidget {
 class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
   
   late final ProveedorRepository proveedorRepo = ProveedorRepository(widget.dbContext);
-  late final TypeProveedorRepository typeProveedorRepo = TypeProveedorRepository(widget.dbContext);
   final _singleElementLoadingController = StreamController<bool>.broadcast();
   int _selectedIndex = -1;
 
@@ -66,6 +64,7 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: FutureBuilder(
         future: proveedorRepo.getAll(),
         builder: (context, snapshot) {
@@ -143,9 +142,12 @@ class ProveedorElement extends StatelessWidget {
         itemBuilder: (context) => [
           const PopupMenuItem(value: 0, child: Text('Editar'),)
         ],
-        onSelected: (value) {
+        onSelected: (value) async {
           switch (value) {
-            case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProveedorRegisterScreen(dbContext: dbContext)));
+            case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProveedorRegisterScreen(
+              dbContext: dbContext,
+              idProveedorToEdit: proveedor.id,
+            )));
             default: return;
           }
         },

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bancalcaj_app/modules/proveedor_module/classes/international_ubication.dart';
+import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
 import 'package:bancalcaj_app/services/api_readonly_services/ubication_api.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
@@ -9,8 +10,8 @@ import 'package:flutter/material.dart';
 class InternationalUbicationField extends StatefulWidget {
   
   final UbicationFieldController? controller;
-
-  const InternationalUbicationField({super.key, this.controller});
+  final Ubication? initialData;
+  const InternationalUbicationField({super.key, this.controller, this.initialData});
 
   @override
   State<InternationalUbicationField> createState() => _InternationalUbicationFieldState();
@@ -18,10 +19,22 @@ class InternationalUbicationField extends StatefulWidget {
 
 class _InternationalUbicationFieldState extends State<InternationalUbicationField> {
 
-  final TextEditingController _dropDownSearchController = TextEditingController();
+  late final TextEditingController _dropDownSearchController;
   String _selectedCountry = '';
   String _selectedIndex = '';
   
+  @override
+  void initState() {
+    super.initState();
+    if(widget.initialData != null){
+      _selectedIndex = widget.initialData!.countryCode;
+      _selectedCountry = widget.initialData!.getCountryName!;
+      _dropDownSearchController = TextEditingController(text: _selectedCountry);
+      return;
+    }
+    _dropDownSearchController = TextEditingController();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DropDownSearchField<Map<String,String>>(
@@ -40,8 +53,6 @@ class _InternationalUbicationFieldState extends State<InternationalUbicationFiel
           ),
           subtitle: Text('Ha ocurrido un error de conexion: ${(error as SocketException).message}', style: const TextStyle(color: Colors.red)),
         ),
-          //contentPadding: const EdgeInsets.only(left: 20)),
-
       suggestionsCallback: (pattern) => UbicationAPI.paises(pattern).then((value) => value.data!),
       itemBuilder: (context, itemData) => ListTile(title: Text(itemData['nombre']!)),
       transitionBuilder: (context, suggestionsBox, controller) => suggestionsBox,
