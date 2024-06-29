@@ -51,6 +51,18 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
+  Future<Map<String, dynamic>> getTemp(String table) async {
+    final uri = Uri.https(domain, 'api/$table');
+    final response = await http.get(uri, headers: headers).timeout(timeLimit);
+    if(response.statusCode == 200){
+      return json.decode(response.body);
+    }
+    else{
+      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+    }
+  }
+
+  @override
   Future<Map<String, dynamic>> getById(int id, String table) async {
     final uri = Uri.https(domain, 'api/$table/$id');
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
