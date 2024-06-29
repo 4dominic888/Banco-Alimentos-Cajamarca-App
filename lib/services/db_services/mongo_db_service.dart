@@ -6,13 +6,13 @@ import 'dart:convert';
 
 class MongoDBService implements DataBaseService {
 
-  static Duration timeLimit = const Duration(seconds: 15);
+  static const Duration timeLimit = Duration(seconds: 15);
 
-  Map<String, String> headers = {
+  static const Map<String, String> headers = {
       'Content-Type': 'application/json',
   };
 
-  static String domain = 'backend-test-bacalcaj.onrender.com';
+  static const String domain = 'backend-test-bacalcaj.onrender.com';
 
   @override
   Future<void> init() async{
@@ -26,7 +26,7 @@ class MongoDBService implements DataBaseService {
     if(response.statusCode == 200){
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       if(data.containsKey('message')){
-        throw FormatException('Error al realizar solicitud post: ${data['message']['errorResponse']['errmsg']}');
+        throw FormatException('Error al realizar solicitud post: $data');
       }
       return response;
     }
@@ -51,8 +51,27 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future<Map<String, dynamic>> getById(int id, String table) {
-    throw UnimplementedError();
+  Future<Map<String, dynamic>> getTemp(String table) async {
+    final uri = Uri.https(domain, 'api/$table');
+    final response = await http.get(uri, headers: headers).timeout(timeLimit);
+    if(response.statusCode == 200){
+      return json.decode(response.body);
+    }
+    else{
+      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getById(int id, String table) async {
+    final uri = Uri.https(domain, 'api/$table/$id');
+    final response = await http.get(uri, headers: headers).timeout(timeLimit);
+    if(response.statusCode == 200){
+      return json.decode(response.body);
+    }
+    else{
+      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+    }
   }
 
   @override
@@ -61,8 +80,16 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future update(int id, Map<String, dynamic> newData, String table) {
-    throw UnimplementedError();
+  Future update(int id, Map<String, dynamic> newData, String table) async {
+    final uri = Uri.https(domain, 'api/$table/$id');
+    final response = await http.put(uri, headers: headers, body: jsonEncode(newData)).timeout(timeLimit);
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      if(data.containsKey('message')){
+        throw FormatException('Error al realizar solicitud put: $data');
+      }
+      return response;
+    }
+    throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }
-  
 }

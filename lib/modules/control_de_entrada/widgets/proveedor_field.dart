@@ -36,12 +36,12 @@ class ProveedorFieldState extends State<ProveedorField> {
     return list;
   }
 
-  Proveedor get proveedor {
+  Proveedor? get proveedor {
     final proveedorName = _keyAutoField.currentState?.text.trim();
     if(_onAvailableConnection){
-      return _proveedores.firstWhere((element) => element.nombre.toLowerCase() == proveedorName?.toLowerCase(), orElse: () => Proveedor(id: "0", nombre: proveedorName!));
+      return _proveedores.firstWhere((element) => element.nombre.toLowerCase() == proveedorName?.toLowerCase());
     }
-    return Proveedor(id: "0", nombre: proveedorName!);
+    return null;
   }
 
   @override
@@ -56,7 +56,6 @@ class ProveedorFieldState extends State<ProveedorField> {
                 recommends: snapshot.data?.map((e) => e.nombre) ?? [],
                 validate: (str) {
                     if(str == null || str.trim().isEmpty) return "El campo está vacio";
-                    if(proveedor.id == 0.toString()) return "El proveedor ingresado no existe";
                     return null;
                 },
               );

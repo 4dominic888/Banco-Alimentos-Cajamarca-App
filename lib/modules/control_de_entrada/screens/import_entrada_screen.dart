@@ -89,18 +89,10 @@ class _ImportEntradaScreenState extends State<ImportEntradaScreen> {
         );
       });
 
-      if(proveedor.id == "0"){
-        await _showAlert(
-          context, 
-          title: "Advertencia",
-          content: "El proveedor ingresado no está registrado actualmente, ¿Desea registrar dicho proveedor de todas maneras?",
-        );
-      }
-
       await _registerEntrada(Entrada(
         fecha: fecha,
         cantidad: cantidad,
-        proveedor: proveedor,
+        proveedor: proveedor!,
         productos: tiposProductos,
         comentario: comentario,
         almacenero: Almacenero(nombre: "almacenero test", dni: "12345678")
