@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
+import 'package:bancalcaj_app/modules/proveedor_module/widgets/pagination_widget.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
+import 'package:bancalcaj_app/shared/util/paginate_data.dart';
 import 'package:flutter/material.dart';
 
 class ProveedorViewScreen extends StatefulWidget {
@@ -19,6 +21,9 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
   late final ProveedorRepository proveedorRepo = ProveedorRepository(widget.dbContext);
   final _singleElementLoadingController = StreamController<bool>.broadcast();
   int _selectedIndex = -1;
+
+  int _page = 1;
+  static const _limit = 10;
 
   void showProveedorDetail(Proveedor detailItem) async{
     showDialog(context: context, builder: (context) => AlertDialog(
@@ -65,56 +70,73 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: FutureBuilder(
-        future: proveedorRepo.getAll(),
+      body: FutureBuilder<PaginateData<Proveedor>?>(
+        future: proveedorRepo.getAllPaginated(page: _page, limit: _limit),
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
             return const Center(child: CircularProgressIndicator());
           }
           if(snapshot.hasError || snapshot.data == null){
-            return const Center(child: Text('Ha ocurrido un error al mostrar la informacion'));
+            return Center(child: Text('Ha ocurrido un error al mostrar la informacion ${snapshot.error}'));
           }
-          if(snapshot.data!.isEmpty){
+          if(snapshot.data!.data.isEmpty){
             return const Center(child: Text('Sin proveedores a mostrar'));
           }
+
+          final currentList = snapshot.data!.data;
+          final pageMetadata = snapshot.data!.metadata;
           
-          return SingleChildScrollView(
-            physics: const ScrollPhysics(),
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final item = snapshot.data![index];
-                return StreamBuilder<bool>(
-                  stream: _singleElementLoadingController.stream,
-                  builder: (context, snapshot) {
-                    return ProveedorElement(
-                      dbContext: widget.dbContext,
-                      proveedor: item,
-                      leading: StreamBuilder<bool>(
+          return Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 500,
+                child: SingleChildScrollView(
+                  physics: const ScrollPhysics(),
+                  child: ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: currentList.length,
+                    itemBuilder: (context, index) {
+                      final item = currentList[index];
+                      return StreamBuilder<bool>(
                         stream: _singleElementLoadingController.stream,
-                        builder: (context, snapshot) => 
-                          (snapshot.data ?? false) && _selectedIndex == index ? 
-                            const CircularProgressIndicator() : 
-                            IconButton(
-                              onPressed: (snapshot.data != null ? !snapshot.data! : true) ? () async {
-                                _singleElementLoadingController.sink.add(true); _selectedIndex = index;
-                                final Proveedor detailItem = (await proveedorRepo.getByIdDetailed(item.id))!;
-                                _singleElementLoadingController.sink.add(false);
-                                if(!context.mounted) return;
-                                showProveedorDetail(detailItem);
-                              } : null,
-                              icon: const Icon(Icons.remove_red_eye_rounded)
-                            )
-                        
-                      ),
-                    );
-                  }
-                );
-              },
-            ),
+                        builder: (context, snapshot) {
+                          return ProveedorElement(
+                            dbContext: widget.dbContext,
+                            proveedor: item,
+                            leading: StreamBuilder<bool>(
+                              stream: _singleElementLoadingController.stream,
+                              builder: (context, snapshot) => 
+                                (snapshot.data ?? false) && _selectedIndex == index ? 
+                                  const CircularProgressIndicator() : 
+                                  IconButton(
+                                    onPressed: (snapshot.data != null ? !snapshot.data! : true) ? () async {
+                                      _singleElementLoadingController.sink.add(true); _selectedIndex = index;
+                                      final Proveedor detailItem = (await proveedorRepo.getByIdDetailed(item.id))!;
+                                      _singleElementLoadingController.sink.add(false);
+                                      if(!context.mounted) return;
+                                      showProveedorDetail(detailItem);
+                                    } : null,
+                                    icon: const Icon(Icons.remove_red_eye_rounded)
+                                  )
+                              
+                            ),
+                          );
+                        }
+                      );
+                    },
+                  ),
+                ),
+              ),
+              PaginationWidget(
+                currentPage: pageMetadata.currentPage,
+                totalPages: pageMetadata.totalPages,
+                onNextPagePressed: _page != pageMetadata.totalPages ? () => setState(() =>_page++) : null,
+                onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
+              )
+            ],
           );
         }
       ),

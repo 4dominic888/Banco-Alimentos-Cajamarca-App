@@ -2,6 +2,7 @@ import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart'
 import 'package:bancalcaj_app/services/api_readonly_services/ubication_api.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/repository.dart';
+import 'package:bancalcaj_app/shared/util/paginate_data.dart';
 import 'package:bancalcaj_app/shared/util/result.dart';
 
 class ProveedorRepository extends Repository<Proveedor>{
@@ -28,11 +29,18 @@ class ProveedorRepository extends Repository<Proveedor>{
 
   @override
   Future<List<Proveedor>> getAll() async {
-    final data = await _context.getTemp(table);
-    if(data != null){
-      return List<Proveedor>.from((data['data'] as List).map((e) => Proveedor.fromJson(e)));
+    final data = await _context.getAll(table);
+    return List<Proveedor>.from(data.map((e) => Proveedor.fromJson(e)));
+  }
+
+  @override
+  Future<PaginateData<Proveedor>?> getAllPaginated({int? page = 1, int? limit = 5}) async {
+    try {
+      final PaginateData<Map<String, dynamic>>? paginateData = await _context.getAllPaginated(table, page: page, limit: limit);
+      return PaginateData<Proveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => Proveedor.fromJson(e)).toList());  
+    } catch (e) {
     }
-    return [];
+    return null;
   }
 
   @override
