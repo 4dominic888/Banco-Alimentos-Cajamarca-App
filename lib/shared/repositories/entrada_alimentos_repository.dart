@@ -23,10 +23,8 @@ class EntradaAlimentosRepository extends Repository<Entrada> {
   @override
   Future<List<Entrada>> getAll() async {
     final data = await _context.getAll(table);
-    if(data != null){
-      return List<Entrada>.from(data.map((e) => Entrada.fromJson(e)));
-    }
-    return [];
+    return List.from(data.map((e) => Entrada.fromJson(e)));
+
   }
 
   @override
@@ -42,7 +40,7 @@ class EntradaAlimentosRepository extends Repository<Entrada> {
   }
 
   @override
-  Future<PaginateData<Entrada>> getAllPaginated({int? page = 1, int? limit = 5}) {
+  Future<PaginateData<Entrada>> getAllPaginated({int? page = 1, int? limit = 5, String? search}) {
     // TODO: implement getAllPaginated
     throw UnimplementedError();
   }

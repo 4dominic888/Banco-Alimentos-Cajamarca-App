@@ -19,6 +19,15 @@ class Proveedor{
     );
   }
 
+  factory Proveedor.fromJsonLow(Map<String, dynamic> json){
+    return Proveedor(
+      id: json['idp'],
+      nombre: json['nombre'],
+      typeProveedor: TypeProveedor(id: '-1', name: 'unknown'),
+      ubication: Ubication(country: {'':''}, type: '')
+    );
+  }
+
   Map<String, dynamic> toJson(){
     return {
       'idp': id,

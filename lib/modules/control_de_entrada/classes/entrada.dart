@@ -1,3 +1,4 @@
+
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
@@ -26,18 +27,17 @@ class Entrada {
         _comentario = comentario ?? '',
         _almacenero = almacenero;
 
-      factory Entrada.fromJson(Map<String, dynamic> json){
-        final products = json["tipoProductos"] as List<dynamic>;
-        return Entrada(
-          fecha: DateTime.parse(json["fecha"]),
-          cantidad: double.parse(json["cantidad"].toString()),
-          proveedor: Proveedor.fromJson(json["proveedor"]),
-          productos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
-          comentario: json["comentario"],
-          almacenero: Almacenero.fromJson(json["almacenero"])
-        );
-      }
-
+    factory Entrada.fromJson(Map<String, dynamic> json){
+      final products = json["tipoProductos"] as List<dynamic>;
+      return Entrada(
+        fecha: DateTime.parse(json["fecha"]),
+        cantidad: double.parse(json["cantidad"].toString()),
+        proveedor: Proveedor.fromJsonLow(json["proveedor"]),
+        productos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
+        comentario: json["comentario"],
+        almacenero: Almacenero.fromJson(json["almacenero"])
+      );
+    }
 
     double get cantidad => _cantidad;
     Proveedor get proveedor => _proveedor;
@@ -70,4 +70,22 @@ class Entrada {
         "almacenero": _almacenero.dni.toString()
       };
     }
+
+  Entrada copyWith({
+    DateTime? fecha,
+    double? cantidad,
+    Proveedor? proveedor,
+    List<TipoProductos>? tiposProductos,
+    Almacenero? almacenero,
+    String? comentario
+  }){
+    return Entrada(
+      fecha: fecha ?? this.fecha,
+      cantidad: cantidad ?? this.cantidad,
+      proveedor: proveedor ?? this.proveedor,
+      productos: tiposProductos ?? this.tiposProductos,
+      almacenero: almacenero ?? this.almacenero,
+      comentario: comentario ?? this.comentario,
+    );
+  }
 }

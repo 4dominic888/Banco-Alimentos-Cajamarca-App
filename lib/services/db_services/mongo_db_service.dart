@@ -52,8 +52,8 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future<PaginateData<Map<String, dynamic>>?> getAllPaginated(String table, {int? page = 1, int? limit = 5}) async {
-    final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString()});
+  Future<PaginateData<Map<String, dynamic>>?> getAllPaginated(String table, {int? page = 1, int? limit = 5, String? search}) async {
+    final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString(), 'search': search});
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
       return PaginateData<Map<String, dynamic>>.fromJson(json.decode(response.body));

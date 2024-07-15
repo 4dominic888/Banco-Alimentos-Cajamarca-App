@@ -34,7 +34,7 @@ class ProveedorRepository extends Repository<Proveedor>{
   }
 
   @override
-  Future<PaginateData<Proveedor>?> getAllPaginated({int? page = 1, int? limit = 5}) async {
+  Future<PaginateData<Proveedor>?> getAllPaginated({int? page = 1, int? limit = 5, String? search}) async {
     try {
       final PaginateData<Map<String, dynamic>>? paginateData = await _context.getAllPaginated(table, page: page, limit: limit);
       return PaginateData<Proveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => Proveedor.fromJson(e)).toList());  

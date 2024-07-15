@@ -6,6 +6,7 @@ import 'package:bancalcaj_app/shared/repositories/entrada_alimentos_repository.d
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/services/file_services/excel_service.dart';
 import 'package:bancalcaj_app/services/file_services/pdf_service.dart';
+import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -20,20 +21,18 @@ class ExportEntradaScreen extends StatefulWidget {
 
 class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
   
-  late final EntradaAlimentosRepository entradaRepo = EntradaAlimentosRepository(widget.dbContext);
+  late final EntradaAlimentosRepository entradaRepo;
+  late final ProveedorRepository proveedorRepo;
   late final PDFService _pdfService;
   late final ExcelService _excelService;
   bool _isLoading = false;
-  bool _isAvalaibleConnection = false;
 
   Future<List<Entrada>> initList() async {
     List<Entrada> list;
     try{
       list = await entradaRepo.getAll();
-      _isAvalaibleConnection = true;
     } on TimeoutException{
       list = [];
-      _isAvalaibleConnection = false;
     }
     return list;
   }
@@ -41,6 +40,8 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
   Future<void> _initService() async{
     _pdfService = PDFService();
     _excelService = ExcelService();
+    entradaRepo = EntradaAlimentosRepository(widget.dbContext);
+    proveedorRepo = ProveedorRepository(widget.dbContext);
 
     await Future.wait([
       _pdfService.init(),
@@ -138,7 +139,13 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 ElevatedButton(
-                                  onPressed: _isLoading ? null : () async => await _excelService.printEntradaExcel(entrada),
+                                  onPressed: _isLoading ? null : () async {
+                                    //! Se que se repite el codigo, pero es un parche rapido
+                                    final entradaWithProveedor = entrada.copyWith(
+                                      proveedor: await proveedorRepo.getById(entrada.proveedor.id)
+                                    );                                    
+                                    await _excelService.printEntradaExcel(entradaWithProveedor);
+                                  },
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -153,7 +160,12 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                                 ),
                                 const SizedBox(width: 10),
                                 ElevatedButton(
-                                  onPressed: _isLoading ? null : () async => await _pdfService.printEntradaPDF(entrada),
+                                  onPressed: _isLoading ? null : () async {
+                                    final entradaWithProveedor = entrada.copyWith(
+                                      proveedor: await proveedorRepo.getById(entrada.proveedor.id)
+                                    );
+                                    await _pdfService.printEntradaPDF(entradaWithProveedor);
+                                  },
                                   child: const Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -174,9 +186,6 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             else{
-              if(!_isAvalaibleConnection){
-                return const Center(child: Text("Ha ocurrido un error de conexión, intentelo nuevamente"));
-              }
               return const Center(child: Text("No hay entradas registradas por el momento"));
             }
           }
