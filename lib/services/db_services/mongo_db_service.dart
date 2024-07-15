@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
+import 'package:bancalcaj_app/shared/util/paginate_data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -44,6 +45,18 @@ class MongoDBService implements DataBaseService {
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
       return json.decode(response.body);
+    }
+    else{
+      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
+    }
+  }
+
+  @override
+  Future<PaginateData<Map<String, dynamic>>?> getAllPaginate(String table, {int? page = 1, int? limit = 5, String? search}) async {
+    final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString(), 'search': search});
+    final response = await http.get(uri, headers: headers).timeout(timeLimit);
+    if(response.statusCode == 200){
+      return PaginateData<Map<String, dynamic>>.fromJson(json.decode(response.body));
     }
     else{
       throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);

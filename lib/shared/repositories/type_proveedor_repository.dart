@@ -1,6 +1,7 @@
 import 'package:bancalcaj_app/modules/proveedor_module/classes/type_proveedor.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/repository.dart';
+import 'package:bancalcaj_app/shared/util/paginate_data.dart';
 import 'package:bancalcaj_app/shared/util/result.dart';
 
 class TypeProveedorRepository extends Repository<TypeProveedor> {
@@ -43,6 +44,12 @@ class TypeProveedorRepository extends Repository<TypeProveedor> {
   @override
   Future update(int id, TypeProveedor item) {
     // TODO: implement update
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<PaginateData<TypeProveedor>?> getAllPaginated({int? page = 1, int? limit = 5, String? search}) {
+    // TODO: implement getAllPaginated
     throw UnimplementedError();
   }
   
