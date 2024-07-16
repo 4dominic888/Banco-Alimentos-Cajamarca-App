@@ -1,6 +1,6 @@
-import 'package:bancalcaj_app/domain/classes/entrada.dart';
+import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/interfaces/repository.dart';
-import 'package:bancalcaj_app/shared/util/paginate_data.dart';
+import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 
 typedef E = Entrada;
 

@@ -1,6 +1,6 @@
-import 'package:bancalcaj_app/domain/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/interfaces/repository.dart';
-import 'package:bancalcaj_app/shared/util/paginate_data.dart';
+import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 
 typedef E = Proveedor;
 

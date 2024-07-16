@@ -1,6 +1,6 @@
-import 'package:bancalcaj_app/domain/classes/entrada.dart';
+import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
-import 'package:bancalcaj_app/shared/util/save_dialog.dart';
+import 'package:bancalcaj_app/infrastructure/save_dialog.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/services.dart';
 

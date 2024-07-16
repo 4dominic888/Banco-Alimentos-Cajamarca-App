@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/domain/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
 
 abstract class ProveedorServiceBase{
   Future<void> agregarProveedor(Proveedor proveedor);

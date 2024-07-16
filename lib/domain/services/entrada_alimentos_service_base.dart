@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/domain/classes/entrada.dart';
+import 'package:bancalcaj_app/domain/models/entrada.dart';
 
 abstract class EntradaAlimentosServiceBase{
   Future<void> agregarEntrada(Entrada entrada);
