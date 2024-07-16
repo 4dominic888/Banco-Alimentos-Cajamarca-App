@@ -3,13 +3,13 @@ import 'package:bancalcaj_app/modules/control_de_entrada/screens/export_entrada_
 import 'package:bancalcaj_app/modules/control_de_entrada/screens/import_entrada_screen.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_view_screen.dart';
-import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
-import 'package:bancalcaj_app/services/db_services/mongo_db_service.dart';
+import 'package:bancalcaj_app/domain/interfaces/database_interface.dart';
+import 'package:bancalcaj_app/data/mongodb/mongodb_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
-  final dbContext = DataBaseService.getInstance(MongoDBService());
+  final dbContext = DatabaseInterface.getInstance(MongoDBMapper());
   await dbContext.init();
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ Future<void> main() async {
 
 class MainApp extends StatelessWidget {
     const MainApp({super.key, required this.dbContext});
-    final DataBaseService dbContext;
+    final DatabaseInterface dbContext;
 
     @override
     Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class MainApp extends StatelessWidget {
 class _RouterScreen extends StatelessWidget {
   const _RouterScreen({required this.dbContext});
 
-  final DataBaseService dbContext;
+  final DatabaseInterface dbContext;
 
   @override
   Widget build(BuildContext context) {
