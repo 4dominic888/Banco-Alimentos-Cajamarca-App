@@ -1,9 +1,9 @@
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/radio_button_list_controller.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/international_ubication_field.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/national_ubication_field.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/radio_button_list.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/controllers/radio_button_list_controller.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/controllers/ubication_field_controller.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/international_ubication_field.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/national_ubication_field.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/radio_button_list.dart';
 import 'package:flutter/material.dart';
 
 class UbicationFormField extends StatefulWidget {

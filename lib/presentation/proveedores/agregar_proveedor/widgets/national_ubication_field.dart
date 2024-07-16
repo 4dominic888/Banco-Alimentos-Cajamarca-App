@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bancalcaj_app/domain/classes/national_ubication.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/controllers/ubication_field_controller.dart';
 import 'package:bancalcaj_app/data/opendatasoft/ubication_api.dart';
 import 'package:flutter/material.dart';
 

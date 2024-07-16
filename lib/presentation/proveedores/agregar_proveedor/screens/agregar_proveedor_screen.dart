@@ -1,40 +1,30 @@
-import 'package:bancalcaj_app/domain/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/result.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/ubication_form_field.dart';
-import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
-import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
-import 'package:bancalcaj_app/shared/repositories/type_proveedor_repository.dart';
-import 'package:bancalcaj_app/shared/util/result.dart';
+import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/ubication_form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
-class ProveedorRegisterScreen extends StatefulWidget {
+class AgregarProveedorScreen extends StatefulWidget {
 
-  final int? idProveedorToEdit;
-  final DataBaseService dbContext;
-  const ProveedorRegisterScreen({super.key, required this.dbContext, this.idProveedorToEdit});
+  final String? idProveedorToEdit;
+  const AgregarProveedorScreen({super.key, this.idProveedorToEdit});
 
   @override
-  State<ProveedorRegisterScreen> createState() => _ProveedorRegisterScreenState();
+  State<AgregarProveedorScreen> createState() => _AgregarProveedorScreenState();
 }
 
-class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
+class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
   
-  late final ProveedorRepository _proveedorRepo;
-  late final TypeProveedorRepository _typeProveedorRepo;
-
+  final proveedorService = GetIt.I<ProveedorServiceBase>();
+  
   final _formkey = GlobalKey<FormState>();
   final _proveedorNameKey = GlobalKey<FormFieldState>();
   final _proveedorTypeKey = GlobalKey<FormFieldState>();
   final _proveedorUbicationKey = GlobalKey<FormFieldState<Ubication>>();
 
   bool _onLoad = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _proveedorRepo = ProveedorRepository(widget.dbContext);
-    _typeProveedorRepo = TypeProveedorRepository(widget.dbContext);
-  }
 
   void onSubmit() async {
     if (_formkey.currentState!.validate()) {
@@ -45,20 +35,22 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
         typeProveedor: _proveedorTypeKey.currentState?.value,
         ubication: _proveedorUbicationKey.currentState!.value!
       );
-      late final Result<String> result;
-      if(widget.idProveedorToEdit != null){
-        result = await _proveedorRepo.update(widget.idProveedorToEdit!, proveedor);
+      final Result<Object> result;
+      if(widget.idProveedorToEdit != null) {
+        result = await proveedorService.editarProveedor(proveedor, id: widget.idProveedorToEdit!);
       }
-      else{result = await _proveedorRepo.add(proveedor);}
+      else{
+        result = await proveedorService.agregarProveedor(proveedor);
+      }
 
       setState(() => _onLoad = false);
 
       if(!mounted) return;
-      if(result.success){
+      if(!result.success){
         showDialog(context: context, builder: (context) => 
           AlertDialog(
-            title: const Text('Exito'),
-            content: Text(result.data!),
+            title: const Text('Error'),
+            content: Text(result.message!),
             actions: [
               TextButton(onPressed: () {
                 Navigator.of(context).pop();
@@ -71,14 +63,20 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
       }
       showDialog(context: context, builder: (context) => 
         AlertDialog(
-          title: const Text('Error'),
-          content: Text(result.message!),
+          title: const Text('Exito'),
+          content: const Text('Se ha realizado el proceso con exito'),
           actions: [
             TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok'))
           ],
         )
       );
     }
+  }
+
+  Future<List<TypeProveedor>> listTypeProveedores() async {
+    final result = await proveedorService.verTiposDeProveedor(limite: 20);
+    if(!result.success) return [];
+    return result.data!.data;
   }
 
   @override
@@ -93,12 +91,16 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: FutureBuilder<Proveedor?>(
-        future: _proveedorRepo.getByIdDetailed(widget.idProveedorToEdit ?? -1),
+      body: FutureBuilder<Result<Proveedor?>> (
+        future: proveedorService.seleccionarProveedor(widget.idProveedorToEdit ?? '-1'),
         builder: (context, snapProveedor) {
-          if(snapProveedor.connectionState == ConnectionState.waiting){
+          if(snapProveedor.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          if(snapProveedor.data != null && !snapProveedor.data!.success){
+            return Center(child: Text(snapProveedor.data?.message ?? 'Nulo'));
+          }
+          final proveedor = snapProveedor.data!.data;
           return Form(
             key: _formkey,
             child: SingleChildScrollView(
@@ -111,7 +113,7 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: TextFormField(
-                      initialValue: snapProveedor.data?.nombre,
+                      initialValue: proveedor?.nombre,
                       key: _proveedorNameKey,
                       decoration: const InputDecoration(
                         label: Text("Nombre del proveedor"),
@@ -133,20 +135,20 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
                   //* Tipo de proveedor
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    child: FutureBuilder<Iterable<TypeProveedor?>>(
-                      future: _typeProveedorRepo.getAll(),
+                    child: FutureBuilder<List<TypeProveedor>>(
+                      future: listTypeProveedores(),
                       initialData: const [],
                       builder: (context, snapshot) {
                         if(snapshot.data != null && snapshot.data!.isNotEmpty){
                           return DropdownButtonFormField<TypeProveedor?>(
                             key: _proveedorTypeKey,
-                            value: snapProveedor.data?.typeProveedor,
+                            value: proveedor!.typeProveedor,
                             onChanged: (_) {},
                             menuMaxHeight: 280,
                             items: snapshot.data!.map<DropdownMenuItem<TypeProveedor?>>((value) =>
                               DropdownMenuItem<TypeProveedor?>(
                                 value: value,
-                                child: Text(value!.name),
+                                child: Text(value.name),
                               )
                             ).toList(),
                             decoration: const InputDecoration(
@@ -170,7 +172,7 @@ class _ProveedorRegisterScreenState extends State<ProveedorRegisterScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
                     child: UbicationFormField(
-                      initialData: snapProveedor.data?.ubication,
+                      initialData: proveedor!.ubication,
                       formFieldKey: _proveedorUbicationKey,
                       validator: (value) {
                         if (value == null) {

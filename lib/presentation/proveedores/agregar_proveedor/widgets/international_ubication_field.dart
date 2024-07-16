@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bancalcaj_app/domain/classes/international_ubication.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/controllers/ubication_field_controller.dart';
 import 'package:bancalcaj_app/data/opendatasoft/ubication_api.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';

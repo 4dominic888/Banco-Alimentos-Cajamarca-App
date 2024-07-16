@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bancalcaj_app/domain/classes/proveedor.dart';
-import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
-import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
+import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class ProveedorField extends StatefulWidget {
-  final DataBaseService dbContext;
-  const ProveedorField({super.key, required this.dbContext});
+  const ProveedorField({super.key});
 
   @override
   State<ProveedorField> createState() => ProveedorFieldState();
@@ -17,23 +16,25 @@ class ProveedorField extends StatefulWidget {
 
 class ProveedorFieldState extends State<ProveedorField> {
 
-  late final ProveedorRepository proveedorRepo;
+  final proveedorService = GetIt.I<ProveedorServiceBase>();
 
   late final TextEditingController _dropDownSearchController;
   Proveedor? proveedor;
 
-  Future<List<Proveedor>> _getProveedores(String? search) async{
-    final paginateData = search == null ? 
-      await proveedorRepo.getAllPaginated(limit: 20) : await proveedorRepo.getAllPaginated(search: search, limit: 20);
-      
-    print(paginateData!.data);
-    return paginateData.data;
+  Future<List<Proveedor>> _getProveedores(String? search) async {
+    final result = search == null ? 
+      await proveedorService.verProveedores(limite: 20) : await proveedorService.verProveedores(busqueda: search, limite: 20);
+    
+    if(!result.success){
+      return [];
+    }
+
+    return result.data!.data;
   }
 
   @override
   void initState() {
     super.initState();
-    proveedorRepo = ProveedorRepository(widget.dbContext);
     _dropDownSearchController = TextEditingController();
   }
 

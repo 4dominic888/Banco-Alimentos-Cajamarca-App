@@ -4,28 +4,26 @@ import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 
 typedef E = Proveedor;
 
-abstract class ProveedorRepositoryBase extends Repository<Proveedor> implements ICrudable<E>, IPaginatable<E>{
+abstract class ProveedorRepositoryBase extends Repository<Proveedor> implements ICrudable<E>{
   final String dataset = 'proveedores';
   final String typeDataset = 'typeProveedores';
   
   ProveedorRepositoryBase({required super.db});
 
-  @override Future add(E proveedor);
-  @override Future<Iterable<E>> getAll();
-  @override Future<E?> getById(int id);
-  @override Future<PaginateData<E>?> getAllPaginated({int? page = 1, int? limit = 5, String? search});
-  @override Future update(int id, E proveedor);
-  @override Future delete(int id);
+  @override Future<String> add(E proveedor);
+  @override Future<E?> getById(String id);
+  @override Future<PaginateData<E>?> getAll({required int page, required int limit, String? search});
+  @override Future<bool> update(String id, E proveedor);
+  @override Future<bool> delete(String id);
 
 
   //* Extra methods
-  Future<Proveedor?> getByIdDetailed(int id);
+  Future<E?> getByIdDetailed(String id);
 
   //* TypeProveedor section
   Future<String> addType(TypeProveedor typeProveedor);
-  Future<Iterable<TypeProveedor>> getAllTypes();
-  Future<TypeProveedor?> getTypeById(int id);
-  Future deleteType(int id);
-  Future updateType(int id, TypeProveedor item);
-  Future<PaginateData<TypeProveedor>?> getAllTypesPaginated({int? page = 1, int? limit = 5, String? search});
+  Future<TypeProveedor?> getTypeById(String id);
+  Future<bool> deleteType(String id);
+  Future<bool> updateType(String id, TypeProveedor item);
+  Future<PaginateData<TypeProveedor>?> getAllTypes({required int page, required int limit, required String search});
 }

@@ -21,7 +21,7 @@ interface class MongoDBMapper implements DatabaseInterface {
   }
 
   @override
-  Future<http.Response> add(Map<String, dynamic> data, String table) async {
+  Future<String> add(Map<String, dynamic> data, String table) async {
     final uri = Uri.https(domain, 'api/$table');
     final response = await http.post(uri, headers: headers, body: jsonEncode(data)).timeout(timeLimit);
     if(response.statusCode == 200){
@@ -29,30 +29,18 @@ interface class MongoDBMapper implements DatabaseInterface {
       if(data.containsKey('message')){
         throw FormatException('Error al realizar solicitud post: $data');
       }
-      return response;
+      return data['id'];
     }
     throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }
 
   @override
-  Future delete(int id, String table) {
+  Future<bool> delete(String id, String table) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getAll(String table) async {
-    final uri = Uri.https(domain, 'api/$table');
-    final response = await http.get(uri, headers: headers).timeout(timeLimit);
-    if(response.statusCode == 200){
-      return (json.decode(response.body) as List).cast<Map<String, dynamic>>();
-    }
-    else{
-      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
-    }
-  }
-
-  @override
-  Future<PaginateData<Map<String, dynamic>>?> getAllPaginated(String table, {int? page = 1, int? limit = 5, String? search}) async {
+  Future<PaginateData<Map<String, dynamic>>?> getAll(String table, {required int page, required int limit, String? search}) async {
     final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString(), 'search': search});
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
@@ -64,7 +52,7 @@ interface class MongoDBMapper implements DatabaseInterface {
   }
 
   @override
-  Future<Map<String, dynamic>> getById(int id, String table) async {
+  Future<Map<String, dynamic>> getById(String id, String table) async {
     final uri = Uri.https(domain, 'api/$table/$id');
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
@@ -76,12 +64,12 @@ interface class MongoDBMapper implements DatabaseInterface {
   }
 
   @override
-  Future insert(int id, Map<String, dynamic> data, String table) {
+  Future<String> insert(String id, Map<String, dynamic> data, String table) {
     throw UnimplementedError();
   }
 
   @override
-  Future update(int id, Map<String, dynamic> newData, String table) async {
+  Future<bool> update(String id, Map<String, dynamic> newData, String table) async {
     final uri = Uri.https(domain, 'api/$table/$id');
     final response = await http.put(uri, headers: headers, body: jsonEncode(newData)).timeout(timeLimit);
     if(response.statusCode == 200){
@@ -89,7 +77,7 @@ interface class MongoDBMapper implements DatabaseInterface {
       if(data.containsKey('message')){
         throw FormatException('Error al realizar solicitud put: $data');
       }
-      return response;
+      return data['result'];
     }
     throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }

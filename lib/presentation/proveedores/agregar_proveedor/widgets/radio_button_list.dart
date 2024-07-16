@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/radio_button_list_controller.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/controllers/radio_button_list_controller.dart';
 import 'package:flutter/material.dart';
 
 class RadioButtonList extends StatefulWidget {

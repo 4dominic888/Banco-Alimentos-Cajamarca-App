@@ -1,6 +1,6 @@
 import 'package:bancalcaj_app/domain/classes/producto.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/widgets/auto_completed_field.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/widgets/decimal_field.dart';
+import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/auto_completed_field.dart';
+import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/decimal_field.dart';
 import 'package:flutter/material.dart';
 
 //TODO Remover esta clase y cambiarla por una llamada a algun archivo o base de datos

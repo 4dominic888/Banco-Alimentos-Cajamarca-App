@@ -7,11 +7,11 @@ abstract class Repository<T>{
 }
 
 abstract class IAddable<T> { Future add(T item); }
-abstract class IUpdatable<T> { Future update(int id, T item); }
-abstract class IDeletable<T> { Future delete(int id); }
-abstract class IGetable<T> { Future<T?> getById(int id); Future<Iterable<T>> getAll(); }
-abstract class IPaginatable<T> {
-  Future<PaginateData<T>?> getAllPaginated({int? page = 1, int? limit = 5, String? search});  
+abstract class IUpdatable<T> { Future update(String id, T item); }
+abstract class IDeletable<T> { Future delete(String id); }
+abstract class IGetable<T> { 
+  Future<T?> getById(String id);
+  Future<PaginateData<T>?> getAll({required int page, required int limit, required String search});
 }
 
 abstract class ICrudable<T> implements IAddable<T>, IUpdatable<T>, IDeletable<T>, IGetable<T> { }

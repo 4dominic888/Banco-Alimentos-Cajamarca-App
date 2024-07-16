@@ -1,24 +1,24 @@
 import 'dart:async';
 
-import 'package:bancalcaj_app/domain/classes/proveedor.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/widgets/pagination_widget.dart';
-import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
-import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
-import 'package:bancalcaj_app/shared/util/paginate_data.dart';
+import 'package:bancalcaj_app/domain/classes/result.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
+import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
+import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/pagination_widget.dart';
+import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
-class ProveedorViewScreen extends StatefulWidget {
-  final DataBaseService dbContext;
-  const ProveedorViewScreen({super.key, required this.dbContext});
+class VerProveedoresScreen extends StatefulWidget {
+  const VerProveedoresScreen({super.key});
   
   @override
-  State<ProveedorViewScreen> createState() => _ProveedorViewScreenState();
+  State<VerProveedoresScreen> createState() => _VerProveedoresScreenState();
 }
 
-class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
+class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
   
-  late final ProveedorRepository proveedorRepo = ProveedorRepository(widget.dbContext);
+  final proveedorService = GetIt.I<ProveedorServiceBase>();
   final _singleElementLoadingController = StreamController<bool>.broadcast();
   int _selectedIndex = -1;
 
@@ -64,14 +64,14 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
         )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProveedorRegisterScreen(dbContext: widget.dbContext))),
+        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AgregarProveedorScreen())),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: FutureBuilder<PaginateData<Proveedor>?>(
-        future: proveedorRepo.getAllPaginated(page: _page, limit: _limit),
+      body: FutureBuilder<Result<PaginateData<Proveedor>>?>(
+        future: proveedorService.verProveedores(pagina: _page, limite: _limit),
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
             return const Center(child: CircularProgressIndicator());
@@ -79,12 +79,12 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
           if(snapshot.hasError || snapshot.data == null){
             return Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}'));
           }
-          if(snapshot.data!.data.isEmpty){
+          if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
             return const Center(child: Text('Sin proveedores a mostrar'));
           }
-
-          final currentList = snapshot.data!.data;
-          final pageMetaData = snapshot.data!.metadata;
+          final paginateData = snapshot.data!.data!;
+          final currentList = paginateData.data;
+          final pageMetaData = paginateData.metadata;
           
           return Column(
             children: [
@@ -104,7 +104,6 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
                         stream: _singleElementLoadingController.stream,
                         builder: (context, singleSnapshot) {
                           return ProveedorElement(
-                            dbContext: widget.dbContext,
                             proveedor: item,
                             leading: StreamBuilder<bool>(
                               stream: _singleElementLoadingController.stream,
@@ -114,7 +113,7 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
                                   IconButton(
                                     onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
                                       _singleElementLoadingController.sink.add(true); _selectedIndex = index;
-                                      final Proveedor detailItem = (await proveedorRepo.getByIdDetailed(item.id))!;
+                                      final Proveedor detailItem = (await proveedorService.seleccionarProveedor(item.id)).data!;
                                       _singleElementLoadingController.sink.add(false);
                                       if(!context.mounted) return;
                                       showProveedorDetail(detailItem);
@@ -149,9 +148,8 @@ class ProveedorElement extends StatelessWidget {
   final Proveedor proveedor;
   final void Function()? onTap;
   final Widget? leading;
-  final DataBaseService dbContext;
 
-  const ProveedorElement({super.key, required this.proveedor, required this.dbContext, this.onTap, this.leading});
+  const ProveedorElement({super.key, required this.proveedor, this.onTap, this.leading});
 
   @override
   Widget build(BuildContext context) {
@@ -166,8 +164,7 @@ class ProveedorElement extends StatelessWidget {
         ],
         onSelected: (value) async {
           switch (value) {
-            case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProveedorRegisterScreen(
-              dbContext: dbContext,
+            case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarProveedorScreen(
               idProveedorToEdit: proveedor.id,
             )));
             default: return;

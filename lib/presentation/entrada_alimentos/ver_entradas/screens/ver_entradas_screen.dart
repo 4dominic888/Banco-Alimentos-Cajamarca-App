@@ -1,47 +1,40 @@
 import 'dart:async';
 
-import 'package:bancalcaj_app/domain/classes/entrada.dart';
+import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
-import 'package:bancalcaj_app/shared/repositories/entrada_alimentos_repository.dart';
-import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
-import 'package:bancalcaj_app/services/file_services/excel_service.dart';
-import 'package:bancalcaj_app/services/file_services/pdf_service.dart';
-import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
+import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
+import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
+import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
-class ExportEntradaScreen extends StatefulWidget {
-  const ExportEntradaScreen({super.key, required this.dbContext});
-  final DataBaseService dbContext;
+class VerEntradasScreen extends StatefulWidget {
+  const VerEntradasScreen({super.key});
 
   @override
-  State<ExportEntradaScreen> createState() => _ExportEntradaScreenState();
+  State<VerEntradasScreen> createState() => _VerEntradasScreenState();
 }
 
-class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
+class _VerEntradasScreenState extends State<VerEntradasScreen> {
   
-  late final EntradaAlimentosRepository entradaRepo;
-  late final ProveedorRepository proveedorRepo;
-  late final PDFService _pdfService;
-  late final ExcelService _excelService;
+  final entradaService = GetIt.I<EntradaAlimentosServiceBase>();
+  final proveedorService = GetIt.I<ProveedorServiceBase>();
+
+  late final PDFWritter _pdfService;
+  late final ExcelWritter _excelService;
   bool _isLoading = false;
 
   Future<List<Entrada>> initList() async {
-    List<Entrada> list;
-    try{
-      list = await entradaRepo.getAll();
-    } on TimeoutException{
-      list = [];
-    }
-    return list;
+    final result = await entradaService.verEntradas();
+    return result.data!.data;
   }
 
   Future<void> _initService() async{
-    _pdfService = PDFService();
-    _excelService = ExcelService();
-    entradaRepo = EntradaAlimentosRepository(widget.dbContext);
-    proveedorRepo = ProveedorRepository(widget.dbContext);
+    _pdfService = PDFWritter();
+    _excelService = ExcelWritter();
 
     await Future.wait([
       _pdfService.init(),
@@ -141,9 +134,10 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                                 ElevatedButton(
                                   onPressed: _isLoading ? null : () async {
                                     //! Se que se repite el codigo, pero es un parche rapido
+                                    final result = await proveedorService.seleccionarProveedor(entrada.proveedor.id.toString());
                                     final entradaWithProveedor = entrada.copyWith(
-                                      proveedor: await proveedorRepo.getById(entrada.proveedor.id)
-                                    );                                    
+                                      proveedor: result.data
+                                    );
                                     await _excelService.printEntradaExcel(entradaWithProveedor);
                                   },
                                   child: Column(
@@ -161,8 +155,9 @@ class _ExportEntradaScreenState extends State<ExportEntradaScreen> {
                                 const SizedBox(width: 10),
                                 ElevatedButton(
                                   onPressed: _isLoading ? null : () async {
+                                    final result = await proveedorService.seleccionarProveedor(entrada.proveedor.id.toString());
                                     final entradaWithProveedor = entrada.copyWith(
-                                      proveedor: await proveedorRepo.getById(entrada.proveedor.id)
+                                      proveedor: result.data
                                     );
                                     await _pdfService.printEntradaPDF(entradaWithProveedor);
                                   },
