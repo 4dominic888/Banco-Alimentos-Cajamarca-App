@@ -1,8 +1,8 @@
-import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
+import 'package:bancalcaj_app/domain/interfaces/database_interface.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 
 abstract class Repository<T>{
-  final DataBaseService db;
+  final DatabaseInterface db;
   Repository({required this.db});
 }
 
