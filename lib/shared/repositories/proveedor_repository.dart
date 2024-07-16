@@ -39,8 +39,8 @@ class ProveedorRepository extends Repository<Proveedor>{
       final PaginateData<Map<String, dynamic>>? paginateData = await _context.getAllPaginated(table, page: page, limit: limit);
       return PaginateData<Proveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => Proveedor.fromJson(e)).toList());  
     } catch (e) {
+      return null;
     }
-    return null;
   }
 
   @override
@@ -83,5 +83,4 @@ class ProveedorRepository extends Repository<Proveedor>{
       return Result.onError(message: 'Ha ocurrido un error: $e');
     }
   }
-  
 }

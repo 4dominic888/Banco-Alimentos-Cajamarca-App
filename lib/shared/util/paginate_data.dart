@@ -1,6 +1,5 @@
-
-class PaginateData<T> {
-  final Metadata metadata;
+class PaginateData<T>{
+  final PaginateMetaData metadata;
   final List<T> data;
 
   PaginateData({
@@ -10,28 +9,27 @@ class PaginateData<T> {
 
   factory PaginateData.fromJson(Map<String, dynamic> json){
     return PaginateData(
-      metadata: Metadata.fromJson(json['metaData']),
+      metadata: PaginateMetaData.fromJson(json['metaData']),
       data: (json['data'] as List).cast<T>()
     );
   }
-
 }
 
-class Metadata{
+class PaginateMetaData{
   final int total;
   final int currentPage;
   final int totalPages;
   final int currentCount;
 
-  Metadata({
+  PaginateMetaData({
     required this.total,
     required this.currentPage,
     required this.totalPages,
     required this.currentCount
   });
 
-  factory Metadata.fromJson(Map<String, dynamic> json){
-    return Metadata(
+  factory PaginateMetaData.fromJson(Map<String, dynamic> json) {
+    return PaginateMetaData(
       total: json['totalDocuments'],
       currentPage: json['pageNumber'],
       totalPages: json['totalPages'],

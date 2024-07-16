@@ -48,7 +48,7 @@ class TypeProveedorRepository extends Repository<TypeProveedor> {
   }
 
   @override
-  Future<PaginateData<TypeProveedor>> getAllPaginated({int? page = 1, int? limit = 5, String? search}) {
+  Future<PaginateData<TypeProveedor>?> getAllPaginated({int? page = 1, int? limit = 5, String? search}) {
     // TODO: implement getAllPaginated
     throw UnimplementedError();
   }

@@ -40,8 +40,8 @@ class EntradaAlimentosRepository extends Repository<Entrada> {
   }
 
   @override
-  Future<PaginateData<Entrada>> getAllPaginated({int? page = 1, int? limit = 5, String? search}) {
-    // TODO: implement getAllPaginated
+  Future<PaginateData<Entrada>?> getAllPaginated({int? page = 1, int? limit = 5, String? search}) {
+    // TODO: implement getAllPaginate
     throw UnimplementedError();
   }
 }

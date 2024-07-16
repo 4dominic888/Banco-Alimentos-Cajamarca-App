@@ -24,9 +24,8 @@ class ProveedorFieldState extends State<ProveedorField> {
 
   Future<List<Proveedor>> _getProveedores(String? search) async{
     final paginateData = search == null ? 
-      await proveedorRepo.getAllPaginated(limit: 20) :
-      await proveedorRepo.getAllPaginated(search: search, limit: 20);
-
+      await proveedorRepo.getAllPaginated(limit: 20) : await proveedorRepo.getAllPaginated(search: search, limit: 20);
+      
     print(paginateData!.data);
     return paginateData!.data;
   }

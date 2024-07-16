@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 class PaginationWidget extends StatelessWidget {
-  final int currentPage;
+  final int currentPages;
   final int totalPages;
-  final VoidCallback? onNextPagePressed;
-  final VoidCallback? onPreviousPagePressed;
+  final void Function()? onNextPagePressed;
+  final void Function()? onPreviousPagePressed;
 
   const PaginationWidget({
-    super.key, 
-    required this.currentPage,
+    super.key,
+    required this.currentPages,
     required this.totalPages,
-    required this.onNextPagePressed,
-    required this.onPreviousPagePressed,
+    this.onNextPagePressed,
+    this.onPreviousPagePressed
   });
 
   @override
@@ -23,12 +23,14 @@ class PaginationWidget extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: onPreviousPagePressed,
         ),
+
         const SizedBox(width: 16),
         Text(
-          'Página $currentPage de $totalPages',
+          'Página $currentPages de $totalPages',
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(width: 16),
+        
         IconButton(
           icon: const Icon(Icons.arrow_forward),
           onPressed: onNextPagePressed,
@@ -37,3 +39,4 @@ class PaginationWidget extends StatelessWidget {
     );
   }
 }
+

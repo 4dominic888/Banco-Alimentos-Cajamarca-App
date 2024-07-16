@@ -23,7 +23,7 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
   int _selectedIndex = -1;
 
   int _page = 1;
-  static const _limit = 10;
+  int _limit = 10;
 
   void showProveedorDetail(Proveedor detailItem) async{
     showDialog(context: context, builder: (context) => AlertDialog(
@@ -77,14 +77,14 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if(snapshot.hasError || snapshot.data == null){
-            return Center(child: Text('Ha ocurrido un error al mostrar la informacion ${snapshot.error}'));
+            return Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}'));
           }
           if(snapshot.data!.data.isEmpty){
             return const Center(child: Text('Sin proveedores a mostrar'));
           }
 
           final currentList = snapshot.data!.data;
-          final pageMetadata = snapshot.data!.metadata;
+          final pageMetaData = snapshot.data!.metadata;
           
           return Column(
             children: [
@@ -102,17 +102,17 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
                       final item = currentList[index];
                       return StreamBuilder<bool>(
                         stream: _singleElementLoadingController.stream,
-                        builder: (context, snapshot) {
+                        builder: (context, singleSnapshot) {
                           return ProveedorElement(
                             dbContext: widget.dbContext,
                             proveedor: item,
                             leading: StreamBuilder<bool>(
                               stream: _singleElementLoadingController.stream,
-                              builder: (context, snapshot) => 
-                                (snapshot.data ?? false) && _selectedIndex == index ? 
+                              builder: (context, streamSnapshot) => 
+                                (streamSnapshot.data ?? false) && _selectedIndex == index ? 
                                   const CircularProgressIndicator() : 
                                   IconButton(
-                                    onPressed: (snapshot.data != null ? !snapshot.data! : true) ? () async {
+                                    onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
                                       _singleElementLoadingController.sink.add(true); _selectedIndex = index;
                                       final Proveedor detailItem = (await proveedorRepo.getByIdDetailed(item.id))!;
                                       _singleElementLoadingController.sink.add(false);
@@ -131,9 +131,9 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
                 ),
               ),
               PaginationWidget(
-                currentPage: pageMetadata.currentPage,
-                totalPages: pageMetadata.totalPages,
-                onNextPagePressed: _page != pageMetadata.totalPages ? () => setState(() =>_page++) : null,
+                currentPages: pageMetaData.currentPage,
+                totalPages: pageMetaData.totalPages,
+                onNextPagePressed: _page != pageMetaData.totalPages ? () => setState(() =>_page++) : null,
                 onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
               )
             ],
