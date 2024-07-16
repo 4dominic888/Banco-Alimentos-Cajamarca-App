@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
+import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:double_linked_list/double_linked_list.dart';
 
 class NationalUbication extends Ubication {

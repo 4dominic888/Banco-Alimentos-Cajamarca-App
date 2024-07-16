@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/proveedor.dart';
 import 'package:bancalcaj_app/services/api_readonly_services/ubication_api.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/repository.dart';

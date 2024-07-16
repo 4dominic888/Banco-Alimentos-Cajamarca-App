@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
+import 'package:bancalcaj_app/domain/classes/entrada.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/repository.dart';
 import 'package:bancalcaj_app/shared/util/paginate_data.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/proveedor.dart';
 import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';

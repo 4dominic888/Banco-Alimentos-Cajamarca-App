@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/entrada.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
+import 'package:bancalcaj_app/domain/classes/almacenero.dart';
+import 'package:bancalcaj_app/domain/classes/entrada.dart';
+import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/proveedor_field.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/widgets/select_products.dart';
 

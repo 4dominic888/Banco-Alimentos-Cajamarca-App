@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/modules/proveedor_module/classes/type_proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/proveedor.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/repository.dart';
 import 'package:bancalcaj_app/shared/util/paginate_data.dart';

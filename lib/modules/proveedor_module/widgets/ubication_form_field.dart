@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
+import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/radio_button_list_controller.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/controllers/ubication_field_controller.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/international_ubication_field.dart';

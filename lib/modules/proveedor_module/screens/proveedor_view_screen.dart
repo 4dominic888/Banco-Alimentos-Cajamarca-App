@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/proveedor.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/screens/proveedor_register_screen.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/pagination_widget.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';

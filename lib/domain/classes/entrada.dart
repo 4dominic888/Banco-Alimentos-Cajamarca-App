@@ -1,7 +1,7 @@
 
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/almacenero.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/almacenero.dart';
+import 'package:bancalcaj_app/domain/classes/producto.dart';
+import 'package:bancalcaj_app/domain/classes/proveedor.dart';
 import 'package:intl/intl.dart';
 
 class Entrada {

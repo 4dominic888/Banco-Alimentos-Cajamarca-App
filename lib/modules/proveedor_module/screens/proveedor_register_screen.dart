@@ -1,6 +1,5 @@
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/proveedor.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/classes/type_proveedor.dart';
-import 'package:bancalcaj_app/modules/proveedor_module/classes/ubication.dart';
+import 'package:bancalcaj_app/domain/classes/proveedor.dart';
+import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/modules/proveedor_module/widgets/ubication_form_field.dart';
 import 'package:bancalcaj_app/services/db_services/data_base_service.dart';
 import 'package:bancalcaj_app/shared/repositories/proveedor_repository.dart';

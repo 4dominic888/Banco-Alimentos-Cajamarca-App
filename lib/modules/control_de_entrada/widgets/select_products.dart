@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:bancalcaj_app/modules/control_de_entrada/classes/producto.dart';
+import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/modules/control_de_entrada/screens/add_product_dialog.dart';
 import 'package:flutter/material.dart';
 
