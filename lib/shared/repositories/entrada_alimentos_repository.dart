@@ -23,10 +23,8 @@ class EntradaAlimentosRepository extends Repository<Entrada> {
   @override
   Future<List<Entrada>> getAll() async {
     final data = await _context.getAll(table);
-    if(data != null){
-      return List<Entrada>.from(data.map((e) => Entrada.fromJson(e)));
-    }
-    return [];
+    return List.from(data.map((e) => Entrada.fromJson(e)));
+
   }
 
   @override

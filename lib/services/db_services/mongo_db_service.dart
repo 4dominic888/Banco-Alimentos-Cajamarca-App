@@ -40,11 +40,11 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future<List<dynamic>> getAll(String table) async {
+  Future<List<Map<String, dynamic>>> getAll(String table) async {
     final uri = Uri.https(domain, 'api/$table');
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
-      return json.decode(response.body);
+      return (json.decode(response.body) as List).cast<Map<String, dynamic>>();
     }
     else{
       throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
@@ -52,23 +52,11 @@ class MongoDBService implements DataBaseService {
   }
 
   @override
-  Future<PaginateData<Map<String, dynamic>>?> getAllPaginate(String table, {int? page = 1, int? limit = 5, String? search}) async {
+  Future<PaginateData<Map<String, dynamic>>?> getAllPaginated(String table, {int? page = 1, int? limit = 5, String? search}) async {
     final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString(), 'search': search});
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
       return PaginateData<Map<String, dynamic>>.fromJson(json.decode(response.body));
-    }
-    else{
-      throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
-    }
-  }
-
-  @override
-  Future<Map<String, dynamic>> getTemp(String table) async {
-    final uri = Uri.https(domain, 'api/$table');
-    final response = await http.get(uri, headers: headers).timeout(timeLimit);
-    if(response.statusCode == 200){
-      return json.decode(response.body);
     }
     else{
       throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);

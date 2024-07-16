@@ -23,7 +23,6 @@ class PaginationWidget extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: onPreviousPagePressed,
         ),
-        
         const SizedBox(width: 16),
         Text(
           'Página $currentPages de $totalPages',

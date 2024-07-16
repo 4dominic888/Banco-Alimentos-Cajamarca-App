@@ -29,21 +29,16 @@ class ProveedorRepository extends Repository<Proveedor>{
 
   @override
   Future<List<Proveedor>> getAll() async {
-    final data = await _context.getTemp(table);
-    if(data != null){
-      return List<Proveedor>.from((data['data'] as List).map((e) => Proveedor.fromJson(e)));
-    }
-    return [];
+    final data = await _context.getAll(table);
+    return List<Proveedor>.from(data.map((e) => Proveedor.fromJson(e)));
   }
 
   @override
   Future<PaginateData<Proveedor>?> getAllPaginated({int? page = 1, int? limit = 5, String? search}) async {
-    try{
-      final PaginateData<Map<String, dynamic>>? paginateData = await _context.getAllPaginate(table, page: page, limit: limit);
-      return PaginateData<Proveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => Proveedor.fromJson(e)).toList());
-    }
-    catch(e){
-      print(e);
+    try {
+      final PaginateData<Map<String, dynamic>>? paginateData = await _context.getAllPaginated(table, page: page, limit: limit);
+      return PaginateData<Proveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => Proveedor.fromJson(e)).toList());  
+    } catch (e) {
       return null;
     }
   }
@@ -88,6 +83,4 @@ class ProveedorRepository extends Repository<Proveedor>{
       return Result.onError(message: 'Ha ocurrido un error: $e');
     }
   }
-
-  
 }

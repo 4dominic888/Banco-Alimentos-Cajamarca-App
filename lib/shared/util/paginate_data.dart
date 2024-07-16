@@ -1,4 +1,3 @@
-
 class PaginateData<T>{
   final PaginateMetaData metadata;
   final List<T> data;

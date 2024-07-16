@@ -90,7 +90,7 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
             children: [
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: 400,
+                height: 500,
                 child: SingleChildScrollView(
                   physics: const ScrollPhysics(),
                   child: ListView.builder(
@@ -133,8 +133,8 @@ class _ProveedorViewScreenState extends State<ProveedorViewScreen> {
               PaginationWidget(
                 currentPages: pageMetaData.currentPage,
                 totalPages: pageMetaData.totalPages,
-                onNextPagePressed: _page != pageMetaData.totalPages ? () => setState(() => _page++) : null,
-                onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null,
+                onNextPagePressed: _page != pageMetaData.totalPages ? () => setState(() =>_page++) : null,
+                onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
               )
             ],
           );
