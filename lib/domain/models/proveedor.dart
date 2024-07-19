@@ -1,5 +1,28 @@
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
 
+class ProveedorView {
+  final String id;
+  final String nombre;
+  final String typeProveedor;
+  final Map<String, dynamic> ubication;
+
+  ProveedorView({
+    required this.id,
+    required this.nombre,
+    required this.typeProveedor,
+    required this.ubication
+  });
+
+  factory ProveedorView.fromJson(Map<String, dynamic> json){
+    return ProveedorView(
+      id: json['idp'],
+      nombre: json['nombre'],
+      typeProveedor: json['type'],
+      ubication: json['ubication']
+    );
+  }
+}
+
 class Proveedor{
   final String id;
   final String nombre;

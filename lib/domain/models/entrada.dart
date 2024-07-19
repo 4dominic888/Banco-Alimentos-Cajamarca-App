@@ -1,8 +1,33 @@
-
 import 'package:bancalcaj_app/domain/models/almacenero.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:intl/intl.dart';
+
+class EntradaView {
+  final String id;
+  final DateTime fecha;
+  final double cantidad;
+  final String proveedor;
+  final String almacenero;
+
+  EntradaView({
+    required this.id,
+    required this.fecha,
+    required this.cantidad,
+    required this.proveedor,
+    required this.almacenero
+  });
+
+  factory EntradaView.fromJson(Map<String, dynamic> json){
+    return EntradaView(
+      id: json['_id'],
+      fecha: DateTime.parse(json['fecha']),
+      cantidad: double.parse(json["cantidad"].toString()),
+      proveedor: json['proveedor'],
+      almacenero: json['almacenero']
+    );
+  }
+}
 
 class Entrada {
     DateTime fecha;
