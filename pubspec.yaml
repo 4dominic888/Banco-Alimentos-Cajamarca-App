@@ -10,6 +10,7 @@ dependencies:
   dartx: ^1.2.0
   double_linked_list: ^2.0.1
   drop_down_search_field: ^1.0.4
+  dropdown_search: ^5.0.6
   encrypt: ^5.0.3
   excel: ^4.0.2
   file_picker: ^8.0.3

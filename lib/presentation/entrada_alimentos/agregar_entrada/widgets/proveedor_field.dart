@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
-import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class ProveedorField extends StatefulWidget {
   const ProveedorField({super.key});
@@ -17,56 +14,23 @@ class ProveedorField extends StatefulWidget {
 class ProveedorFieldState extends State<ProveedorField> {
 
   final proveedorService = GetIt.I<ProveedorServiceBase>();
-
-  late final TextEditingController _dropDownSearchController;
-  Proveedor? proveedor;
-
-  Future<List<Proveedor>> _getProveedores(String? search) async {
-    final result = search == null ? 
-      await proveedorService.verProveedores(limite: 20) : await proveedorService.verProveedores(busqueda: search, limite: 20);
-    
-    if(!result.success){
-      return [];
-    }
-
-    return result.data!.data;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _dropDownSearchController = TextEditingController();
-  }
+  String? proveedorId;
 
   @override
   Widget build(BuildContext context) {
-    return DropDownSearchField<Proveedor>(
-      textFieldConfiguration: TextFieldConfiguration(
-        controller: _dropDownSearchController,
-        decoration: const InputDecoration(
-          labelText: 'Proveedor'
-        )
-      ),
-      errorBuilder: (context, error) => 
-        ExpansionTile(
-          title: const Text('Se ha producido un error',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.red)
-          ),
-          subtitle: Text('Ha ocurrido un error de conexion: ${(error as SocketException).message}', style: const TextStyle(color: Colors.red)),
-        ),
-      
-      suggestionsCallback: (pattern) => _getProveedores(pattern),
-      itemBuilder: (context, itemData) => ListTile(title: Text(itemData.nombre)),
-      transitionBuilder: (context, suggestionsBox, controller) => suggestionsBox,
-      loadingBuilder: (context) => const ListTile(leading: CircularProgressIndicator(color: Colors.red)),
-      noItemsFoundBuilder: (context) => const ListTile(title: Text('Proveedores no encontrados...', style: TextStyle(fontWeight: FontWeight.bold)), contentPadding: EdgeInsets.only(left: 20)),
-      onSuggestionSelected: (suggestion){
-        proveedor = suggestion;
-        _dropDownSearchController.text = suggestion.nombre;
+    return DropdownSearch<ProveedorView>(
+      asyncItems: (text) async {
+        final result = await proveedorService.verProveedores(pagina: 1, limite: 5, nombre: text);
+        if(!result.success) return [];
+        return result.data!.data;
       },
-      displayAllSuggestionWhenTap: true
+      itemAsString: (item) => item.nombre,
+      validator: (value) {
+        if(value == null) return 'Campo requerido';
+        return null;
+      },
+      onChanged: (value) => proveedorId = value!.id,
+      
     );
     // return FutureBuilder<Iterable<Proveedor>>(
     //       future: _getProveedores(),

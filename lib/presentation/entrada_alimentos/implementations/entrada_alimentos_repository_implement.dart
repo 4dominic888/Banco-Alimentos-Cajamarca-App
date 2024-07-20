@@ -18,9 +18,10 @@ interface class EntradaAlimentosRepositoryImplement extends EntradaAlimentosRepo
   }
 
   @override
-  Future<Entrada?> getById(String id) {
-    // TODO: implement getById
-    throw UnimplementedError();
+  Future<Entrada?> getById(String id) async {
+    final data = await db.getById(id, dataset);
+    if(data == null) return null;
+    return Entrada.fromJson(data);
   }
 
   @override

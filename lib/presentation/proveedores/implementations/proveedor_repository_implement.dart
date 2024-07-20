@@ -1,6 +1,5 @@
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/repositories/proveedor_repository_base.dart';
-import 'package:bancalcaj_app/data/opendatasoft/ubication_api.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 
 interface class ProveedorRepositoryImplement extends ProveedorRepositoryBase{
@@ -27,31 +26,6 @@ interface class ProveedorRepositoryImplement extends ProveedorRepositoryBase{
     final data = await db.getById(id, dataset);
     if(data == null) return null;
     return Proveedor.fromJson(data);
-  }
-
-  @override
-  Future<Proveedor?> getByIdDetailed(String id) async {
-    final data = await db.getById(id, dataset);
-    if(data == null) return null;
-    final retorno = Proveedor.fromJson(data);
-    retorno.ubication.countryName = (await UbicationAPI.paisById(retorno.ubication.countryCode)).data!['nombre']!;
-
-    //* Premature performance... =(
-    if(retorno.ubication.type == 'national'){
-      retorno.ubication.departamentoName = (await UbicationAPI.departamentoById(retorno.ubication.departamentoCode!)).data!['nombre']!;
-      
-      retorno.ubication.provinciaName = (await UbicationAPI.provinciaById(
-        retorno.ubication.departamentoCode!,
-        retorno.ubication.provinciaCode!
-      )).data!['nombre']!;
-
-      retorno.ubication.distritoName = (await UbicationAPI.distritoById(
-        retorno.ubication.departamentoCode!,
-        retorno.ubication.provinciaCode!,
-        retorno.ubication.distritoCode!
-      )).data!['nombre']!;
-    }
-    return retorno;
   }
 
   @override

@@ -6,6 +6,7 @@ import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
 import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/pagination_widget.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
+import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/proveedor_element.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -19,9 +20,12 @@ class VerProveedoresScreen extends StatefulWidget {
 class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
   
   final proveedorService = GetIt.I<ProveedorServiceBase>();
-  final _singleElementLoadingController = StreamController<bool>.broadcast();
-  int _selectedIndex = -1;
 
+  //* Para seleccion
+  final _singleElementLoadingController = StreamController<bool>.broadcast();
+
+
+  int _selectedIndex = -1;
   int _page = 1;
   int _limit = 10;
 
@@ -70,7 +74,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: FutureBuilder<Result<PaginateData<Proveedor>>?>(
+      body: FutureBuilder<Result<PaginateData<ProveedorView>>?>(
         future: proveedorService.verProveedores(pagina: _page, limite: _limit),
         builder: (context, snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting){
@@ -82,9 +86,8 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
           if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
             return const Center(child: Text('Sin proveedores a mostrar'));
           }
-          final paginateData = snapshot.data!.data!;
-          final currentList = paginateData.data;
-          final pageMetaData = paginateData.metadata;
+          final currentList = snapshot.data!.data!.data; //* data data data
+          final pageMetaData = snapshot.data!.data!.metadata;
           
           return Column(
             children: [
@@ -113,10 +116,15 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
                                   IconButton(
                                     onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
                                       _singleElementLoadingController.sink.add(true); _selectedIndex = index;
-                                      final Proveedor detailItem = (await proveedorService.seleccionarProveedor(item.id)).data!;
+                                      final result = await proveedorService.seleccionarProveedor(item.id);
+                                      if(!result.success) {
+                                        // TODO dialog
+                                        return;
+                                      }
+                                      await result.data!.ubication.fillFields();
                                       _singleElementLoadingController.sink.add(false);
                                       if(!context.mounted) return;
-                                      showProveedorDetail(detailItem);
+                                      showProveedorDetail(result.data!);
                                     } : null,
                                     icon: const Icon(Icons.remove_red_eye_rounded)
                                   )
@@ -139,38 +147,6 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
           );
         }
       ),
-    );
-  }
-}
-
-class ProveedorElement extends StatelessWidget {
-
-  final Proveedor proveedor;
-  final void Function()? onTap;
-  final Widget? leading;
-
-  const ProveedorElement({super.key, required this.proveedor, this.onTap, this.leading});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(proveedor.nombre),
-      subtitle: Text(proveedor.typeProveedor.name),
-      onTap: onTap,
-      leading: leading,
-      trailing: PopupMenuButton(
-        itemBuilder: (context) => [
-          const PopupMenuItem(value: 0, child: Text('Editar'),)
-        ],
-        onSelected: (value) async {
-          switch (value) {
-            case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarProveedorScreen(
-              idProveedorToEdit: proveedor.id,
-            )));
-            default: return;
-          }
-        },
-      )
     );
   }
 }

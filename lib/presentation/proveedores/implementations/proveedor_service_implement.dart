@@ -81,6 +81,7 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
     try {
       final data = await repo.getById(id);
       if(data == null) throw Exception('Valor no encontrado');
+      await data.ubication.fillFields();
       return Result.success(data: data);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');

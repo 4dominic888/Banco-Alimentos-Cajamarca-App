@@ -17,10 +17,6 @@ abstract class ProveedorRepositoryBase extends Repository<Proveedor> implements 
   @override Future<bool> update(String id, E proveedor);
   @override Future<bool> delete(String id);
 
-
-  //* Extra methods
-  Future<E?> getByIdDetailed(String id);
-
   //* TypeProveedor section
   Future<String> addType(TypeProveedor typeProveedor);
   Future<TypeProveedor?> getTypeById(String id);

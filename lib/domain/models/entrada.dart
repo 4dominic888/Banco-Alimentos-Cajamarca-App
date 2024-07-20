@@ -27,6 +27,10 @@ class EntradaView {
       almacenero: json['almacenero']
     );
   }
+
+    String get fechaStr => DateFormat("dd-MM-yyyy HH:mm").format(fecha);
+    String get cantidadStr => cantidad.toStringAsFixed(2);
+
 }
 
 class Entrada {

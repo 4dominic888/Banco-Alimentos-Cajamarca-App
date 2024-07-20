@@ -15,7 +15,7 @@ class ProveedorView {
 
   factory ProveedorView.fromJson(Map<String, dynamic> json){
     return ProveedorView(
-      id: json['idp'],
+      id: (json['idp']).toString(),
       nombre: json['nombre'],
       typeProveedor: json['type'],
       ubication: json['ubication']
@@ -31,10 +31,17 @@ class Proveedor{
 
   Proveedor({required this.id, required this.nombre, required this.typeProveedor, required this.ubication});
   Proveedor.toSend({required this.nombre, required this.typeProveedor, required this.ubication}) : id = '0';
+  
+  factory Proveedor.onlyId(String id) => Proveedor(
+    id: id, 
+    nombre: '',
+    typeProveedor: TypeProveedor(name: ''),
+    ubication: Ubication.none()
+  );
 
   factory Proveedor.fromJson(Map<String, dynamic> json){
     return Proveedor(
-      id: json['idp'],
+      id: (json['idp']).toString(),
       nombre: json['nombre'],
       typeProveedor: TypeProveedor.fromJson(json['type']),
       ubication: Ubication.fromJson(json['ubication'])
@@ -43,7 +50,7 @@ class Proveedor{
 
   factory Proveedor.fromJsonLow(Map<String, dynamic> json){
     return Proveedor(
-      id: json['idp'],
+      id: (json['idp']).toString(),
       nombre: json['nombre'],
       typeProveedor: TypeProveedor(id: '-1', name: 'unknown'),
       ubication: Ubication(country: {'':''}, type: '')
@@ -66,6 +73,20 @@ class Proveedor{
       'type': typeProveedor.id,
       'ubication': ubication.toJson()
     };
+  }
+
+  Proveedor copyWith({
+    String? id,
+    String? nombre,
+    TypeProveedor? typeProveedor,
+    Ubication? ubication
+  }){
+    return Proveedor(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      typeProveedor: typeProveedor ?? this.typeProveedor,
+      ubication: ubication ?? this.ubication
+    );
   }
 }
 

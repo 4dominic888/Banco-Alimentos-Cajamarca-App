@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bancalcaj_app/domain/models/almacenero.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/proveedor_field.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/select_products.dart';
@@ -70,7 +71,7 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
 
     final fecha = _keyFieldFecha.currentState!.fecha;
     final cantidad = _keyFieldProductos.currentState!.cantidadTotal;
-    final proveedor = _keyFieldProveedor.currentState!.proveedor;
+    final proveedorId = _keyFieldProveedor.currentState!.proveedorId;
     final productos = _keyFieldProductos.currentState!.listProducts;
     final comentario = _keyFieldComentario.currentState!.value.toString();
 
@@ -78,17 +79,14 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
       final List<TipoProductos> tiposProductos = [];
       productos.forEach((key, value) {
         tiposProductos.add(
-          TipoProductos(
-            nombre: key,
-            productos: value
-          )
+          TipoProductos(nombre: key, productos: value)
         );
       });
 
       await _registerEntrada(Entrada(
         fecha: fecha,
         cantidad: cantidad,
-        proveedor: proveedor!,
+        proveedor: Proveedor.onlyId(proveedorId!),
         productos: tiposProductos,
         comentario: comentario,
         almacenero: Almacenero(nombre: "almacenero test", dni: "12345678")
@@ -116,11 +114,6 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
     );
     _onLoad = false;
     return;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override

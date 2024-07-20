@@ -2,6 +2,7 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/type_proveedor_field.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/ubication_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -73,12 +74,6 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
     }
   }
 
-  Future<List<TypeProveedor>> listTypeProveedores() async {
-    final result = await proveedorService.verTiposDeProveedor(limite: 20);
-    if(!result.success) return [];
-    return result.data!.data;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,9 +91,6 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
         builder: (context, snapProveedor) {
           if(snapProveedor.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          }
-          if(snapProveedor.data != null && !snapProveedor.data!.success){
-            return Center(child: Text(snapProveedor.data?.message ?? 'Nulo'));
           }
           final proveedor = snapProveedor.data!.data;
           return Form(
@@ -135,44 +127,48 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
                   //* Tipo de proveedor
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    child: FutureBuilder<List<TypeProveedor>>(
-                      future: listTypeProveedores(),
-                      initialData: const [],
-                      builder: (context, snapshot) {
-                        if(snapshot.data != null && snapshot.data!.isNotEmpty){
-                          return DropdownButtonFormField<TypeProveedor?>(
-                            key: _proveedorTypeKey,
-                            value: proveedor!.typeProveedor,
-                            onChanged: (_) {},
-                            menuMaxHeight: 280,
-                            items: snapshot.data!.map<DropdownMenuItem<TypeProveedor?>>((value) =>
-                              DropdownMenuItem<TypeProveedor?>(
-                                value: value,
-                                child: Text(value.name),
-                              )
-                            ).toList(),
-                            decoration: const InputDecoration(
-                              label: Text("Tipo de proveedor"),
-                              icon: Icon(Icons.category)
-                            ),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'No se ha seleccionado una opcion';
-                              }
-                              return null;
-                            },
-                          );
-                        }
-                        return const Text('No hay informacion de los tipos de proveedor');
-                      }
-                    )
+                    child: TypeProveedorField(
+                      formFieldKey: _proveedorTypeKey,
+                      initialValue: proveedor?.typeProveedor,
+                    ),
+                    // child: FutureBuilder<List<TypeProveedor>>(
+                    //   future: listTypeProveedores(),
+                    //   initialData: const [],
+                    //   builder: (context, snapshot) {
+                    //     if(snapshot.data != null && snapshot.data!.isNotEmpty){
+                    //       return DropdownButtonFormField<TypeProveedor?>(
+                    //         key: _proveedorTypeKey,
+                    //         value: proveedor!.typeProveedor,
+                    //         onChanged: (_) {},
+                    //         menuMaxHeight: 280,
+                    //         items: snapshot.data!.map<DropdownMenuItem<TypeProveedor?>>((value) =>
+                    //           DropdownMenuItem<TypeProveedor?>(
+                    //             value: value,
+                    //             child: Text(value.name),
+                    //           )
+                    //         ).toList(),
+                    //         decoration: const InputDecoration(
+                    //           label: Text("Tipo de proveedor"),
+                    //           icon: Icon(Icons.category)
+                    //         ),
+                    //         validator: (value) {
+                    //           if (value == null) {
+                    //             return 'No se ha seleccionado una opcion';
+                    //           }
+                    //           return null;
+                    //         },
+                    //       );
+                    //     }
+                    //     return const Text('No hay informacion de los tipos de proveedor');
+                    //   }
+                    // )
                   ),
             
                   //* Ubicacion
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
                     child: UbicationFormField(
-                      initialData: proveedor!.ubication,
+                      initialData: proveedor?.ubication,
                       formFieldKey: _proveedorUbicationKey,
                       validator: (value) {
                         if (value == null) {
