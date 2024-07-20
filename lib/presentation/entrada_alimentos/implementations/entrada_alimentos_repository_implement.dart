@@ -30,10 +30,10 @@ interface class EntradaAlimentosRepositoryImplement extends EntradaAlimentosRepo
   }
 
   @override
-  Future<PaginateData<Entrada>?> getAll({required int page, required int limit, String? search}) async {
-    final paginateData = await db.getAll(dataset, page: page, limit: limit, search: search);
+  Future<PaginateData<EntradaView>?> getAll({required int page, required int limit, Map<String, dynamic>? aditionalQueries}) async {
+    final paginateData = await db.getAll(dataset, page: page, limit: limit, aditionalQueries: aditionalQueries);
     if(paginateData == null) return null;
-    return PaginateData<Entrada>(metadata: paginateData.metadata, data: paginateData.data.map((e) => Entrada.fromJson(e)).toList());
+    return PaginateData<EntradaView>(metadata: paginateData.metadata, data: paginateData.data.map((e) => EntradaView.fromJson(e)).toList());
   }
 
 }

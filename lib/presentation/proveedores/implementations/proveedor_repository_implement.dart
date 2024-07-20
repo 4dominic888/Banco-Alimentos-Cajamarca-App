@@ -13,10 +13,10 @@ interface class ProveedorRepositoryImplement extends ProveedorRepositoryBase{
   }
 
   @override
-  Future<PaginateData<Proveedor>?> getAll({required int page, required int limit, String? search}) async {
+  Future<PaginateData<ProveedorView>?> getAll({required int page, required int limit, Map<String, dynamic>? aditionalQueries}) async {
     try {
-      final PaginateData<Map<String, dynamic>>? paginateData = await db.getAll(dataset, page: page, limit: limit, search: search);
-      return PaginateData<Proveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => Proveedor.fromJson(e)).toList());  
+      final PaginateData<Map<String, dynamic>>? paginateData = await db.getAll(dataset, page: page, limit: limit, aditionalQueries: aditionalQueries);
+      return PaginateData<ProveedorView>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => ProveedorView.fromJson(e)).toList());  
     } catch (e) {
       return null;
     }
@@ -71,9 +71,13 @@ interface class ProveedorRepositoryImplement extends ProveedorRepositoryBase{
   }
   
   @override
-  Future<PaginateData<TypeProveedor>?> getAllTypes({required int page, required int limit, required String search}) {
-    // TODO: implement getAllTypesPaginated
-    throw UnimplementedError();
+  Future<PaginateData<TypeProveedor>?> getAllTypes({required int page, required int limit, Map<String, dynamic>? aditionalQueries}) async {
+    try {
+      final PaginateData<Map<String, dynamic>>? paginateData = await db.getAll(typeDataset, page: page, limit: limit, aditionalQueries: aditionalQueries);
+      return PaginateData<TypeProveedor>(metadata: paginateData!.metadata, data: paginateData.data.map((e) => TypeProveedor.fromJson(e)).toList());  
+    } catch (e) {
+      return null;
+    }
   }
   
   @override

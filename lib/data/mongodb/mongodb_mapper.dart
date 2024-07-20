@@ -40,8 +40,9 @@ interface class MongoDBMapper implements DatabaseInterface {
   }
 
   @override
-  Future<PaginateData<Map<String, dynamic>>?> getAll(String table, {required int page, required int limit, String? search}) async {
-    final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString(), 'search': search});
+  Future<PaginateData<Map<String, dynamic>>?> getAll(String table, {required int page, required int limit, Map<String, dynamic>? aditionalQueries}) async {
+    
+    final uri = Uri.https(domain, 'api/$table', {'page': page.toString(), 'limit': limit.toString(), ...?aditionalQueries });
     final response = await http.get(uri, headers: headers).timeout(timeLimit);
     if(response.statusCode == 200){
       return PaginateData<Map<String, dynamic>>.fromJson(json.decode(response.body));
@@ -77,7 +78,7 @@ interface class MongoDBMapper implements DatabaseInterface {
       if(data.containsKey('message')){
         throw FormatException('Error al realizar solicitud put: $data');
       }
-      return data['result'];
+      return data['status'];
     }
     throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }

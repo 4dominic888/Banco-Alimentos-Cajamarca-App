@@ -24,9 +24,12 @@ interface class EntradaAlimentosServiceImplement implements EntradaAlimentosServ
   }
 
   @override
-  Future<Result<PaginateData<Entrada>>> verEntradas({int? pagina = 1, int? limite = 5, String? busqueda}) async {
+  Future<Result<PaginateData<EntradaView>>> verEntradas({int? pagina = 1, int? limite = 5, String? proveedor, String? almacenero}) async {
     try {
-      final paginateData = await repo.getAll(page: pagina!, limit: limite!, search: busqueda);
+      final paginateData = await repo.getAll(page: pagina!, limit: limite!, aditionalQueries: {
+        'proveedor': proveedor ?? '',
+        'almacenero': almacenero ?? ''
+      });
       return Result.success(data: paginateData);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');
