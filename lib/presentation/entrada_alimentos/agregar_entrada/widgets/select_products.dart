@@ -104,6 +104,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
       items: _listSelect.map<DropdownMenuItem<String>>((e) => DropdownMenuItem(value: e, child: Text("Agregar $e"))).toList(),
       validator: (value) {
         if(_listProducts.isEmpty) return "No se ha seleccionado productos";
+        if(cantidadTotal <= 0.01) return 'El valor minimo aceptado es de 0.01 Kg';
         return null;
       },
       decoration: const InputDecoration(
