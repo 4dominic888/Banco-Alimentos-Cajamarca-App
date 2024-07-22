@@ -34,9 +34,8 @@ interface class ProveedorRepositoryImplement extends ProveedorRepositoryBase{
   }
 
   @override
-  Future<bool> delete(String id) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<bool> delete(String id) async {
+    return await db.delete(id, dataset);
   }
 
   @override

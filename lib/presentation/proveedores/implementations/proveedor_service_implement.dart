@@ -43,9 +43,12 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
   }
 
   @override
-  Future<Result<bool>> eliminarProveedor(String id) {
-    // TODO: implement eliminarProveedor
-    throw UnimplementedError();
+  Future<Result<bool>> eliminarProveedor(String id) async {
+    try {
+      return Result.success(data: await repo.delete(id));
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
 
   @override

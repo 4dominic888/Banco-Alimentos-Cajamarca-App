@@ -35,9 +35,17 @@ interface class MongoDBMapper implements DatabaseInterface {
   }
 
   @override
-  Future<bool> delete(String id, String table) {
-    throw UnimplementedError();
-  }
+  Future<bool> delete(String id, String table) async {
+    final uri = Uri.https(domain, 'api/$table/$id');
+    final response = await http.delete(uri, headers: headers).timeout(timeLimit);
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      if(data.containsKey('message')){
+        throw FormatException('Error al realizar solicitud put: $data');
+      }
+      return data['status'];
+    }
+    throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);  }
 
   @override
   Future<PaginateData<Map<String, dynamic>>?> getAll(String table, {required int page, required int limit, Map<String, dynamic>? aditionalQueries}) async {
