@@ -7,8 +7,9 @@ class ProveedorElement extends StatelessWidget {
   final ProveedorView proveedor;
   final void Function()? onTap;
   final Widget? leading;
+  final void Function()? onDataUpdate;
 
-  const ProveedorElement({super.key, required this.proveedor, this.onTap, this.leading});
+  const ProveedorElement({super.key, required this.proveedor, this.onTap, this.leading, this.onDataUpdate});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class ProveedorElement extends StatelessWidget {
           switch (value) {
             case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarProveedorScreen(
               idProveedorToEdit: proveedor.id,
-            )));
+            ))).then((value) => onDataUpdate?.call());
             default: return;
           }
         },

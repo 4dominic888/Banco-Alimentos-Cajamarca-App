@@ -4,8 +4,11 @@ import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/ubication_form_field.dart';
+import 'package:bancalcaj_app/presentation/widgets/loading_process_button.dart';
+import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class AgregarProveedorScreen extends StatefulWidget {
 
@@ -25,17 +28,16 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
   final _proveedorTypeKey = GlobalKey<FormFieldState>();
   final _proveedorUbicationKey = GlobalKey<FormFieldState<Ubication>>();
 
-  bool _onLoad = false;
-
-  void onSubmit() async {
+  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
+  
+  Future<void> onSubmit() async {
     if (_formkey.currentState!.validate()) {
-
-      setState(() => _onLoad = true);
       final Proveedor proveedor = Proveedor.toSend(
         nombre: _proveedorNameKey.currentState?.value,
         typeProveedor: _proveedorTypeKey.currentState?.value,
         ubication: _proveedorUbicationKey.currentState!.value!
       );
+
       final Result<Object> result;
       if(widget.idProveedorToEdit != null) {
         result = await proveedorService.editarProveedor(proveedor, id: widget.idProveedorToEdit!);
@@ -43,35 +45,23 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
       else{
         result = await proveedorService.agregarProveedor(proveedor);
       }
-
-      setState(() => _onLoad = false);
-
-      if(!mounted) return;
       if(!result.success){
-        showDialog(context: context, builder: (context) => 
-          AlertDialog(
-            title: const Text('Error'),
-            content: Text(result.message!),
-            actions: [
-              TextButton(onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              }, child: const Text('Ok'))
-            ],
-          )
-        );
+        _btnController.error();
+        NotificationMessage.showErrorNotification(title: 'Error', description: result.message!);
         return;
       }
-      showDialog(context: context, builder: (context) => 
-        AlertDialog(
-          title: const Text('Exito'),
-          content: const Text('Se ha realizado el proceso con exito'),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok'))
-          ],
-        )
-      );
+
+      _btnController.success();
+      NotificationMessage.showSuccessNotification(title: 'Exito', description: 'Se ha realizado el proceso con exito');
+
+      //* El proceso es para actualizar y no esta montado el context
+      if(widget.idProveedorToEdit != null && mounted){
+        Navigator.of(context).pop();
+      }
+
+      return;
     }
+    _btnController.error();
   }
 
   @override
@@ -158,23 +148,16 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
               
                   //* Button
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: !_onLoad ? onSubmit : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white
-                          ),  
-                          child: const Text("Registrar")
-                        ),
-
-                        const SizedBox(width: 30),
-                        
-                        _onLoad ? const CircularProgressIndicator(color: Colors.red) : const SizedBox.shrink()
-                      ],
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                    child: LoadingProcessButton(
+                      controller: _btnController,
+                      label: Text(
+                        widget.idProveedorToEdit != null ? 'Actualizar' : 'Registrar',
+                        style: const TextStyle(color: Colors.white)
+                      ),
+                      color: Colors.red,
+                      proccess: onSubmit,
+                    )
                   )
                 ],
               ),

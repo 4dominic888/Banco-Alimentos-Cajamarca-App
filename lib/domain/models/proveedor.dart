@@ -59,7 +59,7 @@ class Proveedor{
 
   Map<String, dynamic> toJson(){
     return {
-      'idp': id,
+      'idp': int.parse(id),
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()
@@ -68,7 +68,7 @@ class Proveedor{
 
   Map<String, dynamic> toJsonSend(){
     return {
-      'idp': id,
+      'idp': int.parse(id),
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()

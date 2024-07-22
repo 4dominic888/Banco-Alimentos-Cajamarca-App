@@ -29,7 +29,7 @@ interface class MongoDBMapper implements DatabaseInterface {
       if(data.containsKey('message')){
         throw FormatException('Error al realizar solicitud post: $data');
       }
-      return data['id'];
+      return data['id'].toString();
     }
     throw HttpException('El servidor devolvió ${response.statusCode}', uri: uri);
   }

@@ -28,9 +28,12 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
   }
 
   @override
-  Future<Result<bool>> editarProveedor(Proveedor proveedor, {required String id}) {
-    // TODO: implement editarProveedor
-    throw UnimplementedError();
+  Future<Result<bool>> editarProveedor(Proveedor proveedor, {required String id}) async{
+    try {
+      return Result.success(data: await repo.update(id, proveedor));
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
 
   @override

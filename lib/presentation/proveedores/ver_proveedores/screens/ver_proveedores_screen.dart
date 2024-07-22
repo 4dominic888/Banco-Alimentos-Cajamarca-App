@@ -73,7 +73,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
         )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AgregarProveedorScreen())),
+        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AgregarProveedorScreen())).then((value) => setState(() { })),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
@@ -147,6 +147,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
                           builder: (context, singleSnapshot) {
                             return ProveedorElement(
                               proveedor: item,
+                              onDataUpdate: () => setState(() { }),
                               leading: StreamBuilder<bool>(
                                 stream: _singleElementLoadingController.stream,
                                 builder: (context, streamSnapshot) => 
