@@ -15,7 +15,7 @@ class ProveedorView {
 
   factory ProveedorView.fromJson(Map<String, dynamic> json){
     return ProveedorView(
-      id: (json['idp']).toString(),
+      id: json['idp'],
       nombre: json['nombre'],
       typeProveedor: json['type'],
       ubication: json['ubication']
@@ -41,7 +41,7 @@ class Proveedor{
 
   factory Proveedor.fromJson(Map<String, dynamic> json){
     return Proveedor(
-      id: (json['idp']).toString(),
+      id: json['idp'],
       nombre: json['nombre'],
       typeProveedor: TypeProveedor.fromJson(json['type']),
       ubication: Ubication.fromJson(json['ubication'])
@@ -50,7 +50,7 @@ class Proveedor{
 
   factory Proveedor.fromJsonLow(Map<String, dynamic> json){
     return Proveedor(
-      id: (json['idp']).toString(),
+      id: json['idp'],
       nombre: json['nombre'],
       typeProveedor: TypeProveedor(id: '-1', name: 'unknown'),
       ubication: Ubication(country: {'':''}, type: '')
@@ -59,7 +59,7 @@ class Proveedor{
 
   Map<String, dynamic> toJson(){
     return {
-      'idp': int.parse(id),
+      'idp': id,
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()
@@ -68,7 +68,6 @@ class Proveedor{
 
   Map<String, dynamic> toJsonSend(){
     return {
-      'idp': int.parse(id),
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()

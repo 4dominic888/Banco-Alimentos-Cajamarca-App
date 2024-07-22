@@ -22,7 +22,7 @@ class BigStaticSizeBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(20)
         ),
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.8,
+        height: MediaQuery.of(context).size.height * 0.7,
         child: child
       ),
     );
