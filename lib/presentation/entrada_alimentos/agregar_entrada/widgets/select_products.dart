@@ -5,7 +5,6 @@ import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/scr
 import 'package:flutter/material.dart';
 
 class SelectProductsField extends StatefulWidget {
-
   final List<String> defaultCommonProducts;
   final List<TipoProductos>? initialValue;
   final Key formFieldKey;

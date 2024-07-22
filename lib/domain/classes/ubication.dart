@@ -14,7 +14,7 @@ class Ubication {
       type: ''
     );
   }
-
+  
   factory Ubication.fromJson(Map<String,dynamic> json){
     return Ubication(
       country: {"codigo": json['countryCode'], "nombre": null},
@@ -35,7 +35,7 @@ class Ubication {
 
   set distritoName(String name) =>
     subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['nombre'] = name;
-  
+
   String get countryCode => country['codigo']!;
   String? get departamentoCode => subPlaces?.firstWhere((element) => element.keys.first == 'departamento').content.values.first['codigo'];
   String? get provinciaCode =>    subPlaces?.firstWhere((element) => element.keys.first == 'provincia').content.values.first['codigo'];
@@ -65,7 +65,7 @@ class Ubication {
       )).data!['nombre']!;
     }
   }
-
+  
   @override
   String toString() {
     return """country: ${country['codigo']}-${country['nombre']}

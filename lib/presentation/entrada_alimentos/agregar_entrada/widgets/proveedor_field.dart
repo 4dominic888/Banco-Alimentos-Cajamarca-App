@@ -30,7 +30,6 @@ class ProveedorFieldState extends State<ProveedorField> {
         return null;
       },
       onChanged: (value) => proveedorId = value!.id,
-      
     );
     // return FutureBuilder<Iterable<Proveedor>>(
     //       future: _getProveedores(),
