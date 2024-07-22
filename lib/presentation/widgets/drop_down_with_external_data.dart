@@ -10,6 +10,7 @@ class DropDownWithExternalData<T> extends StatefulWidget {
   final String label;
   final void Function()? onChanged;
   final bool? isVisible;
+  final Icon? icon;
 
   const DropDownWithExternalData({
     super.key,
@@ -18,6 +19,7 @@ class DropDownWithExternalData<T> extends StatefulWidget {
     required this.itemAsString,
     required this.label,
     this.isVisible = false,
+    this.icon,
     this.onChanged,
     this.initialValue,
   });
@@ -52,7 +54,7 @@ class _TypeDropDownWithExternalDataState<T> extends State<DropDownWithExternalDa
           dropdownDecoratorProps: DropDownDecoratorProps(
             baseStyle: const TextStyle(fontSize: 18, color: Colors.black),
             dropdownSearchDecoration: InputDecoration(
-              icon: const Icon(Icons.category),
+              icon: widget.icon,
               label: Text(widget.label)
             )
           ),

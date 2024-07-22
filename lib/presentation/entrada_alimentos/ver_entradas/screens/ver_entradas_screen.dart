@@ -97,6 +97,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                         itemAsString: (value) => value.nombre,
                         label: 'Proveedor',
                         isVisible: true,
+                        icon: const Icon(Icons.delivery_dining),
                         asyncItems: (text) async {
                           final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
                           if(!result.success || result.data == null) return [];
@@ -115,6 +116,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                         formFieldKey: _keyFieldAlmacenero,
                         itemAsString: (value) => value.nombre,
                         label: 'Almaceneros',
+                        icon: const Icon(Icons.person),
                         isVisible: true,
                         asyncItems: (text) async {
                           final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);

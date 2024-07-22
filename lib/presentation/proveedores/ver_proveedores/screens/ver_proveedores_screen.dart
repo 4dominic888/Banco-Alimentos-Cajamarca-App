@@ -5,6 +5,7 @@ import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
 import 'package:bancalcaj_app/presentation/widgets/big_static_size_box.dart';
+import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/proveedor_element.dart';
@@ -25,6 +26,9 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
   //* Para seleccion
   final _singleElementLoadingController = StreamController<bool>.broadcast();
   final _paginateMetadaDataController = StreamController<PaginateMetaData>();
+
+  final GlobalKey<FormFieldState<TypeProveedor>> _keyFieldTypeProveedor = GlobalKey();
+  final _nameController = TextEditingController();
 
   int _selectedIndex = -1;
   int _page = 1;
@@ -77,8 +81,42 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Column(
         children: [
+
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              children: [
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
+                      onChanged: (value) => setState(() { }),
+                    )
+                  )
+                ),
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropDownWithExternalData<TypeProveedor>(
+                    formFieldKey: _keyFieldTypeProveedor,
+                    itemAsString: (value) => value.name,
+                    label: 'Tipo de proveedor',
+                    isVisible: true,
+                    icon: const Icon(Icons.category),
+                    asyncItems: (text) async {
+                      final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);
+                      if(!result.success || result.data == null) return [];
+                      return result.data!.data;                              
+                    },
+                    onChanged: () => setState(() {})                    
+                  ),
+                ))
+              ],
+            ),
+          ),
+
           FutureBuilder<Result<PaginateData<ProveedorView>>?>(
-            future: proveedorService.verProveedores(pagina: _page, limite: _limit),
+            future: proveedorService.verProveedores(pagina: _page, limite: _limit, nombre: _nameController.text, tipoProveedor: _keyFieldTypeProveedor.currentState?.value?.name),
             builder: (context, snapshot) {
               if(snapshot.connectionState == ConnectionState.waiting){
                 return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));

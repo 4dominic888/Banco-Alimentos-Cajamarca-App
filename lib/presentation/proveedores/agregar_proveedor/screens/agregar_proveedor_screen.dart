@@ -131,6 +131,7 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
                       formFieldKey: _proveedorTypeKey,
                       initialValue: proveedor?.typeProveedor,
                       itemAsString: (TypeProveedor value) => value.name,
+                      icon: const Icon(Icons.category),
                       label: 'Tipo de proveedor',
                       asyncItems: (text) async {
                         final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);

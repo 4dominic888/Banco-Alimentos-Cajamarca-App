@@ -101,6 +101,7 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
                     formFieldKey: _keyFieldProveedor,
                     itemAsString: (value) => value.nombre,
                     label: 'Proveedor',
+                    icon: const Icon(Icons.delivery_dining),
                     asyncItems: (text) async {
                       final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
                       if(!result.success || result.data == null) return [];
