@@ -50,7 +50,7 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
       final entrada = Entrada.reduced(
         fecha: fecha,
         proveedorId: proveedorView.id,
-        productos: productos,
+        tiposProductos: productos,
         cantidad: cantidad,
         almaceneroId: '12345678',
         comentario: comentario

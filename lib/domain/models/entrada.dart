@@ -9,13 +9,15 @@ class EntradaView {
   final double cantidad;
   final String proveedor;
   final String almacenero;
+  final List<String> productos;
 
   EntradaView({
     required this.id,
     required this.fecha,
     required this.cantidad,
     required this.proveedor,
-    required this.almacenero
+    required this.almacenero,
+    required this.productos
   });
 
   factory EntradaView.fromJson(Map<String, dynamic> json){
@@ -24,98 +26,79 @@ class EntradaView {
       fecha: DateTime.parse(json['fecha']),
       cantidad: double.parse(json["cantidad"].toString()),
       proveedor: json['proveedor'],
-      almacenero: json['almacenero']
+      almacenero: json['almacenero'],
+      productos: (json['productos'] is Iterable) ? (json['productos'] as Iterable).map((e) => e.toString()).toList() : []
     );
   }
 
-    String get fechaStr => DateFormat("dd-MM-yyyy HH:mm").format(fecha);
-    String get cantidadStr => cantidad.toStringAsFixed(2);
+  String get fechaStr => DateFormat("dd-MM-yyyy HH:mm").format(fecha);
+  String get cantidadStr => cantidad.toStringAsFixed(2);
 
 }
 
 class Entrada {
-    DateTime fecha;
-    double _cantidad;
-    Proveedor _proveedor;
-    List<TipoProductos> _tiposProductos;
-    String? _comentario;
-    Almacenero _almacenero;
+  DateTime? fecha = DateTime.now();
+  final double cantidad;
+  final Proveedor proveedor;
+  final List<TipoProductos> tiposProductos;
+  final String? comentario;
+  final Almacenero almacenero;
 
-    Entrada({
-      DateTime? fecha,
-      required double cantidad,
-      required Proveedor proveedor,
-      required List<TipoProductos> productos,
-      String? comentario,
-      required Almacenero almacenero
-    }) :
-        fecha = fecha ?? DateTime.now(),
-        _cantidad = cantidad,
-        _proveedor = proveedor,
-        _tiposProductos = productos,
-        _comentario = comentario ?? '',
-        _almacenero = almacenero
-      ;
+  Entrada({
+    this.fecha,
+    required this.cantidad,
+    required this.proveedor,
+    required this.tiposProductos,
+    required this.almacenero,
+    this.comentario = '',
+  });
 
-    Entrada.reduced({
-      DateTime? fecha,
-      required double cantidad,
-      required String proveedorId,
-      required List<TipoProductos> productos,
-      String? comentario,
-      required String almaceneroId
-    }) :
-        fecha = fecha ?? DateTime.now(),
-        _cantidad = cantidad,
-        _proveedor = Proveedor.onlyId(proveedorId),
-        _tiposProductos = productos,
-        _comentario = comentario ?? '',
-        _almacenero = Almacenero(dni: almaceneroId, nombre: 'none')
-      ;      
+  Entrada.reduced({
+    this.fecha,
+    required this.cantidad,
+    required String proveedorId,
+    required this.tiposProductos,
+    required String almaceneroId,
+    this.comentario,
+  }) : proveedor = Proveedor.onlyId(proveedorId), almacenero = Almacenero(dni: almaceneroId, nombre: 'none');      
 
-    factory Entrada.fromJson(Map<String, dynamic> json){
-      final products = json["tipoProductos"] as List<dynamic>;
-      return Entrada(
-        fecha: DateTime.parse(json["fecha"]),
-        cantidad: double.parse(json["cantidad"].toString()),
-        proveedor: Proveedor.fromJsonLow(json["proveedor"]),
-        productos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
-        comentario: json["comentario"],
-        almacenero: Almacenero.fromJson(json["almacenero"])
-      );
-    }
+  factory Entrada.fromJson(Map<String, dynamic> json){
+    final products = json["tipoProductos"] as List<dynamic>;
+    return Entrada(
+      fecha: DateTime.parse(json["fecha"]),
+      cantidad: double.parse(json["cantidad"].toString()),
+      proveedor: Proveedor.fromJsonLow(json["proveedor"]),
+      tiposProductos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
+      comentario: json["comentario"],
+      almacenero: Almacenero.fromJson(json["almacenero"])
+    );
+  }
 
-    double get cantidad => _cantidad;
-    Proveedor get proveedor => _proveedor;
-    List<TipoProductos> get tiposProductos => _tiposProductos;
-    String? get comentario =>_comentario;
-    Almacenero get almacenero =>_almacenero;
-
-    String get fechaStr => DateFormat("dd-MM-yyyy HH:mm").format(fecha);
-    String get cantidadStr => _cantidad.toStringAsFixed(2);
+  String get fechaStr => DateFormat("dd-MM-yyyy HH:mm").format(fecha!);
+  String get cantidadStr => cantidad.toStringAsFixed(2);
 
 
-    Map<String, dynamic> toJson(){
-      return{
-        "fecha" : fecha.toIso8601String(),
-        "cantidad": cantidadStr,
-        "proveedor": _proveedor.toJson(),
-        "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
-        "comentario": _comentario,
-        "almacenero": _almacenero.toJson()
-      };
-    }
+  Map<String, dynamic> toJson(){
+    return{
+      "fecha" : fecha!.toIso8601String(),
+      "cantidad": cantidadStr,
+      "proveedor": proveedor.toJson(),
+      "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
+      "comentario": comentario,
+      "almacenero": almacenero.toJson()
+    };
+  }
 
-    Map<String, dynamic> toJsonEntry(){
-      return{
-        "fecha" : fecha.toIso8601String(),
-        "cantidad": cantidadStr,
-        "proveedor": _proveedor.id.toString(),
-        "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
-        "comentario": _comentario,
-        "almacenero": _almacenero.dni.toString()
-      };
-    }
+  Map<String, dynamic> toJsonEntry(){
+    return{
+      "fecha" : fecha!.toIso8601String(),
+      "cantidad": cantidadStr,
+      "proveedor": proveedor.id.toString(),
+      "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
+      "comentario": comentario,
+      "almacenero": almacenero.dni.toString()
+    };
+  }
 
   Entrada copyWith({
     DateTime? fecha,
@@ -129,7 +112,7 @@ class Entrada {
       fecha: fecha ?? this.fecha,
       cantidad: cantidad ?? this.cantidad,
       proveedor: proveedor ?? this.proveedor,
-      productos: tiposProductos ?? this.tiposProductos,
+      tiposProductos: tiposProductos ?? this.tiposProductos,
       almacenero: almacenero ?? this.almacenero,
       comentario: comentario ?? this.comentario,
     );
