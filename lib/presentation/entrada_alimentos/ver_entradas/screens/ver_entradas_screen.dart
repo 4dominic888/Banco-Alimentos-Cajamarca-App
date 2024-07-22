@@ -8,11 +8,10 @@ import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dar
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
-import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/pagination_widget.dart';
+import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/widgets/entrada_card_element.dart';
+import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 
 class VerEntradasScreen extends StatefulWidget {
   const VerEntradasScreen({super.key});
@@ -28,7 +27,6 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
 
   late final PDFWritter _pdfService;
   late final ExcelWritter _excelService;
-  bool _isLoading = false;
 
   int _page = 1;
   int _limit = 10;  
@@ -40,11 +38,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
     await Future.wait([
       _pdfService.init(),
       _excelService.init()
-    ]).then((value) => setState(() {_isLoading = false;}));
-
-    setState(() {
-      _isLoading = false;
-    });
+    ]);
   }
 
   Future<void> _showSubProducts(BuildContext context, String title, List<Producto> list){
@@ -59,10 +53,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
           itemCount: list.length,
           itemBuilder: (context, index) {
             final Producto p = list[index];
-            return ListTile(
-              title: Text(p.nombre),
-              subtitle: Text('${p.pesoStr} kg'),
-            );
+            return ListTile(title: Text(p.nombre), subtitle: Text('${p.pesoStr} kg'));
           },
         ),
       ),
@@ -88,10 +79,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
           title: const Text("Exportar entrada"), 
-          leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            )),
+          leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context))),
         
         body: FutureBuilder<Result<PaginateData<EntradaView>>>(
           future: entradaService.verEntradas(pagina: _page, limite: _limit),
@@ -122,80 +110,10 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                         itemCount: currentList.length,
                         itemBuilder: (context, index) { 
                           final entradaView = currentList[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text("${entradaView.proveedor} / ${entradaView.cantidadStr}kg\n${DateFormat("dd/MM/yyyy HH:mm").format(entradaView.fecha)}"),
-                              leading: Column(
-                                children: [
-                                  const Icon(Icons.account_box_sharp),
-                                  Text(entradaView.almacenero)
-                                ],
-                              ),
-                              // TODO ver esto
-                              // subtitle: SizedBox(
-                              //     child: Wrap(
-                              //       direction: Axis.horizontal,
-                              //       spacing: 10,
-                              //       runSpacing: 10,
-                              //       children: entradaView.tiposProductos.map((e) => InputChip(
-                              //         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                              //         label: Text(e.nombre, 
-                              //           style: const TextStyle(
-                              //             fontSize: 12
-                              //           ),
-                              //         ),
-                              //         onPressed: () async => await _showSubProducts(context, e.nombre, e.productos),                          
-                              //       )).toList(),
-                              //     ),
-                              // ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: _isLoading ? null : () async {
-                                      //! Se que se repite el codigo, pero es un parche rapido
-                                      final entradaResult = await entradaService.seleccionarEntrada(entradaView.id);
-                                      if(!entradaResult.success) {
-                                        //TODO: algun dialogo
-                                        return;
-                                      }
-                                      await _excelService.printEntradaExcel(entradaResult.data!);
-                                    },
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/svg/microsoft_excel_icon.svg',
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        const Text("Excel", style: TextStyle(color: Colors.black))
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  ElevatedButton(
-                                    onPressed: _isLoading ? null : () async {
-                                      //! Se que se repite el codigo, pero es un parche rapido
-                                      final entradaResult = await entradaService.seleccionarEntrada(entradaView.id);
-                                      if(!entradaResult.success) {
-                                        //TODO: algun dialogo
-                                        print(entradaResult.message);
-                                        return;
-                                      }
-                                      await _pdfService.printEntradaPDF(entradaResult.data!);
-                                    },
-                                    child: const Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.picture_as_pdf, color: Colors.black),
-                                        Text("PDF", style: TextStyle(color: Colors.black))
-                                      ],
-                                    )
-                                  ),
-                                ],
-                              )
-                            ),
+                          return EntradaCardElement(
+                            entradaView: entradaView,
+                            excelService: _excelService,
+                            pdfService: _pdfService
                           );
                         },
                       )

@@ -2,7 +2,7 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
-import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/type_proveedor_field.dart';
+import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/ubication_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -127,41 +127,17 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
                   //* Tipo de proveedor
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    child: TypeProveedorField(
+                    child: DropDownWithExternalData<TypeProveedor>(
                       formFieldKey: _proveedorTypeKey,
                       initialValue: proveedor?.typeProveedor,
+                      itemAsString: (TypeProveedor value) => value.name,
+                      label: 'Tipo de proveedor',
+                      asyncItems: (text) async {
+                        final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);
+                        if(!result.success) return [];
+                        return result.data!.data;
+                      },
                     ),
-                    // child: FutureBuilder<List<TypeProveedor>>(
-                    //   future: listTypeProveedores(),
-                    //   initialData: const [],
-                    //   builder: (context, snapshot) {
-                    //     if(snapshot.data != null && snapshot.data!.isNotEmpty){
-                    //       return DropdownButtonFormField<TypeProveedor?>(
-                    //         key: _proveedorTypeKey,
-                    //         value: proveedor!.typeProveedor,
-                    //         onChanged: (_) {},
-                    //         menuMaxHeight: 280,
-                    //         items: snapshot.data!.map<DropdownMenuItem<TypeProveedor?>>((value) =>
-                    //           DropdownMenuItem<TypeProveedor?>(
-                    //             value: value,
-                    //             child: Text(value.name),
-                    //           )
-                    //         ).toList(),
-                    //         decoration: const InputDecoration(
-                    //           label: Text("Tipo de proveedor"),
-                    //           icon: Icon(Icons.category)
-                    //         ),
-                    //         validator: (value) {
-                    //           if (value == null) {
-                    //             return 'No se ha seleccionado una opcion';
-                    //           }
-                    //           return null;
-                    //         },
-                    //       );
-                    //     }
-                    //     return const Text('No hay informacion de los tipos de proveedor');
-                    //   }
-                    // )
                   ),
             
                   //* Ubicacion

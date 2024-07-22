@@ -1,4 +1,5 @@
 analyzer:
   errors:
     avoid_renaming_method_parameters: ignore
+    sort_child_properties_last: ignore
 include: package:flutter_lints/flutter.yaml

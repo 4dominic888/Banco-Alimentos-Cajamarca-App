@@ -54,7 +54,24 @@ class Entrada {
         _proveedor = proveedor,
         _tiposProductos = productos,
         _comentario = comentario ?? '',
-        _almacenero = almacenero;
+        _almacenero = almacenero
+      ;
+
+    Entrada.reduced({
+      DateTime? fecha,
+      required double cantidad,
+      required String proveedorId,
+      required List<TipoProductos> productos,
+      String? comentario,
+      required String almaceneroId
+    }) :
+        fecha = fecha ?? DateTime.now(),
+        _cantidad = cantidad,
+        _proveedor = Proveedor.onlyId(proveedorId),
+        _tiposProductos = productos,
+        _comentario = comentario ?? '',
+        _almacenero = Almacenero(dni: almaceneroId, nombre: 'none')
+      ;      
 
     factory Entrada.fromJson(Map<String, dynamic> json){
       final products = json["tipoProductos"] as List<dynamic>;
