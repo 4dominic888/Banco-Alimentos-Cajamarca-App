@@ -6,12 +6,31 @@ abstract class Repository<T>{
   Repository({required this.db});
 }
 
+/// Letra C del CRUD
 abstract class IAddable<T> { Future add(T item); }
-abstract class IUpdatable<T> { Future update(String id, T item); }
-abstract class IDeletable<T> { Future delete(String id); }
-abstract class IGetable<T> { 
+
+/// Letra R del CRUD
+/// 
+/// 
+/// T es el tipo de dato a devolver en `getById`
+/// 
+/// U es el tipo de dato a devolver en `getAll`, por lo general debe ser una version corta y general del modelo
+abstract class IGetable<T, U> { 
   Future<T?> getById(String id);
-  Future<PaginateData<T>?> getAll({required int page, required int limit, required String search});
+  Future<PaginateData<U>?> getAll({required int page, required int limit, Map<String, dynamic>? aditionalQueries});
 }
 
-abstract class ICrudable<T> implements IAddable<T>, IUpdatable<T>, IDeletable<T>, IGetable<T> { }
+/// Letra U del CRUD
+abstract class IUpdatable<T> { Future update(String id, T item); }
+
+/// Letra D del CRUD
+abstract class IDeletable<T> { Future delete(String id); }
+
+
+/// Abstraccion del CRUD, implementa todos los metodos de este
+/// 
+/// 
+/// T es el tipo de dato a devolver en `getById`
+/// 
+/// U es el tipo de dato a devolver en `getAll`, por lo general debe ser una version corta y general del modelo
+abstract class ICrudable<T, U> implements IAddable<T>, IUpdatable<T>, IDeletable<T>, IGetable<T, U> { }

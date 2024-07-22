@@ -1,3 +1,4 @@
+import 'package:bancalcaj_app/data/opendatasoft/ubication_api.dart';
 import 'package:double_linked_list/double_linked_list.dart';
 
 class Ubication {
@@ -6,6 +7,13 @@ class Ubication {
   final DoubleLinkedList< Map<String, Map<String,String?> > >? subPlaces;
 
   Ubication({required this.country, required this.type, this.subPlaces});
+  
+  factory Ubication.none() {
+    return Ubication(
+      country: {},
+      type: ''
+    );
+  }
   
   factory Ubication.fromJson(Map<String,dynamic> json){
     return Ubication(
@@ -27,7 +35,6 @@ class Ubication {
 
   set distritoName(String name) =>
     subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['nombre'] = name;
-  
 
   String get countryCode => country['codigo']!;
   String? get departamentoCode => subPlaces?.firstWhere((element) => element.keys.first == 'departamento').content.values.first['codigo'];
@@ -39,6 +46,26 @@ class Ubication {
   String? get getProvinciaName =>    subPlaces?.firstWhere((element) => element.keys.first == 'provincia').content.values.first['nombre'];
   String? get getDistritoName =>     subPlaces?.firstWhere((element) => element.keys.first == 'distrito').content.values.first['nombre'];
 
+  Future<void> fillFields() async {
+    countryName = (await UbicationAPI.paisById(countryCode)).data!['nombre']!;
+
+    //* Premature performance... =(
+    if(type == 'national'){
+      departamentoName = (await UbicationAPI.departamentoById(departamentoCode!)).data!['nombre']!;
+      
+      provinciaName = (await UbicationAPI.provinciaById(
+        departamentoCode!,
+        provinciaCode!
+      )).data!['nombre']!;
+
+      distritoName = (await UbicationAPI.distritoById(
+        departamentoCode!,
+        provinciaCode!,
+        distritoCode!
+      )).data!['nombre']!;
+    }
+  }
+  
   @override
   String toString() {
     return """country: ${country['codigo']}-${country['nombre']}

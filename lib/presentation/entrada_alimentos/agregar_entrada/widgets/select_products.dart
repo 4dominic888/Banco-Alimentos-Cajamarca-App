@@ -5,8 +5,16 @@ import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/scr
 import 'package:flutter/material.dart';
 
 class SelectProductsField extends StatefulWidget {
-  const SelectProductsField({super.key, required this.defaultCommonProducts});
   final List<String> defaultCommonProducts;
+  final List<TipoProductos>? initialValue;
+  final Key formFieldKey;
+  
+  const SelectProductsField({
+    super.key,
+    required this.defaultCommonProducts,
+    required this.formFieldKey,
+    this.initialValue
+  });
 
   @override
   State<SelectProductsField> createState() => SelectProductsFieldState();
@@ -15,60 +23,60 @@ class SelectProductsField extends StatefulWidget {
 class SelectProductsFieldState extends State<SelectProductsField> {
 
   final List<String> _listSelect = [];
-  final Map<String, List<Producto>> _listProducts = {};
-  final HashSet<String> _listTypeProducts = HashSet();
-  double _cantidadTotal = 0.00;
+  final List<TipoProductos> _listProducts = [];
+  final HashSet<String> _stringProducts = HashSet();
 
-  Map<String, List<Producto>> get listProducts => _listProducts;
+  double _cantidadTotal = 0.00;
   double get cantidadTotal => _cantidadTotal;
 
   @override
   void initState() {
     super.initState();
-    _listSelect.addAll(widget.defaultCommonProducts);
-    _listSelect.add("Otros");
+    _listSelect.addAll([...widget.defaultCommonProducts, 'Otros']);
   }
 
-  Future<void> _showProductsAddedDialog(BuildContext context, String optionSelected) async{
-
-    final List<Producto> lista = _listProducts[optionSelected]!;
+  Future<void> _showProductsAddedDialog(BuildContext context, String optionSelected, int foundIndex, FormFieldState<List<TipoProductos>> formState) async{
+    if(foundIndex == -1) return;
 
     return showDialog(context: context, builder: (context) => AlertDialog(
       scrollable: true,
       title: Text("Productos agregados de tipo: $optionSelected"),
       content: StatefulBuilder(
-        builder: (context, setState) => SizedBox(
-          height: 300,
-          width: 300,
-          child: lista.isNotEmpty ? ListView.builder(
-            shrinkWrap: true,
-            itemCount: lista.length,
-            itemBuilder: (context, index) {
-              final element = lista[index];
-              return ListTile(
-                title: Text(element.nombre),
-                subtitle: Text("${element.peso.toString()} kg"),
-                trailing: IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    //* to close
-                    setState(() {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Producto eliminado"),
-                          backgroundColor: Colors.red, duration:
-                          Duration(seconds: 2)
-                        )
-                      );
-                      _cantidadTotal -= element.peso;
-                      lista.removeAt(index);
-                    });
-                  },
-                ),
-              );
-            }, 
-          ) : const Center(child: Text("No hay productos")),
-        ),
+        builder: (context, setState) {
+          if(_listProducts[foundIndex].productos.isEmpty) return const Center(child: Text("No hay productos"));
+          return SizedBox(
+            height: 300, width: 300,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _listProducts[foundIndex].productos.length,
+              itemBuilder: (context, index) {
+                final element = _listProducts[foundIndex].productos[index];
+                return ListTile(
+                  title: Text(element.nombre),
+                  subtitle: Text("${element.peso.toString()} kg"),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      //* Para cerrar
+                      setState(() {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Producto eliminado"),
+                            backgroundColor: Colors.red, duration:
+                            Duration(seconds: 2)
+                          )
+                        );
+                        _cantidadTotal -= element.peso;
+                        _listProducts[foundIndex].productos.removeAt(index);
+                        formState.didChange(_listProducts);
+                      });
+                    },
+                  ),
+                );
+              }, 
+            )
+          );
+        }
       ),
     ));
   }
@@ -90,7 +98,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
     ));
   }
 
-  Widget _dropDownProducts(){
+  Widget _dropDownProducts(FormFieldState<List<TipoProductos>> formState) {
     return DropdownButtonFormField(
       hint: const Text("Selecciona el tipo de producto"),
       items: _listSelect.map<DropdownMenuItem<String>>((e) => DropdownMenuItem(value: e, child: Text("Agregar $e"))).toList(),
@@ -99,8 +107,8 @@ class SelectProductsFieldState extends State<SelectProductsField> {
         return null;
       },
       decoration: const InputDecoration(
-            label: Text("Tipo de productos"),
-            prefixIcon: Icon(Icons.food_bank)
+        label: Text("Tipo de productos"),
+        prefixIcon: Icon(Icons.food_bank)
       ),
       onChanged: (value) async {
         Producto? producto = await showDialog<Producto>(
@@ -109,19 +117,25 @@ class SelectProductsFieldState extends State<SelectProductsField> {
         );
         if(producto != null){
           setState(() {
-            _listTypeProducts.add(value!);
-            _listProducts[value] ??= [];
-            _listProducts[value]!.add(producto);
+            _stringProducts.add(value!);
+
+            final foundIndex = _listProducts.indexWhere((e) => e.nombre == value);
+            if(foundIndex == -1) {
+              _listProducts.add(TipoProductos(nombre: value, productos: [producto]));
+            }
+            else {
+              _listProducts[foundIndex].productos.add(producto);
+            }
+            formState.didChange(_listProducts);
             _cantidadTotal += producto.peso;
-          }
-        );
+          });
         }
       },
     );
   }
 
-  Widget _wrapElements(){
-    if(_listTypeProducts.isEmpty) return const SizedBox.shrink();
+  Widget _wrapElements(FormFieldState<List<TipoProductos>> formState){
+    if(_stringProducts.isEmpty) return const SizedBox.shrink();
     return Column(
       children: [
         const SizedBox(height: 10),
@@ -130,19 +144,21 @@ class SelectProductsFieldState extends State<SelectProductsField> {
           spacing: 13,
           alignment: WrapAlignment.start,
           direction: Axis.horizontal,
-          children: _listTypeProducts.map((e) => InputChip(
+          children: _stringProducts.map((e) => InputChip(
             onSelected: (value) async {
-              await _showProductsAddedDialog(context, e);
+              final foundIndex = _listProducts.indexWhere((element) => element.nombre == e);
+              await _showProductsAddedDialog(context, e, foundIndex, formState);
               setState(() {
-                if(_listProducts[e]!.isEmpty) {
-                  _listTypeProducts.remove(e);
-                  _listProducts.remove(e);
+                if(_listProducts[foundIndex].productos.isEmpty) {
+                  _stringProducts.remove(e);
+                  _listProducts.removeAt(foundIndex);
                 }
               });
             },
             onDeleted: () async {
               bool? delete = await _deleteGroupTypeProductsDialog(context, e);
               if(delete!){
+                final foundIndex = _listProducts.indexWhere((element) => element.nombre == e);
                 setState(() {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -150,9 +166,10 @@ class SelectProductsFieldState extends State<SelectProductsField> {
                     backgroundColor: Colors.red, duration:
                     const Duration(seconds: 2)
                   ));
-                  _cantidadTotal -= _listProducts[e]!.fold<double>(0, (prev, product) => prev + product.peso);
-                  _listProducts.remove(e);
-                  _listTypeProducts.remove(e);
+                  _cantidadTotal -= _listProducts[foundIndex].productos.fold<double>(0, (prev, product) => prev + product.peso);
+                  _listProducts.removeAt(foundIndex);
+                  formState.didChange(_listProducts);
+                  _stringProducts.remove(e);
                 });
               }
             },
@@ -167,18 +184,25 @@ class SelectProductsFieldState extends State<SelectProductsField> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Column(
+    return FormField<List<TipoProductos>>(
+      key: widget.formFieldKey,
+      initialValue: widget.initialValue ?? [],
+      validator: (value) {
+        if(value == null || value.isEmpty) return 'Se debe proporcionar productos';
+        return null;
+      },
+      builder: (formState) {
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [  
-            _wrapElements(),
+            _wrapElements(formState),
             const SizedBox(height: 10),
-            _dropDownProducts(),
-            Text(
-              "Peso total: ${_cantidadTotal.toStringAsFixed(2)} kg"
-            ),
+            _dropDownProducts(formState),
+            Text("Peso total: ${_cantidadTotal.toStringAsFixed(2)} kg"),
             const SizedBox(height: 10),
-          ],
+          ]
         );
+      }
+    );
   }
 }

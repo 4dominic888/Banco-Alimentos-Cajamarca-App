@@ -1,5 +1,28 @@
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
 
+class ProveedorView {
+  final String id;
+  final String nombre;
+  final String typeProveedor;
+  final Map<String, dynamic> ubication;
+
+  ProveedorView({
+    required this.id,
+    required this.nombre,
+    required this.typeProveedor,
+    required this.ubication
+  });
+
+  factory ProveedorView.fromJson(Map<String, dynamic> json){
+    return ProveedorView(
+      id: (json['idp']).toString(),
+      nombre: json['nombre'],
+      typeProveedor: json['type'],
+      ubication: json['ubication']
+    );
+  }
+}
+
 class Proveedor{
   final String id;
   final String nombre;
@@ -8,10 +31,17 @@ class Proveedor{
 
   Proveedor({required this.id, required this.nombre, required this.typeProveedor, required this.ubication});
   Proveedor.toSend({required this.nombre, required this.typeProveedor, required this.ubication}) : id = '0';
+  
+  factory Proveedor.onlyId(String id) => Proveedor(
+    id: id, 
+    nombre: '',
+    typeProveedor: TypeProveedor(name: ''),
+    ubication: Ubication.none()
+  );
 
   factory Proveedor.fromJson(Map<String, dynamic> json){
     return Proveedor(
-      id: json['idp'],
+      id: (json['idp']).toString(),
       nombre: json['nombre'],
       typeProveedor: TypeProveedor.fromJson(json['type']),
       ubication: Ubication.fromJson(json['ubication'])
@@ -20,7 +50,7 @@ class Proveedor{
 
   factory Proveedor.fromJsonLow(Map<String, dynamic> json){
     return Proveedor(
-      id: json['idp'],
+      id: (json['idp']).toString(),
       nombre: json['nombre'],
       typeProveedor: TypeProveedor(id: '-1', name: 'unknown'),
       ubication: Ubication(country: {'':''}, type: '')
@@ -29,7 +59,7 @@ class Proveedor{
 
   Map<String, dynamic> toJson(){
     return {
-      'idp': id,
+      'idp': int.parse(id),
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()
@@ -38,11 +68,25 @@ class Proveedor{
 
   Map<String, dynamic> toJsonSend(){
     return {
-      'idp': id,
+      'idp': int.parse(id),
       'nombre': nombre,
       'type': typeProveedor.id,
       'ubication': ubication.toJson()
     };
+  }
+
+  Proveedor copyWith({
+    String? id,
+    String? nombre,
+    TypeProveedor? typeProveedor,
+    Ubication? ubication
+  }){
+    return Proveedor(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      typeProveedor: typeProveedor ?? this.typeProveedor,
+      ubication: ubication ?? this.ubication
+    );
   }
 }
 

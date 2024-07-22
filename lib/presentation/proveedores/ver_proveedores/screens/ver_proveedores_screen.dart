@@ -4,8 +4,11 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
-import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/pagination_widget.dart';
+import 'package:bancalcaj_app/presentation/widgets/big_static_size_box.dart';
+import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
+import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
+import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/proveedor_element.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -19,9 +22,15 @@ class VerProveedoresScreen extends StatefulWidget {
 class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
   
   final proveedorService = GetIt.I<ProveedorServiceBase>();
-  final _singleElementLoadingController = StreamController<bool>.broadcast();
-  int _selectedIndex = -1;
 
+  //* Para seleccion
+  final _singleElementLoadingController = StreamController<bool>.broadcast();
+  final _paginateMetadaDataController = StreamController<PaginateMetaData>();
+
+  final GlobalKey<FormFieldState<TypeProveedor>> _keyFieldTypeProveedor = GlobalKey();
+  final _nameController = TextEditingController();
+
+  int _selectedIndex = -1;
   int _page = 1;
   int _limit = 10;
 
@@ -64,113 +73,134 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
         )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AgregarProveedorScreen())),
+        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AgregarProveedorScreen())).then((value) => setState(() { })),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: FutureBuilder<Result<PaginateData<Proveedor>>?>(
-        future: proveedorService.verProveedores(pagina: _page, limite: _limit),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return const Center(child: CircularProgressIndicator());
-          }
-          if(snapshot.hasError || snapshot.data == null){
-            return Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}'));
-          }
-          if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
-            return const Center(child: Text('Sin proveedores a mostrar'));
-          }
-          final paginateData = snapshot.data!.data!;
-          final currentList = paginateData.data;
-          final pageMetaData = paginateData.metadata;
-          
-          return Column(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 500,
-                child: SingleChildScrollView(
-                  physics: const ScrollPhysics(),
-                  child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: currentList.length,
-                    itemBuilder: (context, index) {
-                      final item = currentList[index];
-                      return StreamBuilder<bool>(
-                        stream: _singleElementLoadingController.stream,
-                        builder: (context, singleSnapshot) {
-                          return ProveedorElement(
-                            proveedor: item,
-                            leading: StreamBuilder<bool>(
-                              stream: _singleElementLoadingController.stream,
-                              builder: (context, streamSnapshot) => 
-                                (streamSnapshot.data ?? false) && _selectedIndex == index ? 
-                                  const CircularProgressIndicator() : 
-                                  IconButton(
-                                    onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
-                                      _singleElementLoadingController.sink.add(true); _selectedIndex = index;
-                                      final Proveedor detailItem = (await proveedorService.seleccionarProveedor(item.id)).data!;
-                                      _singleElementLoadingController.sink.add(false);
-                                      if(!context.mounted) return;
-                                      showProveedorDetail(detailItem);
-                                    } : null,
-                                    icon: const Icon(Icons.remove_red_eye_rounded)
-                                  )
-                              
-                            ),
-                          );
-                        }
-                      );
+      body: Column(
+        children: [
+
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              children: [
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
+                      onChanged: (value) => setState(() { }),
+                    )
+                  )
+                ),
+                Expanded(child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropDownWithExternalData<TypeProveedor>(
+                    formFieldKey: _keyFieldTypeProveedor,
+                    itemAsString: (value) => value.name,
+                    label: 'Tipo de proveedor',
+                    isVisible: true,
+                    icon: const Icon(Icons.category),
+                    asyncItems: (text) async {
+                      final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);
+                      if(!result.success || result.data == null) return [];
+                      return result.data!.data;                              
                     },
+                    onChanged: () => setState(() {})                    
+                  ),
+                ))
+              ],
+            ),
+          ),
+
+          FutureBuilder<Result<PaginateData<ProveedorView>>?>(
+            future: proveedorService.verProveedores(pagina: _page, limite: _limit, nombre: _nameController.text, tipoProveedor: _keyFieldTypeProveedor.currentState?.value?.name),
+            builder: (context, snapshot) {
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
+              }
+              if(snapshot.hasError || snapshot.data == null){
+                return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
+              }
+              if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
+                return BigStaticSizeBox(context, child: const Center(child: Text('Sin proveedores a mostrar')));
+              }
+              final currentList = snapshot.data!.data!.data; //* data data data
+              _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
+              
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: BigStaticSizeBox(context,
+                  child: SingleChildScrollView(
+                    physics: const ScrollPhysics(),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: currentList.length,
+                      itemBuilder: (context, index) {
+                        final item = currentList[index];
+                        return StreamBuilder<bool>(
+                          stream: _singleElementLoadingController.stream,
+                          builder: (context, singleSnapshot) {
+                            return ProveedorElement(
+                              proveedor: item,
+                              onDataUpdate: () => setState(() { }),
+                              leading: StreamBuilder<bool>(
+                                stream: _singleElementLoadingController.stream,
+                                builder: (context, streamSnapshot) => 
+                                  (streamSnapshot.data ?? false) && _selectedIndex == index ? 
+                                    const CircularProgressIndicator() : 
+                                    IconButton(
+                                      onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
+                                        _singleElementLoadingController.sink.add(true); _selectedIndex = index;
+                                        final result = await proveedorService.seleccionarProveedor(item.id);
+                                        if(!result.success) {
+                                          // TODO dialog
+                                          return;
+                                        }
+                                        await result.data!.ubication.fillFields();
+                                        _singleElementLoadingController.sink.add(false);
+                                        if(!context.mounted) return;
+                                        showProveedorDetail(result.data!);
+                                      } : null,
+                                      icon: const Icon(Icons.remove_red_eye_rounded)
+                                    )
+                                
+                              ),
+                            );
+                          }
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-              PaginationWidget(
-                currentPages: pageMetaData.currentPage,
-                totalPages: pageMetaData.totalPages,
-                onNextPagePressed: _page != pageMetaData.totalPages ? () => setState(() =>_page++) : null,
+              );
+            }
+          ),
+          StreamBuilder<PaginateMetaData>(
+            stream: _paginateMetadaDataController.stream,
+            builder: (context, snapshot) {
+              return PaginationWidget(
+                currentPages: snapshot.data?.currentPage ?? 1,
+                onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
+                totalPages: snapshot.data?.totalPages ?? 1,
                 onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-              )
-            ],
-          );
-        }
+              );
+            }
+          )
+        ],        
       ),
     );
   }
-}
-
-class ProveedorElement extends StatelessWidget {
-
-  final Proveedor proveedor;
-  final void Function()? onTap;
-  final Widget? leading;
-
-  const ProveedorElement({super.key, required this.proveedor, this.onTap, this.leading});
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(proveedor.nombre),
-      subtitle: Text(proveedor.typeProveedor.name),
-      onTap: onTap,
-      leading: leading,
-      trailing: PopupMenuButton(
-        itemBuilder: (context) => [
-          const PopupMenuItem(value: 0, child: Text('Editar'),)
-        ],
-        onSelected: (value) async {
-          switch (value) {
-            case 0: Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarProveedorScreen(
-              idProveedorToEdit: proveedor.id,
-            )));
-            default: return;
-          }
-        },
-      )
-    );
+  void dispose() {
+    _singleElementLoadingController.close();
+    _paginateMetadaDataController.close();
+    _nameController.dispose();
+    super.dispose();
   }
 }

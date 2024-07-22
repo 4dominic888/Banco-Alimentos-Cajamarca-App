@@ -28,9 +28,12 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
   }
 
   @override
-  Future<Result<bool>> editarProveedor(Proveedor proveedor, {required String id}) {
-    // TODO: implement editarProveedor
-    throw UnimplementedError();
+  Future<Result<bool>> editarProveedor(Proveedor proveedor, {required String id}) async{
+    try {
+      return Result.success(data: await repo.update(id, proveedor));
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
 
   @override
@@ -52,9 +55,12 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
   }
 
   @override
-  Future<Result<PaginateData<Proveedor>>> verProveedores({int? pagina = 1, int? limite = 5, String? busqueda}) async {
+  Future<Result<PaginateData<ProveedorView>>> verProveedores({int? pagina = 1, int? limite = 5, String? nombre, String? tipoProveedor}) async {
     try {
-      final paginateData = await repo.getAll(page: pagina!, limit: limite!, search: busqueda);
+      final paginateData = await repo.getAll(page: pagina!, limit: limite!, aditionalQueries: {
+        'name': nombre ?? '',
+        'type': tipoProveedor ?? ''
+      });
       return Result.success(data: paginateData);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');
@@ -62,9 +68,15 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
   }
 
   @override
-  Future<Result<PaginateData<TypeProveedor>>> verTiposDeProveedor({int? pagina = 1, int? limite = 5, String? busqueda}) {
-    // TODO: implement verTiposDeProveedor
-    throw UnimplementedError();
+  Future<Result<PaginateData<TypeProveedor>>> verTiposDeProveedor({int? pagina = 1, int? limite = 5, String? nombre}) async {
+    try{
+      final paginateData = await repo.getAllTypes(page: pagina!, limit: limite!, aditionalQueries: {
+        'name': nombre ?? ''
+      });
+      return Result.success(data: paginateData);
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
   
   @override
@@ -72,6 +84,7 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
     try {
       final data = await repo.getById(id);
       if(data == null) throw Exception('Valor no encontrado');
+      await data.ubication.fillFields();
       return Result.success(data: data);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');

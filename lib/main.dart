@@ -6,6 +6,7 @@ import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens
 import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/screens/ver_proveedores_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 Future<void> main() async {
 
@@ -16,11 +17,12 @@ Future<void> main() async {
 }
 
 class MainApp extends StatelessWidget {
-    const MainApp({super.key});
+  const MainApp({super.key});
 
-    @override
-    Widget build(BuildContext context) {
-        return const MaterialApp(
+  @override
+  Widget build(BuildContext context) {
+      return const OverlaySupport.global(
+        child: MaterialApp(
           title: "Banco de alimentos app",
           locale: Locale('es', 'ES'),
           localizationsDelegates: [
@@ -30,8 +32,9 @@ class MainApp extends StatelessWidget {
           ],
           supportedLocales: [ Locale('es', 'ES') ],
           home: _RouterScreen()
-        );
-    }
+        ),
+      );
+  }
 }
 
 //? Screen temporal, solo para testeo

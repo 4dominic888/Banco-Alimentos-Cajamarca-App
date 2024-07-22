@@ -2,9 +2,13 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/ubication_form_field.dart';
+import 'package:bancalcaj_app/presentation/widgets/loading_process_button.dart';
+import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class AgregarProveedorScreen extends StatefulWidget {
 
@@ -24,17 +28,16 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
   final _proveedorTypeKey = GlobalKey<FormFieldState>();
   final _proveedorUbicationKey = GlobalKey<FormFieldState<Ubication>>();
 
-  bool _onLoad = false;
-
-  void onSubmit() async {
+  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
+  
+  Future<void> onSubmit() async {
     if (_formkey.currentState!.validate()) {
-
-      setState(() => _onLoad = true);
       final Proveedor proveedor = Proveedor.toSend(
         nombre: _proveedorNameKey.currentState?.value,
         typeProveedor: _proveedorTypeKey.currentState?.value,
         ubication: _proveedorUbicationKey.currentState!.value!
       );
+
       final Result<Object> result;
       if(widget.idProveedorToEdit != null) {
         result = await proveedorService.editarProveedor(proveedor, id: widget.idProveedorToEdit!);
@@ -42,41 +45,23 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
       else{
         result = await proveedorService.agregarProveedor(proveedor);
       }
-
-      setState(() => _onLoad = false);
-
-      if(!mounted) return;
       if(!result.success){
-        showDialog(context: context, builder: (context) => 
-          AlertDialog(
-            title: const Text('Error'),
-            content: Text(result.message!),
-            actions: [
-              TextButton(onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              }, child: const Text('Ok'))
-            ],
-          )
-        );
+        _btnController.error();
+        NotificationMessage.showErrorNotification(title: 'Error', description: result.message!);
         return;
       }
-      showDialog(context: context, builder: (context) => 
-        AlertDialog(
-          title: const Text('Exito'),
-          content: const Text('Se ha realizado el proceso con exito'),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Ok'))
-          ],
-        )
-      );
-    }
-  }
 
-  Future<List<TypeProveedor>> listTypeProveedores() async {
-    final result = await proveedorService.verTiposDeProveedor(limite: 20);
-    if(!result.success) return [];
-    return result.data!.data;
+      _btnController.success();
+      NotificationMessage.showSuccessNotification(title: 'Exito', description: 'Se ha realizado el proceso con exito');
+
+      //* El proceso es para actualizar y no esta montado el context
+      if(widget.idProveedorToEdit != null && mounted){
+        Navigator.of(context).pop();
+      }
+
+      return;
+    }
+    _btnController.error();
   }
 
   @override
@@ -96,9 +81,6 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
         builder: (context, snapProveedor) {
           if(snapProveedor.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          }
-          if(snapProveedor.data != null && !snapProveedor.data!.success){
-            return Center(child: Text(snapProveedor.data?.message ?? 'Nulo'));
           }
           final proveedor = snapProveedor.data!.data;
           return Form(
@@ -135,44 +117,25 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
                   //* Tipo de proveedor
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    child: FutureBuilder<List<TypeProveedor>>(
-                      future: listTypeProveedores(),
-                      initialData: const [],
-                      builder: (context, snapshot) {
-                        if(snapshot.data != null && snapshot.data!.isNotEmpty){
-                          return DropdownButtonFormField<TypeProveedor?>(
-                            key: _proveedorTypeKey,
-                            value: proveedor!.typeProveedor,
-                            onChanged: (_) {},
-                            menuMaxHeight: 280,
-                            items: snapshot.data!.map<DropdownMenuItem<TypeProveedor?>>((value) =>
-                              DropdownMenuItem<TypeProveedor?>(
-                                value: value,
-                                child: Text(value.name),
-                              )
-                            ).toList(),
-                            decoration: const InputDecoration(
-                              label: Text("Tipo de proveedor"),
-                              icon: Icon(Icons.category)
-                            ),
-                            validator: (value) {
-                              if (value == null) {
-                                return 'No se ha seleccionado una opcion';
-                              }
-                              return null;
-                            },
-                          );
-                        }
-                        return const Text('No hay informacion de los tipos de proveedor');
-                      }
-                    )
+                    child: DropDownWithExternalData<TypeProveedor>(
+                      formFieldKey: _proveedorTypeKey,
+                      initialValue: proveedor?.typeProveedor,
+                      itemAsString: (TypeProveedor value) => value.name,
+                      icon: const Icon(Icons.category),
+                      label: 'Tipo de proveedor',
+                      asyncItems: (text) async {
+                        final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);
+                        if(!result.success) return [];
+                        return result.data!.data;
+                      },
+                    ),
                   ),
             
                   //* Ubicacion
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
                     child: UbicationFormField(
-                      initialData: proveedor!.ubication,
+                      initialData: proveedor?.ubication,
                       formFieldKey: _proveedorUbicationKey,
                       validator: (value) {
                         if (value == null) {
@@ -185,23 +148,16 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
               
                   //* Button
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: !_onLoad ? onSubmit : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white
-                          ),  
-                          child: const Text("Registrar")
-                        ),
-
-                        const SizedBox(width: 30),
-                        
-                        _onLoad ? const CircularProgressIndicator(color: Colors.red) : const SizedBox.shrink()
-                      ],
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                    child: LoadingProcessButton(
+                      controller: _btnController,
+                      label: Text(
+                        widget.idProveedorToEdit != null ? 'Actualizar' : 'Registrar',
+                        style: const TextStyle(color: Colors.white)
+                      ),
+                      color: Colors.red,
+                      proccess: onSubmit,
+                    )
                   )
                 ],
               ),
