@@ -10,6 +10,7 @@ import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/widgets/entrada_card_element.dart';
+import 'package:bancalcaj_app/presentation/widgets/big_static_size_box.dart';
 import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:flutter/material.dart';
@@ -84,14 +85,6 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
     _pdfService.dispose();
   }
 
-  Widget listContainer(Widget child) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.8,
-      child: child
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,13 +149,13 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
               builder: (context, snapshot) {
             
                 if(snapshot.connectionState == ConnectionState.waiting){
-                  return listContainer(const Center(child: CircularProgressIndicator()));
+                  return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
                 }
                 if(snapshot.hasError || snapshot.data == null){
-                  return listContainer(Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
+                  return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
                 }
                 if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
-                  return listContainer(const Center(child: Text('Sin entradas a mostrar')));
+                  return BigStaticSizeBox(context, child: const Center(child: Text('Sin entradas a mostrar')));
                 }
             
                 final currentList = snapshot.data!.data!.data; //* data data data
@@ -170,8 +163,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                 
                 return Column(
                   children: [
-                    listContainer(
-                      SingleChildScrollView(
+                    BigStaticSizeBox(context, child: SingleChildScrollView(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
@@ -185,8 +177,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                             );
                           },
                         )
-                      ),
-                    ),
+                      )),
                   ],
                 );
               }
