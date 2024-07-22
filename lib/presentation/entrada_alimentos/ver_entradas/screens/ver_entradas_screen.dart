@@ -30,16 +30,11 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
   
   final GlobalKey<FormFieldState<ProveedorView>> _keyFieldProveedor = GlobalKey();
   final GlobalKey<FormFieldState<Almacenero>> _keyFieldAlmacenero = GlobalKey();
+  final _paginateMetadaDataController = StreamController<PaginateMetaData>();
 
   late final PDFWritter _pdfService;
   late final ExcelWritter _excelService;
 
-  PaginateMetaData currentPageMetaData = PaginateMetaData(
-    total: 0,
-    currentPage: 1,
-    totalPages: 1,
-    currentCount: 0
-  );
 
   int _page = 1;
   int _limit = 10;  
@@ -77,12 +72,6 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
   void initState() {
     super.initState();
     _initService();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _pdfService.dispose();
   }
 
   @override
@@ -159,7 +148,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                 }
             
                 final currentList = snapshot.data!.data!.data; //* data data data
-                currentPageMetaData = snapshot.data!.data!.metadata;
+                _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
                 
                 return Column(
                   children: [
@@ -183,14 +172,25 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
               }
             ),
 
-            PaginationWidget(
-              currentPages: currentPageMetaData.currentPage,
-              totalPages: currentPageMetaData.totalPages,
-              onNextPagePressed: _page != currentPageMetaData.totalPages ? () => setState(() =>_page++) : null,
-              onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-            )
+          StreamBuilder<PaginateMetaData>(
+            stream: _paginateMetadaDataController.stream,
+            builder: (context, snapshot) {
+              return PaginationWidget(
+                currentPages: snapshot.data?.currentPage ?? 1,
+                onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
+                totalPages: snapshot.data?.totalPages ?? 1,
+                onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
+              );
+            }
+          )
           ],
         ),
     );
   }
+
+  @override
+  void dispose() {
+    _pdfService.dispose();
+    super.dispose();
+  }  
 }

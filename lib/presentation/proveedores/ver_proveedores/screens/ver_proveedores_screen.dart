@@ -4,6 +4,7 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
+import 'package:bancalcaj_app/presentation/widgets/big_static_size_box.dart';
 import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:bancalcaj_app/presentation/proveedores/ver_proveedores/widgets/proveedor_element.dart';
@@ -23,7 +24,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
 
   //* Para seleccion
   final _singleElementLoadingController = StreamController<bool>.broadcast();
-
+  final _paginateMetadaDataController = StreamController<PaginateMetaData>();
 
   int _selectedIndex = -1;
   int _page = 1;
@@ -74,79 +75,92 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: FutureBuilder<Result<PaginateData<ProveedorView>>?>(
-        future: proveedorService.verProveedores(pagina: _page, limite: _limit),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return const Center(child: CircularProgressIndicator());
-          }
-          if(snapshot.hasError || snapshot.data == null){
-            return Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}'));
-          }
-          if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
-            return const Center(child: Text('Sin proveedores a mostrar'));
-          }
-          final currentList = snapshot.data!.data!.data; //* data data data
-          final pageMetaData = snapshot.data!.data!.metadata;
-          
-          return Column(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 500,
-                child: SingleChildScrollView(
-                  physics: const ScrollPhysics(),
-                  child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: currentList.length,
-                    itemBuilder: (context, index) {
-                      final item = currentList[index];
-                      return StreamBuilder<bool>(
-                        stream: _singleElementLoadingController.stream,
-                        builder: (context, singleSnapshot) {
-                          return ProveedorElement(
-                            proveedor: item,
-                            leading: StreamBuilder<bool>(
-                              stream: _singleElementLoadingController.stream,
-                              builder: (context, streamSnapshot) => 
-                                (streamSnapshot.data ?? false) && _selectedIndex == index ? 
-                                  const CircularProgressIndicator() : 
-                                  IconButton(
-                                    onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
-                                      _singleElementLoadingController.sink.add(true); _selectedIndex = index;
-                                      final result = await proveedorService.seleccionarProveedor(item.id);
-                                      if(!result.success) {
-                                        // TODO dialog
-                                        return;
-                                      }
-                                      await result.data!.ubication.fillFields();
-                                      _singleElementLoadingController.sink.add(false);
-                                      if(!context.mounted) return;
-                                      showProveedorDetail(result.data!);
-                                    } : null,
-                                    icon: const Icon(Icons.remove_red_eye_rounded)
-                                  )
-                              
-                            ),
-                          );
-                        }
-                      );
-                    },
+      body: Column(
+        children: [
+          FutureBuilder<Result<PaginateData<ProveedorView>>?>(
+            future: proveedorService.verProveedores(pagina: _page, limite: _limit),
+            builder: (context, snapshot) {
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
+              }
+              if(snapshot.hasError || snapshot.data == null){
+                return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
+              }
+              if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
+                return BigStaticSizeBox(context, child: const Center(child: Text('Sin proveedores a mostrar')));
+              }
+              final currentList = snapshot.data!.data!.data; //* data data data
+              _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
+              
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: BigStaticSizeBox(context,
+                  child: SingleChildScrollView(
+                    physics: const ScrollPhysics(),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: currentList.length,
+                      itemBuilder: (context, index) {
+                        final item = currentList[index];
+                        return StreamBuilder<bool>(
+                          stream: _singleElementLoadingController.stream,
+                          builder: (context, singleSnapshot) {
+                            return ProveedorElement(
+                              proveedor: item,
+                              leading: StreamBuilder<bool>(
+                                stream: _singleElementLoadingController.stream,
+                                builder: (context, streamSnapshot) => 
+                                  (streamSnapshot.data ?? false) && _selectedIndex == index ? 
+                                    const CircularProgressIndicator() : 
+                                    IconButton(
+                                      onPressed: (streamSnapshot.data != null ? !streamSnapshot.data! : true) ? () async {
+                                        _singleElementLoadingController.sink.add(true); _selectedIndex = index;
+                                        final result = await proveedorService.seleccionarProveedor(item.id);
+                                        if(!result.success) {
+                                          // TODO dialog
+                                          return;
+                                        }
+                                        await result.data!.ubication.fillFields();
+                                        _singleElementLoadingController.sink.add(false);
+                                        if(!context.mounted) return;
+                                        showProveedorDetail(result.data!);
+                                      } : null,
+                                      icon: const Icon(Icons.remove_red_eye_rounded)
+                                    )
+                                
+                              ),
+                            );
+                          }
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-              PaginationWidget(
-                currentPages: pageMetaData.currentPage,
-                totalPages: pageMetaData.totalPages,
-                onNextPagePressed: _page != pageMetaData.totalPages ? () => setState(() =>_page++) : null,
+              );
+            }
+          ),
+          StreamBuilder<PaginateMetaData>(
+            stream: _paginateMetadaDataController.stream,
+            builder: (context, snapshot) {
+              return PaginationWidget(
+                currentPages: snapshot.data?.currentPage ?? 1,
+                onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
+                totalPages: snapshot.data?.totalPages ?? 1,
                 onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-              )
-            ],
-          );
-        }
+              );
+            }
+          )
+        ],        
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _singleElementLoadingController.close();
+    _paginateMetadaDataController.close();
+    super.dispose();
   }
 }
