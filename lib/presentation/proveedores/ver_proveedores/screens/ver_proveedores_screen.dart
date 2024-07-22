@@ -199,6 +199,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
   void dispose() {
     _singleElementLoadingController.close();
     _paginateMetadaDataController.close();
+    _nameController.dispose();
     super.dispose();
   }
 }
