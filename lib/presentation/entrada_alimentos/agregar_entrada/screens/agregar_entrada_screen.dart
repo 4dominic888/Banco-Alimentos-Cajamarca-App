@@ -58,12 +58,12 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
 
       final result = await entradaService.agregarEntrada(entrada);
       if(!result.success) {
-        NotificationMessage.showErrorNotification(title: 'Error', description: result.message!);
+        NotificationMessage.showErrorNotification(result.message!);
         _btnController.error();
         return;
       }
 
-      NotificationMessage.showSuccessNotification(title: 'Exito', description: 'Entrada de alimentos registrada con exito');
+      NotificationMessage.showSuccessNotification('Entrada de alimentos registrada con exito');
       _btnController.success();
       return;
     }

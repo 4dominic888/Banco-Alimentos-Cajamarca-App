@@ -47,12 +47,12 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
       }
       if(!result.success){
         _btnController.error();
-        NotificationMessage.showErrorNotification(title: 'Error', description: result.message!);
+        NotificationMessage.showErrorNotification(result.message!);
         return;
       }
 
       _btnController.success();
-      NotificationMessage.showSuccessNotification(title: 'Exito', description: 'Se ha realizado el proceso con exito');
+      NotificationMessage.showSuccessNotification('Se ha realizado el proceso con exito');
 
       //* El proceso es para actualizar y no esta montado el context
       if(widget.idProveedorToEdit != null && mounted){

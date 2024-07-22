@@ -3,9 +3,9 @@ import 'package:overlay_support/overlay_support.dart';
 
 class NotificationMessage{
 
-  static void showSuccessNotification({required String title, required String description}) {
+  static void showSuccessNotification(description) {
     showSimpleNotification(
-      Text(title),
+      const Text('Exito'),
       subtitle: Text(description),
       autoDismiss: true,
       foreground: Colors.white,
@@ -15,9 +15,9 @@ class NotificationMessage{
     );
   }
 
-  static void showErrorNotification({required String title, required String description}) {
+  static void showErrorNotification(description) {
     showSimpleNotification(
-      Text(title),
+      const Text('Error'),
       subtitle: Text(description),
       autoDismiss: true,
       foreground: Colors.white,

@@ -67,7 +67,7 @@ class EntradaCardElement extends StatelessWidget {
                 //? Si hubiera mas logica compleja o mas botones similares, refactorizar
                 final entradaResult = await GetIt.I<EntradaAlimentosServiceBase>().seleccionarEntrada(entradaView.id);
                 if(!entradaResult.success) {
-                  NotificationMessage.showErrorNotification(title: 'Error', description: entradaResult.message!);
+                  NotificationMessage.showErrorNotification(entradaResult.message!);
                   btnControllerExcel.error();
                   return;
                 }
@@ -101,7 +101,7 @@ class EntradaCardElement extends StatelessWidget {
                 //? Si hubiera mas logica compleja o mas botones similares, refactorizar
                 final entradaResult = await GetIt.I<EntradaAlimentosServiceBase>().seleccionarEntrada(entradaView.id);
                 if(!entradaResult.success) {
-                  NotificationMessage.showErrorNotification(title: 'Error', description: entradaResult.message!);
+                  NotificationMessage.showErrorNotification(entradaResult.message!);
                   btnControllerPdf.error();
                   return;
                 }
