@@ -4,7 +4,6 @@ import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
-import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/widgets/entrada_card_element.dart';
@@ -22,7 +21,6 @@ class VerEntradasScreen extends StatefulWidget {
 class _VerEntradasScreenState extends State<VerEntradasScreen> {
   
   final entradaService = GetIt.I<EntradaAlimentosServiceBase>();
-  final proveedorService = GetIt.I<ProveedorServiceBase>();
 
   late final PDFWritter _pdfService;
   late final ExcelWritter _excelService;
