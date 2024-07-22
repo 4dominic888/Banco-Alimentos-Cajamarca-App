@@ -8,6 +8,8 @@ class DropDownWithExternalData<T> extends StatefulWidget {
   final Future<List<T>> Function(String text) asyncItems;
   final String Function(T value) itemAsString;
   final String label;
+  final void Function()? onChanged;
+  final bool? isVisible;
 
   const DropDownWithExternalData({
     super.key,
@@ -15,6 +17,8 @@ class DropDownWithExternalData<T> extends StatefulWidget {
     required this.asyncItems,
     required this.itemAsString,
     required this.label,
+    this.isVisible = false,
+    this.onChanged,
     this.initialValue,
   });
 
@@ -52,7 +56,11 @@ class _TypeDropDownWithExternalDataState<T> extends State<DropDownWithExternalDa
               label: Text(widget.label)
             )
           ),
-          onChanged: (value) => formState.didChange(value),                      
+          onChanged: (value) {
+            formState.didChange(value);
+            widget.onChanged?.call();
+          },
+          clearButtonProps: ClearButtonProps(isVisible: widget.isVisible!),
         );
       },
       validator: _defaultValidator,

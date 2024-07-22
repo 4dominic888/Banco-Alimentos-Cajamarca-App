@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:bancalcaj_app/domain/classes/result.dart';
+import 'package:bancalcaj_app/domain/models/almacenero.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
+import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
+import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/widgets/entrada_card_element.dart';
+import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -21,9 +25,20 @@ class VerEntradasScreen extends StatefulWidget {
 class _VerEntradasScreenState extends State<VerEntradasScreen> {
   
   final entradaService = GetIt.I<EntradaAlimentosServiceBase>();
+  final proveedorService = GetIt.I<ProveedorServiceBase>();
+  
+  final GlobalKey<FormFieldState<ProveedorView>> _keyFieldProveedor = GlobalKey();
+  final GlobalKey<FormFieldState<Almacenero>> _keyFieldAlmacenero = GlobalKey();
 
   late final PDFWritter _pdfService;
   late final ExcelWritter _excelService;
+
+  PaginateMetaData currentPageMetaData = PaginateMetaData(
+    total: 0,
+    currentPage: 1,
+    totalPages: 1,
+    currentCount: 0
+  );
 
   int _page = 1;
   int _limit = 10;  
@@ -69,6 +84,14 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
     _pdfService.dispose();
   }
 
+  Widget listContainer(Widget child) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: child
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,55 +101,104 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
           title: const Text("Exportar entrada"), 
           leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context))),
         
-        body: FutureBuilder<Result<PaginateData<EntradaView>>>(
-          future: entradaService.verEntradas(pagina: _page, limite: _limit),
-          builder: (context, snapshot) {
-
-            if(snapshot.connectionState == ConnectionState.waiting){
-              return const Center(child: CircularProgressIndicator());
-            }
-            if(snapshot.hasError || snapshot.data == null){
-              return Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}'));
-            }
-            if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
-              return const Center(child: Text('Sin entradas a mostrar'));
-            }
-
-            final currentList = snapshot.data!.data!.data; //* data data data
-            final pageMetaData = snapshot.data!.data!.metadata;
-            
-            return Column(
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 500,              
-                  child: SingleChildScrollView(
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: currentList.length,
-                      itemBuilder: (context, index) { 
-                        final entradaView = currentList[index];
-                        return EntradaCardElement(
-                          entradaView: entradaView,
-                          excelService: _excelService,
-                          pdfService: _pdfService
-                        );
-                      },
+        body: Column(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DropDownWithExternalData<ProveedorView>(
+                        formFieldKey: _keyFieldProveedor,
+                        itemAsString: (value) => value.nombre,
+                        label: 'Proveedor',
+                        isVisible: true,
+                        asyncItems: (text) async {
+                          final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
+                          if(!result.success || result.data == null) return [];
+                          return result.data!.data;                              
+                        },
+                        onChanged: () => setState(() {})
+                      )
                     )
                   ),
-                ),
+                  //const Spacer(),
+                  //TODO Proximamente sera el de almaceneros, pero tendra que esperar
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DropDownWithExternalData<ProveedorView>(
+                        formFieldKey: _keyFieldAlmacenero,
+                        itemAsString: (value) => value.nombre,
+                        label: 'Almaceneros',
+                        isVisible: true,
+                        asyncItems: (text) async {
+                          final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
+                          if(!result.success || result.data == null) return [];
+                          return result.data!.data;                              
+                        },
+                        onChanged: () => setState(() {})
+                      )
+                    )
+                  ),
+                ],
+              )
+            ),
 
-                PaginationWidget(
-                  currentPages: pageMetaData.currentPage,
-                  totalPages: pageMetaData.totalPages,
-                  onNextPagePressed: _page != pageMetaData.totalPages ? () => setState(() =>_page++) : null,
-                  onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-                )
+            FutureBuilder<Result<PaginateData<EntradaView>>>(
+              future: entradaService.verEntradas(
+                pagina: _page,
+                limite: _limit,
+                proveedor: _keyFieldProveedor.currentState?.value?.nombre
+              ),
+              builder: (context, snapshot) {
+            
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return listContainer(const Center(child: CircularProgressIndicator()));
+                }
+                if(snapshot.hasError || snapshot.data == null){
+                  return listContainer(Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
+                }
+                if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
+                  return listContainer(const Center(child: Text('Sin entradas a mostrar')));
+                }
+            
+                final currentList = snapshot.data!.data!.data; //* data data data
+                currentPageMetaData = snapshot.data!.data!.metadata;
+                
+                return Column(
+                  children: [
+                    listContainer(
+                      SingleChildScrollView(
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: currentList.length,
+                          itemBuilder: (context, index) { 
+                            final entradaView = currentList[index];
+                            return EntradaCardElement(
+                              entradaView: entradaView,
+                              excelService: _excelService,
+                              pdfService: _pdfService
+                            );
+                          },
+                        )
+                      ),
+                    ),
+                  ],
+                );
+              }
+            ),
 
-              ],
-            );
-          }
+            PaginationWidget(
+              currentPages: currentPageMetaData.currentPage,
+              totalPages: currentPageMetaData.totalPages,
+              onNextPagePressed: _page != currentPageMetaData.totalPages ? () => setState(() =>_page++) : null,
+              onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
+            )
+          ],
         ),
     );
   }
