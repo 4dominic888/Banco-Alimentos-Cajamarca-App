@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
-import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
@@ -41,24 +40,24 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
     ]);
   }
 
-  Future<void> _showSubProducts(BuildContext context, String title, List<Producto> list){
-    return showDialog(context: context, builder: (context) => AlertDialog(
-      scrollable: true,
-      title: Text(title),
-      content: SizedBox(
-        width: 300,
-        height: 300,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: list.length,
-          itemBuilder: (context, index) {
-            final Producto p = list[index];
-            return ListTile(title: Text(p.nombre), subtitle: Text('${p.pesoStr} kg'));
-          },
-        ),
-      ),
-    ));
-  }
+  // Future<void> _showSubProducts(BuildContext context, String title, List<Producto> list){
+  //   return showDialog(context: context, builder: (context) => AlertDialog(
+  //     scrollable: true,
+  //     title: Text(title),
+  //     content: SizedBox(
+  //       width: 300,
+  //       height: 300,
+  //       child: ListView.builder(
+  //         shrinkWrap: true,
+  //         itemCount: list.length,
+  //         itemBuilder: (context, index) {
+  //           final Producto p = list[index];
+  //           return ListTile(title: Text(p.nombre), subtitle: Text('${p.pesoStr} kg'));
+  //         },
+  //       ),
+  //     ),
+  //   ));
+  // }
   
   @override
   void initState() {
@@ -104,20 +103,20 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                   width: MediaQuery.of(context).size.width,
                   height: 500,              
                   child: SingleChildScrollView(
-                      child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: currentList.length,
-                        itemBuilder: (context, index) { 
-                          final entradaView = currentList[index];
-                          return EntradaCardElement(
-                            entradaView: entradaView,
-                            excelService: _excelService,
-                            pdfService: _pdfService
-                          );
-                        },
-                      )
-                    ),
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: currentList.length,
+                      itemBuilder: (context, index) { 
+                        final entradaView = currentList[index];
+                        return EntradaCardElement(
+                          entradaView: entradaView,
+                          excelService: _excelService,
+                          pdfService: _pdfService
+                        );
+                      },
+                    )
+                  ),
                 ),
 
                 PaginationWidget(

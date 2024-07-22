@@ -34,26 +34,23 @@ class EntradaCardElement extends StatelessWidget {
             Text(entradaView.almacenero)
           ],
         ),
-        // TODO ver esto
-        // subtitle: SizedBox(
-        //     child: Wrap(
-        //       direction: Axis.horizontal,
-        //       spacing: 10,
-        //       runSpacing: 10,
-        //       children: entradaView.tiposProductos.map((e) => InputChip(
-        //         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        //         label: Text(e.nombre, 
-        //           style: const TextStyle(
-        //             fontSize: 12
-        //           ),
-        //         ),
-        //         onPressed: () async => await _showSubProducts(context, e.nombre, e.productos),                          
-        //       )).toList(),
-        //     ),
-        // ),
+        subtitle: SizedBox(
+            child: Wrap(
+              direction: Axis.horizontal,
+              spacing: 10,
+              runSpacing: 10,
+              children: entradaView.productos.map((e) => InputChip(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                label: Text(e, style: const TextStyle(fontSize: 12)),
+                onPressed: () {}
+              )).toList(),
+            ),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+
+            //* Excel Export
             RoundedLoadingButton(
               color: Colors.green,
               controller: btnControllerExcel,
@@ -62,7 +59,7 @@ class EntradaCardElement extends StatelessWidget {
                   children: [
                     SvgPicture.asset('assets/svg/microsoft_excel_icon.svg', width: 24, height: 24, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
                     const Spacer(),
-                    const Text("Excel", style: TextStyle(color: Colors.white))
+                    const Text("Excel", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
                   ],
                 ),
               ),
@@ -85,6 +82,7 @@ class EntradaCardElement extends StatelessWidget {
 
             const SizedBox(width: 10),
 
+            //* PDF Export
             RoundedLoadingButton(
               color: Colors.red,
               controller: btnControllerPdf,
@@ -95,7 +93,7 @@ class EntradaCardElement extends StatelessWidget {
                   children: [
                     Icon(Icons.picture_as_pdf, color: Colors.white),
                     Spacer(),
-                    Text("PDF", style: TextStyle(color: Colors.white))
+                    Text("PDF", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
                   ],
                 ),
               ),
