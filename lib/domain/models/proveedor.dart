@@ -48,6 +48,15 @@ class Proveedor{
     );
   }
 
+  factory Proveedor.fromJsonWithouType(Map<String, dynamic> json){
+    return Proveedor(
+      id: json['idp'],
+      nombre: json['nombre'],
+      typeProveedor: TypeProveedor(id: '-1', name: 'unknown'),
+      ubication: Ubication.fromJson(json['ubication'])
+    );    
+  }
+
   factory Proveedor.fromJsonLow(Map<String, dynamic> json){
     return Proveedor(
       id: json['idp'],
@@ -56,6 +65,13 @@ class Proveedor{
       ubication: Ubication(country: {'':''}, type: '')
     );
   }
+
+  ProveedorView get proveedorView => ProveedorView(
+    id: id,
+    nombre: nombre,
+    typeProveedor: typeProveedor.name,
+    ubication: { "countryCode": ubication.countryCode, "type": ubication.type }
+  );
 
   Map<String, dynamic> toJson(){
     return {

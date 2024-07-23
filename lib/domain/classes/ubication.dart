@@ -17,7 +17,7 @@ class Ubication {
   
   factory Ubication.fromJson(Map<String,dynamic> json){
     return Ubication(
-      country: {"codigo": json['countryCode'], "nombre": null},
+      country: {'codigo': json['countryCode'], "nombre": null},
       type: json['type'],
       subPlaces: DoubleLinkedList.fromIterable((json['subPlaces'] as Iterable).map<Map<String, Map<String,String?> >>(
         (e) => {e['group']: {"codigo": e['subPlaceCode'], "nombre":null}},

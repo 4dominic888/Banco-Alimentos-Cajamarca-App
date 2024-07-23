@@ -2,6 +2,7 @@ import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
+import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/agregar_entrada_screen.dart';
 import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -113,6 +114,27 @@ class EntradaCardElement extends StatelessWidget {
                 btnControllerPdf.reset();
               },
             ),
+          
+            PopupMenuButton(
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 0, child: Text('Actualizar')),
+                const PopupMenuItem(value: 1, child: Text('Eliminar'))                
+              ],
+              onSelected: (value) async {
+                switch (value) {
+                  case 0: {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarEntradaScreen(idEntradaToEdit: entradaView.id)));
+                    break;
+                  }
+
+                  case 1: {
+                    break;
+                  }
+
+                  default: break;
+                }
+              },
+            )
           ],
         )
       ),

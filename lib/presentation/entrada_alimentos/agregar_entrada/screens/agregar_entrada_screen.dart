@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
@@ -15,7 +16,10 @@ import 'package:get_it/get_it.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class AgregarEntradaScreen extends StatefulWidget {
-  const AgregarEntradaScreen({super.key});
+
+  final String? idEntradaToEdit;
+
+  const AgregarEntradaScreen({super.key, this.idEntradaToEdit});
 
   @override
   State<AgregarEntradaScreen> createState() => _AgregarEntradaScreenState();
@@ -34,6 +38,8 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
 
   final entradaService = GetIt.I<EntradaAlimentosServiceBase>();
   final proveedorService = GetIt.I<ProveedorServiceBase>();
+
+  bool _isUpdatable = false;
   
   //TODO: La lista deberia llamarse de alguna base de datos o similar, de momento esto sirve para testear.
   List<String> defaultList = ["Carnes", "Frutas", "Verduras", "Abarrotes", "Embutidos"];
@@ -56,15 +62,29 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
         comentario: comentario
       );
 
-      final result = await entradaService.agregarEntrada(entrada);
+      final Result<Object> result;
+
+      if(_isUpdatable) {
+        result = await entradaService.editarEntrada(entrada, id: widget.idEntradaToEdit!);
+      }
+      else {
+        result = await entradaService.agregarEntrada(entrada);
+      }
+
       if(!result.success) {
-        NotificationMessage.showErrorNotification(result.message!);
         _btnController.error();
+        NotificationMessage.showErrorNotification(result.message!);
         return;
       }
 
-      NotificationMessage.showSuccessNotification('Entrada de alimentos registrada con exito');
       _btnController.success();
+      NotificationMessage.showSuccessNotification('Entrada de alimentos registrada con exito');
+
+      //* El proceso es para actualizar y no esta montado el context
+      if(_isUpdatable && mounted){
+        Navigator.of(context).pop();
+      }
+    
       return;
     }
     _btnController.error();
@@ -82,70 +102,90 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: formkey,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Campo de fecha
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: DateTimeField(formFieldKey: _keyFieldFecha, label: "Fecha")
-                ),
-          
-                // Campo de proveedor o nombre de la organzación
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: DropDownWithExternalData<ProveedorView>(
-                    formFieldKey: _keyFieldProveedor,
-                    itemAsString: (value) => value.nombre,
-                    label: 'Proveedor',
-                    icon: const Icon(Icons.delivery_dining),
-                    asyncItems: (text) async {
-                      final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
-                      if(!result.success || result.data == null) return [];
-                      return result.data!.data;
-                    },
-                  )
-                ),
-          
-                // Campo de selección de productos
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: SelectProductsField(
-                    formFieldKey: _keyFieldProductos,
-                    defaultCommonProducts: defaultList,
-                  )
-                ),
-          
-                // Comentarios
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: TextFormField(
-                    key: _keyFieldComentario,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      label: Text("Comentarios u observaciones a tener en cuenta"),
-                      prefixIcon: Icon(Icons.comment)
-                    ),
-                  ),
-                ),
+      body: FutureBuilder<Result<Entrada?>>(
+        future: entradaService.seleccionarEntrada(widget.idEntradaToEdit ?? 'null'),
+        builder: (context, snapEntrada) {
 
-                // Submit button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                  child: LoadingProcessButton(
-                    controller: _btnController,
-                    label: const Text('Registrar', style: TextStyle(color: Colors.white)),
-                    color: Colors.red,
-                    proccess: _onSubmit,
-                  )
-                ),
-              ],
-          ),
-        ),
+          if(snapEntrada.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final entrada = snapEntrada.data!.data;
+          _isUpdatable = entrada != null;
+
+          return SingleChildScrollView(
+            child: Form(
+              key: formkey,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Campo de fecha
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: DateTimeField(
+                        initialValue: entrada?.fecha,
+                        formFieldKey: _keyFieldFecha,
+                        label: "Fecha"
+                      )
+                    ),
+              
+                    // Campo de proveedor o nombre de la organzación
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: DropDownWithExternalData<ProveedorView>(
+                        initialValue: entrada?.proveedor.proveedorView,
+                        formFieldKey: _keyFieldProveedor,
+                        itemAsString: (value) => value.nombre,
+                        label: 'Proveedor',
+                        icon: const Icon(Icons.delivery_dining),
+                        asyncItems: (text) async {
+                          final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
+                          if(!result.success || result.data == null) return [];
+                          return result.data!.data;
+                        },
+                      )
+                    ),
+              
+                    // Campo de selección de productos
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: SelectProductsField(
+                        initialValue: entrada?.tiposProductos,
+                        formFieldKey: _keyFieldProductos,
+                        defaultCommonProducts: defaultList,
+                      )
+                    ),
+              
+                    // Comentarios
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: TextFormField(
+                        initialValue: entrada?.comentario,
+                        key: _keyFieldComentario,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        decoration: const InputDecoration(
+                          label: Text("Comentarios u observaciones a tener en cuenta"),
+                          prefixIcon: Icon(Icons.comment)
+                        ),
+                      ),
+                    ),
+          
+                    // Submit button
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                      child: LoadingProcessButton(
+                        controller: _btnController,
+                        label: Text(_isUpdatable ? 'Actualizar' : 'Registrar', style: const TextStyle(color: Colors.white)),
+                        color: _isUpdatable ? Colors.blue : Colors.red,
+                        proccess: _onSubmit,
+                      )
+                    ),
+                  ],
+              ),
+            ),
+          );
+        }
       )
     );
   }

@@ -67,7 +67,7 @@ class Entrada {
     return Entrada(
       fecha: DateTime.parse(json["fecha"]),
       cantidad: double.parse(json["cantidad"].toString()),
-      proveedor: Proveedor.fromJsonLow(json["proveedor"]),
+      proveedor: Proveedor.fromJsonWithouType(json["proveedor"]),
       tiposProductos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
       comentario: json["comentario"],
       almacenero: Almacenero.fromJson(json["almacenero"])

@@ -30,6 +30,8 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
 
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
   
+  bool _isUpdatable = false;
+
   Future<void> onSubmit() async {
     if (_formkey.currentState!.validate()) {
       final Proveedor proveedor = Proveedor.toSend(
@@ -39,7 +41,7 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
       );
 
       final Result<Object> result;
-      if(widget.idProveedorToEdit != null) {
+      if(_isUpdatable) {
         result = await proveedorService.editarProveedor(proveedor, id: widget.idProveedorToEdit!);
       }
       else{
@@ -55,7 +57,7 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
       NotificationMessage.showSuccessNotification('Se ha realizado el proceso con exito');
 
       //* El proceso es para actualizar y no esta montado el context
-      if(widget.idProveedorToEdit != null && mounted){
+      if(_isUpdatable && mounted){
         Navigator.of(context).pop();
       }
 
@@ -83,6 +85,7 @@ class _AgregarProveedorScreenState extends State<AgregarProveedorScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final proveedor = snapProveedor.data!.data;
+          _isUpdatable = proveedor != null;
           return Form(
             key: _formkey,
             child: SingleChildScrollView(
