@@ -21,17 +21,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      return const OverlaySupport.global(
-        child: MaterialApp(
-          title: "Banco de alimentos app",
-          locale: Locale('es', 'ES'),
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate
-          ],
-          supportedLocales: [ Locale('es', 'ES') ],
-          home: _RouterScreen()
+      return InteractiveViewer(
+        child: const OverlaySupport.global(
+          child: MaterialApp(
+            title: "Banco de alimentos app",
+            locale: Locale('es', 'ES'),
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            supportedLocales: [ Locale('es', 'ES') ],
+            home: _RouterScreen()
+          ),
         ),
       );
   }
