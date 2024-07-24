@@ -78,7 +78,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: [
 
