@@ -19,7 +19,7 @@ class ProveedorElement extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(proveedor.nombre),
-      subtitle: Text(proveedor.typeProveedor),
+      subtitle: Text(proveedor.typeProveedor ?? '-'),
       onTap: onTap,
       leading: leading,
       trailing: PopupMenuButton(

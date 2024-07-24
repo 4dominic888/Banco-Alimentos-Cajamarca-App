@@ -12,9 +12,8 @@ interface class EntradaAlimentosRepositoryImplement extends EntradaAlimentosRepo
   }
 
   @override
-  Future<bool> delete(String id) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<bool> delete(String id) async {
+    return await db.delete(id, dataset);
   }
 
   @override
@@ -25,9 +24,8 @@ interface class EntradaAlimentosRepositoryImplement extends EntradaAlimentosRepo
   }
 
   @override
-  Future<bool> update(String id, Entrada entrada) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<bool> update(String id, Entrada entrada) async {
+    return await db.update(id, entrada.toJsonEntry(), dataset);
   }
 
   @override

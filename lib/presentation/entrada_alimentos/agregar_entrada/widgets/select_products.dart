@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/add_product_dialog.dart';
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 
 class SelectProductsField extends StatefulWidget {
@@ -23,8 +24,8 @@ class SelectProductsField extends StatefulWidget {
 class SelectProductsFieldState extends State<SelectProductsField> {
 
   final List<String> _listSelect = [];
-  final List<TipoProductos> _listProducts = [];
-  final HashSet<String> _stringProducts = HashSet();
+  late List<TipoProductos> _listProducts;
+  late HashSet<String> _stringProducts;
 
   double _cantidadTotal = 0.00;
   double get cantidadTotal => _cantidadTotal;
@@ -33,6 +34,16 @@ class SelectProductsFieldState extends State<SelectProductsField> {
   void initState() {
     super.initState();
     _listSelect.addAll([...widget.defaultCommonProducts, 'Otros']);
+    if(widget.initialValue == null){
+      _listProducts = [];
+      _stringProducts = HashSet();
+    }
+    else{
+      _listProducts = widget.initialValue!;
+      _stringProducts = widget.initialValue!.map((e) => e.nombre).toHashSet();
+      _cantidadTotal = _listProducts.sumBy((lp) => lp.productos.sumBy((p) => p.peso));
+
+    }
   }
 
   Future<void> _showProductsAddedDialog(BuildContext context, String optionSelected, int foundIndex, FormFieldState<List<TipoProductos>> formState) async{
@@ -104,6 +115,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
       items: _listSelect.map<DropdownMenuItem<String>>((e) => DropdownMenuItem(value: e, child: Text("Agregar $e"))).toList(),
       validator: (value) {
         if(_listProducts.isEmpty) return "No se ha seleccionado productos";
+        if(cantidadTotal <= 0.01) return 'El valor minimo aceptado es de 0.01 Kg';
         return null;
       },
       decoration: const InputDecoration(

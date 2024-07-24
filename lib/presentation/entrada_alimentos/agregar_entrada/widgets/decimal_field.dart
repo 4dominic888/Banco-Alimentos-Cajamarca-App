@@ -37,6 +37,7 @@ class DecimalFieldState extends State<DecimalField>{
           keyboardType: TextInputType.number,
           validator: (value) {
             if(value!.trim().isEmpty) return "El número esta vacío";
+            if(cantidad < 0.01) return "El número debe ser mayor o igual a 0.01";
             if(cantidad == 0) return "El número no debe ser 0";
             return null;
           },

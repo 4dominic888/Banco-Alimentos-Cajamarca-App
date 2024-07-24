@@ -7,17 +7,17 @@ class EntradaView {
   final String id;
   final DateTime fecha;
   final double cantidad;
-  final String proveedor;
-  final String almacenero;
+  final String? proveedor;
+  final String? almacenero;
   final List<String> productos;
 
   EntradaView({
     required this.id,
     required this.fecha,
     required this.cantidad,
-    required this.proveedor,
-    required this.almacenero,
-    required this.productos
+    required this.productos,
+    this.proveedor,
+    this.almacenero,
   });
 
   factory EntradaView.fromJson(Map<String, dynamic> json){
@@ -39,17 +39,17 @@ class EntradaView {
 class Entrada {
   DateTime? fecha = DateTime.now();
   final double cantidad;
-  final Proveedor proveedor;
+  final Proveedor? proveedor;
   final List<TipoProductos> tiposProductos;
   final String? comentario;
-  final Almacenero almacenero;
+  final Almacenero? almacenero;
 
   Entrada({
     this.fecha,
     required this.cantidad,
-    required this.proveedor,
     required this.tiposProductos,
-    required this.almacenero,
+    this.proveedor,
+    this.almacenero,
     this.comentario = '',
   });
 
@@ -67,10 +67,10 @@ class Entrada {
     return Entrada(
       fecha: DateTime.parse(json["fecha"]),
       cantidad: double.parse(json["cantidad"].toString()),
-      proveedor: Proveedor.fromJsonLow(json["proveedor"]),
+      proveedor: json["proveedor"] != null ? Proveedor.fromJsonWithouType(json["proveedor"]) : null,
       tiposProductos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
       comentario: json["comentario"],
-      almacenero: Almacenero.fromJson(json["almacenero"])
+      almacenero: json["almacenero"] != null ? Almacenero.fromJson(json["almacenero"]) : null
     );
   }
 
@@ -82,10 +82,10 @@ class Entrada {
     return{
       "fecha" : fecha!.toIso8601String(),
       "cantidad": cantidadStr,
-      "proveedor": proveedor.toJson(),
+      "proveedor": proveedor?.toJson(),
       "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
       "comentario": comentario,
-      "almacenero": almacenero.toJson()
+      "almacenero": almacenero?.toJson()
     };
   }
 
@@ -93,10 +93,10 @@ class Entrada {
     return{
       "fecha" : fecha!.toIso8601String(),
       "cantidad": cantidadStr,
-      "proveedor": proveedor.id.toString(),
+      "proveedor": proveedor?.id.toString(),
       "tipoProductos": tiposProductos.map((e) => e.toJson()).toList(),
       "comentario": comentario,
-      "almacenero": almacenero.dni.toString()
+      "almacenero": almacenero?.dni.toString()
     };
   }
 

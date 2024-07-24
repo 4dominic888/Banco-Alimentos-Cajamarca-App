@@ -43,7 +43,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(detailItem.typeProveedor.name),
+            Text(detailItem.typeProveedor?.name ?? '-'),
             Text('Pais: ${detailItem.ubication.getCountryName ?? 'unknown'}'),
             
             detailItem.ubication.subPlaces!.isNotEmpty ? Wrap(
@@ -78,7 +78,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: [
 

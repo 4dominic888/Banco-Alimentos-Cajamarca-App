@@ -9,6 +9,7 @@ import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dar
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
+import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/agregar_entrada_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/widgets/entrada_card_element.dart';
 import 'package:bancalcaj_app/presentation/widgets/big_static_size_box.dart';
 import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
@@ -83,6 +84,14 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
           title: const Text("Exportar entrada"), 
           leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context))),
         
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AgregarEntradaScreen())).then((value) => setState(() { })),
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.add)
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
         body: Column(
           children: [
             SizedBox(

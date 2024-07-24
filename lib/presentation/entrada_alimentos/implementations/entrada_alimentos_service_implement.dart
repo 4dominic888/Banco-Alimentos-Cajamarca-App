@@ -37,9 +37,12 @@ interface class EntradaAlimentosServiceImplement implements EntradaAlimentosServ
   }
 
   @override
-  Future<Result<bool>> editarEntrada(Entrada entrada, {required String id}) {
-    // TODO: implement editarEntrada
-    throw UnimplementedError();
+  Future<Result<bool>> editarEntrada(Entrada entrada, {required String id}) async {
+    try {
+      return Result.success(data: await repo.update(id, entrada));
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }    
   }
 
   @override
@@ -69,8 +72,9 @@ interface class EntradaAlimentosServiceImplement implements EntradaAlimentosServ
   }
   
   @override
-  Future<Result<Entrada>> seleccionarEntrada(String id) async {
+  Future<Result<Entrada?>> seleccionarEntrada(String id) async {
     try {
+      if(id == 'null') return Result.success(data: null);
       final data = await repo.getById(id);
       if(data == null) throw Exception('Valor no encontrado');
       return Result.success(data: data);

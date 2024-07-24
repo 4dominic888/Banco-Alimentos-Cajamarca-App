@@ -48,7 +48,7 @@ class ExcelWritter{
     final sheet = _excel.tables['Categoria alimentos'];
 
     // Default data
-    sheet?.cell(CellIndex.indexByString('A1')).value = TextCellValue(entrada.proveedor.nombre);
+    sheet?.cell(CellIndex.indexByString('A1')).value = TextCellValue(entrada.proveedor?.nombre ?? '');
     sheet?.cell(CellIndex.indexByString('D1')).value = TextCellValue("Fecha: ${entrada.fechaStr}");
 
     // fill fields products
@@ -100,7 +100,7 @@ class ExcelWritter{
     final bytes = _excel.save();
     SaveDialog.onDownloadDir(bytes!, 
       dialogTitle: 'Guardar entrada excel',
-      filename: 'entrada_${entrada.proveedor.nombre}_${entrada.hashCode}',
+      filename: 'entrada_${entrada.proveedor?.nombre ?? ''}_${entrada.hashCode}',
       ext: 'xlsx'
     );
 
