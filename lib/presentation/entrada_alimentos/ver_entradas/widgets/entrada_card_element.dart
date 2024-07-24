@@ -28,11 +28,11 @@ class EntradaCardElement extends StatelessWidget {
     final RoundedLoadingButtonController btnControllerPdf = RoundedLoadingButtonController();
     return Card(
       child: ListTile(
-        title: Text("${entradaView.proveedor} / ${entradaView.cantidadStr}kg\n${DateFormat("dd/MM/yyyy HH:mm").format(entradaView.fecha)}"),
+        title: Text("${entradaView.proveedor ?? '-'} / ${entradaView.cantidadStr}kg\n${DateFormat("dd/MM/yyyy HH:mm").format(entradaView.fecha)}"),
         leading: Column(
           children: [
             const Icon(Icons.account_box_sharp),
-            Text(entradaView.almacenero)
+            Text(entradaView.almacenero ?? '-')
           ],
         ),
         subtitle: SizedBox(

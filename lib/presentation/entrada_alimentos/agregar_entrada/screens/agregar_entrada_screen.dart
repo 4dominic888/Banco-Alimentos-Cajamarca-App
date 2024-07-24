@@ -133,7 +133,7 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: DropDownWithExternalData<ProveedorView>(
-                        initialValue: entrada?.proveedor.proveedorView,
+                        initialValue: entrada?.proveedor?.proveedorView,
                         formFieldKey: _keyFieldProveedor,
                         itemAsString: (value) => value.nombre,
                         label: 'Proveedor',

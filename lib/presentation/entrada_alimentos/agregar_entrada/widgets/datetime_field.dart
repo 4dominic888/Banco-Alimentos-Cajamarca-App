@@ -15,7 +15,7 @@ class DateTimeField extends StatefulWidget {
 
 class DateTimeFieldState extends State<DateTimeField> {
     
-  DateTime _fecha = DateTime.now();
+  late DateTime _fecha;
 
   //? Método para obtener la fecha mediante un popup
   Future<void> _selectDate(BuildContext context, FormFieldState<DateTime> formState) async {
@@ -46,6 +46,12 @@ class DateTimeFieldState extends State<DateTimeField> {
         formState.didChange(_fecha);
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fecha = widget.initialValue ?? DateTime.now();
   }
 
   @override

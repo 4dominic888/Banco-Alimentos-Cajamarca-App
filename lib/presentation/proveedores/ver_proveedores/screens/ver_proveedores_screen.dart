@@ -43,7 +43,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(detailItem.typeProveedor.name),
+            Text(detailItem.typeProveedor?.name ?? '-'),
             Text('Pais: ${detailItem.ubication.getCountryName ?? 'unknown'}'),
             
             detailItem.ubication.subPlaces!.isNotEmpty ? Wrap(

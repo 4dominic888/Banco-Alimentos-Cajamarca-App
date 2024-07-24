@@ -39,7 +39,7 @@ class PDFWritter {
     drawText(entrada.cantidadStr, 189, 208, page, _standarFont);
 
     // Proveedor
-    drawText(entrada.proveedor.nombre, 90, 254, page, _standarFont);
+    drawText(entrada.proveedor?.nombre ?? '', 90, 254, page, _standarFont);
 
     // Tipo alimento
     Iterable<String> typeFood = entrada.tiposProductos.map((e) => e.nombre);
@@ -60,13 +60,13 @@ class PDFWritter {
     }
 
     // Almacenero datos
-    drawText(entrada.almacenero.nombre.toUpperCase(), 82.844, 675.580, page, _calibriBold);
-    drawText("DNI: ${entrada.almacenero.dni}", 82.844, 695.709, page, _calibriBold);
+    drawText(entrada.almacenero?.nombre.toUpperCase() ?? '', 82.844, 675.580, page, _calibriBold);
+    drawText("DNI: ${entrada.almacenero?.dni ?? ''}", 82.844, 695.709, page, _calibriBold);
 
     List<int> bytes = await _document.save();
     SaveDialog.onDownloadDir(bytes, 
       dialogTitle: 'Guardar entrada pdf',
-      filename: 'entrada_${entrada.proveedor.nombre}_${entrada.hashCode}',
+      filename: 'entrada_${entrada.proveedor?.nombre ?? ''}_${entrada.hashCode}',
       ext: 'pdf'
     );
   }

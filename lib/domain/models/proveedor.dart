@@ -3,14 +3,14 @@ import 'package:bancalcaj_app/domain/classes/ubication.dart';
 class ProveedorView {
   final String id;
   final String nombre;
-  final String typeProveedor;
+  final String? typeProveedor;
   final Map<String, dynamic> ubication;
 
   ProveedorView({
     required this.id,
     required this.nombre,
-    required this.typeProveedor,
-    required this.ubication
+    required this.ubication,
+    this.typeProveedor,
   });
 
   factory ProveedorView.fromJson(Map<String, dynamic> json){
@@ -26,11 +26,11 @@ class ProveedorView {
 class Proveedor{
   final String id;
   final String nombre;
-  final TypeProveedor typeProveedor;
+  final TypeProveedor? typeProveedor;
   final Ubication ubication;
 
-  Proveedor({required this.id, required this.nombre, required this.typeProveedor, required this.ubication});
-  Proveedor.toSend({required this.nombre, required this.typeProveedor, required this.ubication}) : id = '0';
+  Proveedor({required this.id, required this.nombre, required this.ubication, this.typeProveedor});
+  Proveedor.toSend({required this.nombre, required this.ubication, this.typeProveedor}) : id = '0';
   
   factory Proveedor.onlyId(String id) => Proveedor(
     id: id, 
@@ -43,7 +43,7 @@ class Proveedor{
     return Proveedor(
       id: json['idp'],
       nombre: json['nombre'],
-      typeProveedor: TypeProveedor.fromJson(json['type']),
+      typeProveedor: json['type'] != null ? TypeProveedor.fromJson(json['type']) : null,
       ubication: Ubication.fromJson(json['ubication'])
     );
   }
@@ -69,7 +69,7 @@ class Proveedor{
   ProveedorView get proveedorView => ProveedorView(
     id: id,
     nombre: nombre,
-    typeProveedor: typeProveedor.name,
+    typeProveedor: typeProveedor?.name,
     ubication: { "countryCode": ubication.countryCode, "type": ubication.type }
   );
 
@@ -77,7 +77,7 @@ class Proveedor{
     return {
       'idp': id,
       'nombre': nombre,
-      'type': typeProveedor.id,
+      'type': typeProveedor?.id,
       'ubication': ubication.toJson()
     };
   }
@@ -85,7 +85,7 @@ class Proveedor{
   Map<String, dynamic> toJsonSend(){
     return {
       'nombre': nombre,
-      'type': typeProveedor.id,
+      'type': typeProveedor?.id,
       'ubication': ubication.toJson()
     };
   }
@@ -117,6 +117,6 @@ class TypeProveedor {
   };
 
   @override
-  // ignore: non_nullable_equals_parameter
+  // ignore: non_nullable_equals_parameter, hash_and_equals
   bool operator ==(dynamic other) => other != null && other is TypeProveedor && id == other.id && name == other.name;
 }
