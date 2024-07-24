@@ -85,6 +85,7 @@ interface class ProveedorServiceImplement implements ProveedorServiceBase{
   @override
   Future<Result<Proveedor>> seleccionarProveedor(String id) async {
     try {
+      if(id == '-1') return Result.success(data: null);
       final data = await repo.getById(id);
       if(data == null) throw Exception('Valor no encontrado');
       await data.ubication.fillFields();
