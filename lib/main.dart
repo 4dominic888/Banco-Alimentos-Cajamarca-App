@@ -22,6 +22,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
       return InteractiveViewer(
+        constrained: true,
         child: const OverlaySupport.global(
           child: MaterialApp(
             title: "Banco de alimentos app",
@@ -47,12 +48,86 @@ class _RouterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
-        body: Column(children: [
-          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AgregarEntradaScreen())), child: const Text("Entrada alimentos Import")),
-          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VerEntradasScreen())), child: const Text("Entrada alimentos Export")),
-          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AgregarProveedorScreen())), child: const Text('Proveedor register')),
-          TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VerProveedoresScreen())), child: const Text('Proveedor list'))
-        ])
+        body: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    const Text('Entradas de alimentos',
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)
+                    ),
+                    Expanded(
+                      child: Wrap(
+                        runSpacing: 15,
+                        spacing: 15,
+                        runAlignment: WrapAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 300,
+                            child: Card(child: ListTile(
+                              title: const Text('Registrar Entradas de alimentos', style: TextStyle(fontSize: 25)),
+                              leading: const Icon(Icons.app_registration_rounded),
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarEntradaScreen()))
+                            ))
+                          ),
+                          SizedBox(
+                            width: 260,
+                            child: Card(child: ListTile(
+                              title: const Text('Ver Entradas de alimentos', style: TextStyle(fontSize: 25)),
+                              leading: const Icon(Icons.list),
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()))
+                            ))
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+
+                const Spacer(),
+
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Text('Proveedores',
+                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)
+                      ),
+                      Wrap(
+                        runSpacing: 15,
+                        spacing: 15,
+                        runAlignment: WrapAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 260,
+                            child: Card(child: ListTile(
+                              title: const Text('Registrar Proveedores', style: TextStyle(fontSize: 25)),
+                              leading: const Icon(Icons.person_add_alt),
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarProveedorScreen()))
+                            ))
+                          ),
+                          SizedBox(
+                            width: 260,
+                            child: Card(child: ListTile(
+                              title: const Text('Ver proveedores', style: TextStyle(fontSize: 25)),
+                              leading: const Icon(Icons.group),
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VerProveedoresScreen()))
+                            ))
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
     );
   }
 }
