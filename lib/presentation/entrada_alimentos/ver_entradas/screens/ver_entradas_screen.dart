@@ -178,7 +178,8 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                                 return EntradaCardElement(
                                   entradaView: entradaView,
                                   excelService: _excelService,
-                                  pdfService: _pdfService
+                                  pdfService: _pdfService,
+                                  onDataUpdate: () => setState(() { }),
                                 );
                               },
                             )

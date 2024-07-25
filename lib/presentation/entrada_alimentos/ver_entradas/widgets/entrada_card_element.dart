@@ -15,12 +15,13 @@ class EntradaCardElement extends StatelessWidget {
     super.key,
     required this.entradaView,
     required ExcelWritter excelService,
-    required PDFWritter pdfService,
+    required PDFWritter pdfService, this.onDataUpdate,
   }) : _excelService = excelService, _pdfService = pdfService;
 
   final EntradaView entradaView;
   final ExcelWritter _excelService;
   final PDFWritter _pdfService;
+  final void Function()? onDataUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -123,13 +124,54 @@ class EntradaCardElement extends StatelessWidget {
               onSelected: (value) async {
                 switch (value) {
                   case 0: {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarEntradaScreen(idEntradaToEdit: entradaView.id)));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AgregarEntradaScreen(idEntradaToEdit: entradaView.id)))
+                      .then((_) => onDataUpdate?.call());
                     break;
                   }
 
-                  case 1: {
-                    break;
-                  }
+                case 1: {
+                  final RoundedLoadingButtonController btnConfirmController = RoundedLoadingButtonController();
+                  showDialog(context: context, builder: (dialogContext) => AlertDialog(
+                    title: const Text('Eliminar Entrada'),
+                    content: const Text('Esta seguro que desea eliminar esta entrada de alimentos'),
+                    actions: [
+                      SizedBox(
+                        width: 120,
+                        height: 50,
+                        child: RoundedLoadingButton(
+                          controller: btnConfirmController,
+                          child: const Text('Aceptar', style: TextStyle(color: Colors.white)),
+                          color: Colors.red,
+                          width: 120,
+                          onPressed: () async {
+                            final result = await GetIt.I<EntradaAlimentosServiceBase>().eliminarEntrada(entradaView.id);
+                            if(dialogContext.mounted) { Navigator.of(dialogContext).pop(); }
+                            if(!result.success) {
+                              NotificationMessage.showErrorNotification(result.message!);
+                              return;
+                            }
+                            NotificationMessage.showSuccessNotification('Se ha eliminado el proveedor con exito');
+                            onDataUpdate?.call();
+                          },
+                        ),
+                      ),
+
+                      SizedBox(width: 120, height: 50,
+                        child: ElevatedButton(
+                          child: const Text('Cancelar'),
+                          style: const ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(Colors.white),
+                            foregroundColor: WidgetStatePropertyAll(Colors.black)
+                          ),
+                          onPressed: () => Navigator.of(context).pop()
+                        ),
+                      ),
+                    ],
+                  ));
+
+                  break;
+                }
+
 
                   default: break;
                 }
