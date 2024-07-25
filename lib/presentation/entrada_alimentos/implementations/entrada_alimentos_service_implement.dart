@@ -46,9 +46,12 @@ interface class EntradaAlimentosServiceImplement implements EntradaAlimentosServ
   }
 
   @override
-  Future<Result<bool>> eliminarEntrada(String id) {
-    // TODO: implement eliminarEntrada
-    throw UnimplementedError();
+  Future<Result<bool>> eliminarEntrada(String id) async {
+    try {
+      return Result.success(data: await repo.delete(id));
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
   }
 
   @override
