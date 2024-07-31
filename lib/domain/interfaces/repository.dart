@@ -24,7 +24,7 @@ abstract class IGetable<T, U> {
 abstract class IUpdatable<T> { Future update(String id, T item); }
 
 /// Letra D del CRUD
-abstract class IDeletable<T> { Future delete(String id); }
+abstract class IDeletable { Future delete(String id); }
 
 
 /// Abstraccion del CRUD, implementa todos los metodos de este
@@ -33,4 +33,4 @@ abstract class IDeletable<T> { Future delete(String id); }
 /// T es el tipo de dato a devolver en `getById`
 /// 
 /// U es el tipo de dato a devolver en `getAll`, por lo general debe ser una version corta y general del modelo
-abstract class ICrudable<T, U> implements IAddable<T>, IUpdatable<T>, IDeletable<T>, IGetable<T, U> { }
+abstract class ICrudable<T, U> implements IAddable<T>, IUpdatable<T>, IDeletable, IGetable<T, U> { }

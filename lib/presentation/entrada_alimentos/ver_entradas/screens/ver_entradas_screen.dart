@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 import 'package:bancalcaj_app/domain/classes/result.dart';
-import 'package:bancalcaj_app/domain/models/almacenero.dart';
+import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
@@ -31,7 +31,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
   final proveedorService = GetIt.I<ProveedorServiceBase>();
   
   final GlobalKey<FormFieldState<ProveedorView>> _keyFieldProveedor = GlobalKey();
-  final GlobalKey<FormFieldState<Almacenero>> _keyFieldAlmacenero = GlobalKey();
+  final GlobalKey<FormFieldState<Employee>> _keyFieldAlmacenero = GlobalKey();
   final _paginateMetadaDataController = StreamController<PaginateMetaData>();
 
   late final PDFWritter _pdfService;
@@ -159,6 +159,9 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                     if(snapshot.hasError || snapshot.data == null){
                       return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
                     }
+                    if(!snapshot.data!.success){
+                      return BigStaticSizeBox(context, child: Center(child: Text(snapshot.data!.message!)));
+                    }                    
                     if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
                       return BigStaticSizeBox(context, child: const Center(child: Text('Sin entradas a mostrar')));
                     }

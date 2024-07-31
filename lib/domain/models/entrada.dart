@@ -1,4 +1,4 @@
-import 'package:bancalcaj_app/domain/models/almacenero.dart';
+import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +42,7 @@ class Entrada {
   final Proveedor? proveedor;
   final List<TipoProductos> tiposProductos;
   final String? comentario;
-  final Almacenero? almacenero;
+  final Employee? almacenero;
 
   Entrada({
     this.fecha,
@@ -60,7 +60,7 @@ class Entrada {
     required this.tiposProductos,
     required String almaceneroId,
     this.comentario,
-  }) : proveedor = Proveedor.onlyId(proveedorId), almacenero = Almacenero(dni: almaceneroId, nombre: 'none');      
+  }) : proveedor = Proveedor.onlyId(proveedorId), almacenero = Employee.onlyDni(dni: almaceneroId);
 
   factory Entrada.fromJson(Map<String, dynamic> json){
     final products = json["tipoProductos"] as List<dynamic>;
@@ -70,7 +70,7 @@ class Entrada {
       proveedor: json["proveedor"] != null ? Proveedor.fromJsonWithouType(json["proveedor"]) : null,
       tiposProductos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
       comentario: json["comentario"],
-      almacenero: json["almacenero"] != null ? Almacenero.fromJson(json["almacenero"]) : null
+      almacenero: json["almacenero"] != null ? Employee.fromJson(json["almacenero"]) : null
     );
   }
 
@@ -105,7 +105,7 @@ class Entrada {
     double? cantidad,
     Proveedor? proveedor,
     List<TipoProductos>? tiposProductos,
-    Almacenero? almacenero,
+    Employee? almacenero,
     String? comentario
   }){
     return Entrada(
