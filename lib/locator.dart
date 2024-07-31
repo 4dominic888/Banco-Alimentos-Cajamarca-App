@@ -3,6 +3,7 @@ import 'package:bancalcaj_app/domain/interfaces/database_interface.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/presentation/empleados/implementations/employee_repository_implement.dart';
 import 'package:bancalcaj_app/presentation/empleados/implementations/employee_service_implement.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/implementations/entrada_alimentos_repository_implement.dart';
@@ -21,9 +22,13 @@ Future<void> setupLocator() async {
   final dbContext = DatabaseInterface.getInstance(MongoDBMapper());
   await dbContext.init();
 
-  _locator.registerLazySingletonAsync<SharedPreferences>(
-    () async => await SharedPreferences.getInstance()
+  _locator.registerSingletonAsync<SharedPreferences>(
+    () => SharedPreferences.getInstance()
   );
+
+  await _locator.isReady<SharedPreferences>();
+
+  _locator.registerSingleton<EmployeeGeneralState>(EmployeeGeneralState());
 
   _locator.registerLazySingleton<EntradaAlimentosServiceBase>(
     () => EntradaAlimentosServiceImplement(

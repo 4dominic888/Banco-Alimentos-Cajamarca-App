@@ -43,6 +43,8 @@ class Employee {
 
     Employee.onlyDni({required this.dni}) : nombre='', types=[];
 
+    Employee.none() : dni='', nombre='', types=[];
+
     factory Employee.fromJson(Map<String, dynamic> json){
       return Employee(
         nombre: json['nombre'],
