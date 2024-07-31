@@ -4,7 +4,8 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/repositories/employee_repository_base.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
-import 'package:bancalcaj_app/infrastructure/token_utils.dart';
+import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
+import 'package:get_it/get_it.dart';
 
 interface class EmployeeServiceImplement extends EmployeeServiceBase{
 
@@ -49,7 +50,7 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
         body: {'dni': dni, 'password': password }
       );
 
-      await TokenUtils.setTokens(response);
+      await AuthUtils.setTokens(response);
 
       return Result.success(data: response['status']);
     } catch (e) {
@@ -60,13 +61,14 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   @override
   Future<Result<bool>> logout() async {
     try {
-      await TokenUtils.refreshingToken();
+      await AuthUtils.refreshingToken();
       final response = await ExpressBackend.solicitude('employee/logout',
         RequestType.post,
         needPermission: true
       );
       
-      await TokenUtils.cleanTokens();
+      await AuthUtils.cleanTokens();
+      GetIt.I<EmployeeGeneralState>().employee = Employee.none();
       return Result.success(data: response['status']);
 
     } catch (e) {
@@ -77,7 +79,7 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   @override
   Future<Result<bool>> recuperarPassword(String dni, {required String newPassword, required String code}) async {
     try {
-      await TokenUtils.refreshingToken();
+      await AuthUtils.refreshingToken();
       final response = await ExpressBackend.solicitude('employee/recovery-password',
         RequestType.post,
         body: { 'dni': dni, 'password': newPassword, 'code': code },
@@ -93,7 +95,7 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   Future<Result<String>> register(Employee employee, String password) async {
     try {
       final response = await repo.register(employee, password);
-      await TokenUtils.setTokens({ 'token': response['token'], 'refreshToken': response['refreshToken'] });
+      await AuthUtils.setTokens({ 'token': response['token'], 'refreshToken': response['refreshToken'] });
       return Result.success(data: response['qr']);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');
