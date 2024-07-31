@@ -3,6 +3,11 @@ enum EmployeeType{
   almacenero
 }
 
+const Map<EmployeeType, String>_employeeTypeMap = {
+  EmployeeType.administrador: 'Administrador',
+  EmployeeType.almacenero: 'Almacenero'
+};
+
 class EmployeeView {
   final String dni;
   final String nombre;
@@ -52,6 +57,20 @@ class Employee {
         types: (json['types'] is Iterable) ? (json['types'] as Iterable).map((e) => EmployeeType.values[e]).toList() : []
       );
     }
+
+    String get typesStr {
+      final StringBuffer buffer = StringBuffer();
+
+      if(types.length == 1) return _employeeTypeMap[types.first] ?? 'unknown';
+
+      for (int i = 0; i < types.length; i++) {
+        buffer.write(_employeeTypeMap[types[i]]);
+        if (i < types.length - 1) { buffer.write(', '); }
+        else { buffer.write(' & '); }
+      }
+
+      return buffer.toString();
+    }    
 
     Map<String, dynamic> toJsonPassword(String password){
       return {

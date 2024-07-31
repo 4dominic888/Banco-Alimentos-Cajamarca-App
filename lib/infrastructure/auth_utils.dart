@@ -35,11 +35,13 @@ class AuthUtils{
   static String? get accessToken => _prefs.getString('token');
   static String? get refreshToken => _prefs.getString('refreshToken');
 
+  //* Si alguno de los 2 tokens es nulo O refresh token esta expirado
+  static bool get isNotEmployeeAuthenticate => (accessToken == null || refreshToken == null) || (refreshToken != null && isTokenExpired(refreshToken!));
+
   /// Retorna el estado del refresco, si se refresco o no
   static Future<void> refreshingToken() async {
 
-    //* Si alguno de los 2 tokens es nulo O refresh token esta expirado
-    if((accessToken == null || refreshToken == null) || (refreshToken != null && isTokenExpired(refreshToken!))) {
+    if(isNotEmployeeAuthenticate) {
       cleanTokens();
       throw const HttpException('Usuario no autenticado o con token de refresco expirado');
     }

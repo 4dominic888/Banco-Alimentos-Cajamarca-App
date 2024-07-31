@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:animated_floating_buttons/widgets/animated_floating_action_button.dart';
+import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/locator.dart';
@@ -59,6 +60,8 @@ class _RouterScreen extends StatefulWidget {
 
 class _RouterScreenState extends State<_RouterScreen> {
 
+  final _fabKey =GlobalKey<AnimatedFloatingActionButtonState>();
+
   List<Widget> unregisteredOptions() => [
     FloatingActionButton(
       heroTag: 'login',
@@ -77,12 +80,13 @@ class _RouterScreenState extends State<_RouterScreen> {
       child: const Icon(Icons.exit_to_app),
       onPressed: () async {
         final result = await GetIt.I<EmployeeServiceBase>().logout();
-        if(!result.success){
-          NotificationMessage.showErrorNotification(result.message);
-          return;
-        }
-        NotificationMessage.showSuccessNotification('Se ha cerrado sesion correctamente');
-        setState(() {});
+        setState(() {
+          if(!result.success){
+            NotificationMessage.showErrorNotification(result.message);
+            return;
+          }
+          NotificationMessage.showSuccessNotification('Se ha cerrado sesion correctamente');
+        });
       },
     ),
 
@@ -92,6 +96,18 @@ class _RouterScreenState extends State<_RouterScreen> {
       child: const Icon(Icons.edit),
       onPressed: (){
         //TODO vista para editar datos
+      },
+    ),
+
+    FloatingActionButton(
+      heroTag: 'refreshAccount',
+      tooltip: 'Actualiza tus datos de usuario',
+      child: const Icon(Icons.refresh),
+      onPressed: () async{
+        await GetIt.I<EmployeeGeneralState>().refreshEmployee();
+        setState(() {
+          _fabKey.currentState?.closeFABs();
+        });
       },
     )
   ];
@@ -104,6 +120,15 @@ class _RouterScreenState extends State<_RouterScreen> {
       onPressed: () async {
         //TODO Vista de monitorear usuarios
       },
+    ),
+
+    FloatingActionButton(
+      heroTag: 'register',
+      tooltip: 'Registra nuevos usuarios',
+      child: const Icon(Icons.person_add),
+      onPressed: () async {
+        //TODO Vista de monitorear usuarios
+      },
     )
   ];
 
@@ -112,13 +137,15 @@ class _RouterScreenState extends State<_RouterScreen> {
     return Scaffold(
         appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
         persistentFooterButtons: [
-          Text(GetIt.I<EmployeeGeneralState>().employee.nombre),
           Text(GetIt.I<EmployeeGeneralState>().employee.dni),
+          Text(GetIt.I<EmployeeGeneralState>().employee.nombre),
+          Text('[${GetIt.I<EmployeeGeneralState>().employee.typesStr}]'),
           // Text(AuthUtils.refreshToken ?? 'no token')
         ],
-        floatingActionButton: AnimatedFloatingActionButton(          
-          fabButtons: AuthUtils.refreshToken == null ? unregisteredOptions() : employeeOptions()
-          ,
+        floatingActionButton: AnimatedFloatingActionButton(
+          key: _fabKey,
+          fabButtons: AuthUtils.refreshToken == null ? 
+            unregisteredOptions() : [...employeeOptions(), if(GetIt.I<EmployeeGeneralState>().employee.types.contains(EmployeeType.administrador)) ...administratorOptions() ],
           colorStartAnimation: Colors.red.shade300,
           colorEndAnimation: Colors.red.shade200,
           animatedIconData: AnimatedIcons.home_menu,
@@ -148,7 +175,10 @@ class _RouterScreenState extends State<_RouterScreen> {
                             child: Card(child: ListTile(
                               title: const Text('Registrar Entradas de alimentos', style: TextStyle(fontSize: 16)),
                               leading: const Icon(Icons.app_registration_rounded),
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarEntradaScreen()))
+                              onTap: () {
+                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarEntradaScreen()));
+                              }
                             ))
                           ),
                           SizedBox(
@@ -156,7 +186,10 @@ class _RouterScreenState extends State<_RouterScreen> {
                             child: Card(child: ListTile(
                               title: const Text('Ver Entradas de alimentos', style: TextStyle(fontSize: 16)),
                               leading: const Icon(Icons.list),
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()))
+                              onTap: () {
+                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()));
+                              }
                             ))
                           ),
                         ],
@@ -183,7 +216,10 @@ class _RouterScreenState extends State<_RouterScreen> {
                             child: Card(child: ListTile(
                               title: const Text('Registrar Proveedores', style: TextStyle(fontSize: 16)),
                               leading: const Icon(Icons.person_add_alt),
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarProveedorScreen()))
+                              onTap: () {
+                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarProveedorScreen()));
+                              }
                             ))
                           ),
                           SizedBox(
@@ -191,7 +227,10 @@ class _RouterScreenState extends State<_RouterScreen> {
                             child: Card(child: ListTile(
                               title: const Text('Ver proveedores', style: TextStyle(fontSize: 16)),
                               leading: const Icon(Icons.group),
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VerProveedoresScreen()))
+                              onTap: () {
+                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const VerProveedoresScreen()));
+                              }
                             ))
                           ),
                         ],

@@ -72,6 +72,7 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
       return Result.success(data: response['status']);
 
     } catch (e) {
+      await AuthUtils.cleanTokens();
       return Result.onError(message: 'Ha ocurrido un error: $e');
     }
   }
