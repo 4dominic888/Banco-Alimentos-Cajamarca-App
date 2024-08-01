@@ -123,4 +123,14 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
     }
   }
   
+  @override
+  Future<Result<bool>> eliminarEmpleado(String dni) async {
+    try {
+      final result = await repo.delete(dni);
+      return Result.success(data: result);
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
+  }
+  
 }

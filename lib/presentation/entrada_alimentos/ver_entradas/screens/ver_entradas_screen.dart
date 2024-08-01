@@ -192,17 +192,17 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                   }
                 ),
                   
-              StreamBuilder<PaginateMetaData>(
-                stream: _paginateMetadaDataController.stream,
-                builder: (context, snapshot) {
-                  return PaginationWidget(
-                    currentPages: snapshot.data?.currentPage ?? 1,
-                    onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
-                    totalPages: snapshot.data?.totalPages ?? 1,
-                    onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-                  );
-                }
-              )
+                StreamBuilder<PaginateMetaData>(
+                  stream: _paginateMetadaDataController.stream,
+                  builder: (context, snapshot) {
+                    return PaginationWidget(
+                      currentPages: snapshot.data?.currentPage ?? 1,
+                      onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
+                      totalPages: snapshot.data?.totalPages ?? 1,
+                      onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
+                    );
+                  }
+                )
               ],
             ),
           ),
