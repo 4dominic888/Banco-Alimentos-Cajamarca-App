@@ -62,6 +62,7 @@ class _RouterScreen extends StatefulWidget {
 class _RouterScreenState extends State<_RouterScreen> {
 
   final _fabKey =GlobalKey<AnimatedFloatingActionButtonState>();
+  bool _isLoading = false;
 
   List<Widget> unregisteredOptions() => [
     FloatingActionButton(
@@ -80,13 +81,18 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Salir de la sesion',
       child: const Icon(Icons.exit_to_app),
       onPressed: () async {
+        setState(() => _isLoading = true);
         final result = await GetIt.I<EmployeeServiceBase>().logout();
         setState(() {
           if(!result.success){
             NotificationMessage.showErrorNotification(result.message);
+            _isLoading = false;
+            _fabKey.currentState?.closeFABs();
             return;
           }
           NotificationMessage.showSuccessNotification('Se ha cerrado sesion correctamente');
+          _isLoading = false;
+          _fabKey.currentState?.closeFABs();
         });
       },
     ),
@@ -105,9 +111,11 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Actualiza tus datos de usuario',
       child: const Icon(Icons.refresh),
       onPressed: () async{
+        setState(() => _isLoading = true);
         await GetIt.I<EmployeeGeneralState>().refreshEmployee();
         setState(() {
           _fabKey.currentState?.closeFABs();
+          _isLoading = false;
         });
       },
     )
@@ -139,6 +147,7 @@ class _RouterScreenState extends State<_RouterScreen> {
     return Scaffold(
         appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
         persistentFooterButtons: [
+          if(_isLoading) const CircularProgressIndicator(),
           Text(GetIt.I<EmployeeGeneralState>().employee.dni),
           Text(GetIt.I<EmployeeGeneralState>().employee.nombre),
           Text('[${GetIt.I<EmployeeGeneralState>().employee.typesStr}]'),
