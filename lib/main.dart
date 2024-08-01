@@ -7,6 +7,7 @@ import 'package:bancalcaj_app/locator.dart';
 import 'package:bancalcaj_app/presentation/empleados/editar_cuenta/screens/editar_cuenta_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/login/screens/login_empleado_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/register/screens/register_empleado_screen.dart';
+import 'package:bancalcaj_app/presentation/empleados/ver_empleados/screens/ver_empleados_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/screens/ver_entradas_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/agregar_entrada_screen.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
@@ -131,7 +132,8 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Monitorea a los empleados',
       child: const Icon(Icons.app_registration_rounded),
       onPressed: () async {
-        //Todo monitoreate
+        if(AuthUtils.isNotEmployeeAuthenticate || _employeeGeneralState.employee.dni.isEmpty) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEmpleadosScreen()));
       },
     ),
 
