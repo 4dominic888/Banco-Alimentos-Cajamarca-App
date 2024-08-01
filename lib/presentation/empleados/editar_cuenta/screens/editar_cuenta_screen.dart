@@ -2,6 +2,7 @@ import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/presentation/widgets/loading_process_button.dart';
 import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
+import 'package:bancalcaj_app/presentation/widgets/password_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -27,8 +28,6 @@ class _EditarCuentaScreenState extends State<EditarCuentaScreen> {
   final _passwordKey = GlobalKey<FormFieldState<String>>();
   final _verifyPasswordKey = GlobalKey<FormFieldState<String>>();
   final _btnPasswordController = RoundedLoadingButtonController();
-  bool _showPassword = false;
-  bool _showVerifyPassword = false;
 
   Future<void> _updateName() async {
     if(_nameKey.currentState!.validate()) {
@@ -62,62 +61,6 @@ class _EditarCuentaScreenState extends State<EditarCuentaScreen> {
       _btnPasswordController.success();
       NotificationMessage.showSuccessNotification('Actualizacion del contraseña exitoso');
       return;
-      //*TOdo mover esto para recuperar password
-      // bool? confirm = await showDialog<bool>(context: context, builder: (context) {
-      //   final codeKey = GlobalKey<FormFieldState<String>>();
-      //   bool loading = false;
-      //   return StatefulBuilder(
-      //     builder: (context, alertSetState) {
-      //       return AlertDialog(
-      //         title: const Text('Confirmar cambio de contraseña'),
-      //         content: SizedBox(
-      //           height: 120,
-      //           child: Column(
-      //             children: [
-      //               const Text('Ingrese el codigo generado por Google Authenticator'),
-      //               TextFormField(
-      //                 key: codeKey,
-      //                 keyboardType: TextInputType.number,
-      //                 inputFormatters: [
-      //                   FilteringTextInputFormatter.digitsOnly,
-      //                   LengthLimitingTextInputFormatter(6)
-      //                 ],
-      //                 decoration: const InputDecoration(
-      //                   label: Text('Codigo'),
-      //                   icon: Icon(Icons.power_input)
-      //                 ),
-      //                 validator: (value) {
-      //                   if(value == null || value.isEmpty) return 'Se debe proporcionar el codigo';
-      //                   if(value.length != 6) return 'El codigo es de solo 6 digitos';
-      //                   return null;
-      //                 },
-      //               ),
-      //               const SizedBox(height: 10),
-      //               if(loading) const CircularProgressIndicator()
-      //             ],
-      //           ),
-      //         ),
-      //         actions: [
-      //           TextButton(child: const Text('Cancelar'), onPressed: () => Navigator.of(context).pop(false)),
-      //           TextButton(child: const Text('Aceptar'), onPressed: () async {
-      //             if(codeKey.currentState!.validate()) {
-      //               alertSetState(() => loading = true);
-      //               //final result = _employeeService.recuperarPassword(dni, newPassword: newPassword, code: code)
-      //               alertSetState(() => loading = false);
-      //               if(!context.mounted) return;
-      //               Navigator.of(context).pop(true);
-      //             }
-      //           })
-      //         ],
-      //       );
-      //     }
-      //   );
-      // });
-
-      // if(confirm == null || !confirm){
-      //   _btnPasswordController.error();
-      //   return;
-      // }
     }
     _btnPasswordController.error();
   }
@@ -184,19 +127,9 @@ class _EditarCuentaScreenState extends State<EditarCuentaScreen> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                      child: TextFormField(
-                        key: _passwordKey,
-                        obscureText: !_showPassword,
-                        decoration: InputDecoration(
-                          suffix: IconButton(
-                            icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off),
-                            onPressed: (){
-                              setState(() => _showPassword = !_showPassword);
-                            },
-                          ),
-                          label: const Text('Nueva Contraseña'),
-                          icon: const Icon(Icons.password)
-                        ),
+                      child: PasswordFormField(
+                        formKey: _passwordKey,
+                        label: 'Nueva Contraseña',
                         validator: (value) {
                           if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
                           value = value.trim();
@@ -207,28 +140,16 @@ class _EditarCuentaScreenState extends State<EditarCuentaScreen> {
                     ),
                   ),
 
-                  //* Password field
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                      child: TextFormField(
-                        key: _verifyPasswordKey,
-                        obscureText: !_showVerifyPassword,
-                        decoration: InputDecoration(
-                          suffix: IconButton(
-                            icon: Icon(_showVerifyPassword ? Icons.visibility : Icons.visibility_off),
-                            onPressed: (){
-                              setState(() => _showVerifyPassword = !_showVerifyPassword);
-                            },
-                          ),
-                          label: const Text('Confirmar Contraseña'),
-                          icon: const Icon(Icons.password)
-                        ),
+                      child: VerifyPasswordFormField(
+                        formKey: _verifyPasswordKey,
                         validator: (value) {
                           if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
                           value = value.trim();
                           if(value != _passwordKey.currentState!.value!) return 'las contraseñas no coinciden';
-                          return null;
+                          return null;                          
                         },
                       ),
                     ),

@@ -78,11 +78,9 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   @override
   Future<Result<bool>> recuperarPassword(String dni, {required String newPassword, required String code}) async {
     try {
-      await AuthUtils.refreshingToken();
       final response = await ExpressBackend.solicitude('employee/recovery-password',
         RequestType.post,
         body: { 'dni': dni, 'password': newPassword, 'code': code },
-        needPermission: true
       );
       return Result.success(data: response['status']);
     } catch (e) {
