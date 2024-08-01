@@ -6,6 +6,7 @@ class MultiDropDownFormField<T> extends StatefulWidget {
   final Key formFieldKey;
   final String Function(T value) itemAsString;
   final List<T>? items;
+  final List<T>? selectedItems;
   final String label;
   final void Function()? onChanged;
   final Icon? icon;
@@ -18,7 +19,7 @@ class MultiDropDownFormField<T> extends StatefulWidget {
     this.items,
     this.onChanged,
     this.icon,
-    this.compareFn
+    this.compareFn, this.selectedItems
   });
 
   @override
@@ -32,6 +33,7 @@ class _MultiDropDownFormFieldState<T> extends State<MultiDropDownFormField<T>> {
       key: widget.formFieldKey,
       builder: (formState) {
         return DropdownSearch<T>.multiSelection(
+          selectedItems: widget.selectedItems ?? [],
           items: widget.items ?? [],
           itemAsString: widget.itemAsString,
           popupProps: PopupPropsMultiSelection.bottomSheet(
