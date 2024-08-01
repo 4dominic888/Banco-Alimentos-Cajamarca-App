@@ -67,9 +67,9 @@ interface class EmployeeRepositoryImplement extends EmployeeRepositoryBase {
   @override
   Future<bool> updateType(String dni, List<EmployeeType> types) async {
     await AuthUtils.refreshingToken();
-    final response = await ExpressBackend.solicitude('$dataset/types/$dni', 
+    final response = await ExpressBackend.solicitude('$dataset/type/$dni', 
       RequestType.put,
-      body: { 'types': types },
+      body: { 'types': types.map((e) => e.index).toList() },
       needPermission: true
     );
 
