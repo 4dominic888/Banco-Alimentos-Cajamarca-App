@@ -4,6 +4,7 @@ import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/locator.dart';
+import 'package:bancalcaj_app/presentation/empleados/editar_cuenta/screens/editar_cuenta_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/login/screens/login_empleado_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/register/screens/register_empleado_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/screens/ver_entradas_screen.dart';
@@ -64,6 +65,8 @@ class _RouterScreenState extends State<_RouterScreen> {
   final _fabKey =GlobalKey<AnimatedFloatingActionButtonState>();
   bool _isLoading = false;
 
+  final _employeeGeneralState = GetIt.I<EmployeeGeneralState>();
+
   List<Widget> unregisteredOptions() => [
     FloatingActionButton(
       heroTag: 'login',
@@ -102,7 +105,8 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Edita tu cuenta',
       child: const Icon(Icons.edit),
       onPressed: (){
-        //TODO vista para editar datos
+        if(AuthUtils.isNotEmployeeAuthenticate || _employeeGeneralState.employee.dni.isEmpty) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+        Navigator.push(context, MaterialPageRoute(builder: (_) => EditarCuentaScreen(employee: _employeeGeneralState.employee)));
       },
     ),
 
@@ -127,7 +131,7 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Monitorea a los empleados',
       child: const Icon(Icons.app_registration_rounded),
       onPressed: () async {
-        //TODO Vista de monitorear usuarios
+        //Todo monitoreate
       },
     ),
 
@@ -148,9 +152,9 @@ class _RouterScreenState extends State<_RouterScreen> {
         appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
         persistentFooterButtons: [
           if(_isLoading) const CircularProgressIndicator(),
-          Text(GetIt.I<EmployeeGeneralState>().employee.dni),
-          Text(GetIt.I<EmployeeGeneralState>().employee.nombre),
-          Text('[${GetIt.I<EmployeeGeneralState>().employee.typesStr}]'),
+          Text(_employeeGeneralState.employee.dni),
+          Text(_employeeGeneralState.employee.nombre),
+          Text('[${_employeeGeneralState.employee.typesStr}]'),
           // Text(AuthUtils.refreshToken ?? 'no token')
         ],
         floatingActionButton: AnimatedFloatingActionButton(
