@@ -76,7 +76,7 @@ class Employee {
       return {
         "dni": dni,
         "nombre": nombre,
-        "types": types,
+        "types": types.map((e) => e.index).toList(),
         "password": password
       };
     }
