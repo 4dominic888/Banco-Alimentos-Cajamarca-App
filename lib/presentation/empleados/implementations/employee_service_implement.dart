@@ -94,7 +94,6 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   Future<Result<String>> register(Employee employee, String password) async {
     try {
       final response = await repo.register(employee, password);
-      await AuthUtils.setTokens({ 'token': response['token'], 'refreshToken': response['refreshToken'] });
       return Result.success(data: response['qr']);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');
