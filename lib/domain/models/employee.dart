@@ -3,11 +3,6 @@ enum EmployeeType{
   almacenero
 }
 
-const Map<EmployeeType, String>_employeeTypeMap = {
-  EmployeeType.administrador: 'Administrador',
-  EmployeeType.almacenero: 'Almacenero'
-};
-
 class EmployeeView {
   final String dni;
   final String nombre;
@@ -40,6 +35,11 @@ class EmployeeView {
 
 class Employee {
 
+  static Map<EmployeeType, String> employeeTypeMap = {
+    EmployeeType.administrador: 'Administrador',
+    EmployeeType.almacenero: 'Almacenero'
+  };
+
     final String dni;
     final String nombre;
     final List<EmployeeType> types;
@@ -61,10 +61,10 @@ class Employee {
     String get typesStr {
       final StringBuffer buffer = StringBuffer();
 
-      if(types.length == 1) return _employeeTypeMap[types.first] ?? 'unknown';
+      if(types.length == 1) return employeeTypeMap[types.first] ?? 'unknown';
 
       for (int i = 0; i < types.length; i++) {
-        buffer.write(_employeeTypeMap[types[i]]);
+        buffer.write(employeeTypeMap[types[i]]);
         if (i < types.length - 1) { buffer.write(', '); }
         else { buffer.write(' & '); }
       }

@@ -5,7 +5,6 @@ import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/repositories/employee_repository_base.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
-import 'package:get_it/get_it.dart';
 
 interface class EmployeeServiceImplement extends EmployeeServiceBase{
 
@@ -49,7 +48,7 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
         RequestType.post,
         body: {'dni': dni, 'password': password }
       );
-
+      
       await AuthUtils.setTokens(response);
 
       return Result.success(data: response['status']);
@@ -66,13 +65,12 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
         RequestType.post,
         needPermission: true
       );
-      
-      await AuthUtils.cleanTokens();
-      GetIt.I<EmployeeGeneralState>().employee = Employee.none();
+
+      await AuthUtils.cleanUserData();
       return Result.success(data: response['status']);
 
     } catch (e) {
-      await AuthUtils.cleanTokens();
+      await AuthUtils.cleanUserData();
       return Result.onError(message: 'Ha ocurrido un error: $e');
     }
   }

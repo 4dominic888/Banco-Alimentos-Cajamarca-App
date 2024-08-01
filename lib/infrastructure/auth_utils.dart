@@ -18,10 +18,10 @@ class EmployeeGeneralState {
       employee = Employee.none();
       return;
     }
+
     final decodedToken = JwtDecoder.decode(AuthUtils.refreshToken!);
     final result = await _employeeService.seleccionarEmpleado(decodedToken['id']);
     if(!result.success) {
-      employee = Employee.none();
       return;
     }
     employee = result.data!;
@@ -42,8 +42,8 @@ class AuthUtils{
   static Future<void> refreshingToken() async {
 
     if(isNotEmployeeAuthenticate) {
-      cleanTokens();
-      throw const HttpException('Usuario no autenticado o con token de refresco expirado');
+      cleanUserData();
+      throw const HttpException('Usuario no autenticado o con token de refresco expirado, inicie sesion nuevamente');
     }
 
     //* Si se expiro el token principal
@@ -52,6 +52,7 @@ class AuthUtils{
         RequestType.post,
         body: { 'refreshToken': refreshToken }
       );
+
       if(response['message'] != null) throw HttpException(response['message']);
 
       await AuthUtils.setTokens(response);
@@ -84,8 +85,10 @@ class AuthUtils{
     }
   }
 
-  static Future<void> cleanTokens() async{
+  static Future<void> cleanUserData() async{
     await _prefs.remove('token');
     await _prefs.remove('refreshToken');
+    GetIt.I<EmployeeGeneralState>().employee = Employee.none();
+
   }
 }

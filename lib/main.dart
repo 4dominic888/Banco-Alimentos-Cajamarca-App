@@ -5,6 +5,7 @@ import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/locator.dart';
 import 'package:bancalcaj_app/presentation/empleados/login/screens/login_empleado_screen.dart';
+import 'package:bancalcaj_app/presentation/empleados/register/screens/register_empleado_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/screens/ver_entradas_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/agregar_entrada_screen.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
@@ -19,7 +20,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
-  
+
   //* Get the instance of employee
   await GetIt.I<EmployeeGeneralState>().refreshEmployee();
 
@@ -127,7 +128,8 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Registra nuevos usuarios',
       child: const Icon(Icons.person_add),
       onPressed: () async {
-        //TODO Vista de monitorear usuarios
+        if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterEmpleadoScreen()));
       },
     )
   ];
