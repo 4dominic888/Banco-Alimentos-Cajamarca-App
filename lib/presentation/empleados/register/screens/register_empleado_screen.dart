@@ -45,7 +45,6 @@ class _RegisterEmpleadoScreenState extends State<RegisterEmpleadoScreen> {
 
       final result = await _employeeService.register(employee, password);
       if(!result.success){
-        print(result.message);
         NotificationMessage.showErrorNotification(result.message);
         _btnController.error();
         return;
@@ -154,6 +153,8 @@ class _RegisterEmpleadoScreenState extends State<RegisterEmpleadoScreen> {
                       ),
                       validator: (value) {
                         if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
+                        value = value.trim();
+                        if(value.length < 6) return 'Contraseña muy corta';
                         return null;
                       },
                     ),
