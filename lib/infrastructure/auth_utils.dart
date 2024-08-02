@@ -53,7 +53,10 @@ class AuthUtils{
         body: { 'refreshToken': refreshToken }
       );
 
-      if(response['message'] != null) throw HttpException(response['message']);
+      if(response['message'] != null) {
+        cleanUserData();
+        throw HttpException(response['message']);
+      }
 
       await AuthUtils.setTokens(response);
     }
