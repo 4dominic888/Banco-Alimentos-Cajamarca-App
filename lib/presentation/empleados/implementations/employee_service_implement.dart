@@ -48,7 +48,6 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
         RequestType.post,
         body: {'dni': dni, 'password': password }
       );
-      
       await AuthUtils.setTokens(response);
 
       return Result.success(data: response['status']);
@@ -132,5 +131,4 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
       return Result.onError(message: 'Ha ocurrido un error: $e');
     }
   }
-  
 }

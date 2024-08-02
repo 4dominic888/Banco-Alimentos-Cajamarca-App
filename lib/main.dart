@@ -22,6 +22,9 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
+  
+  //* Get the instance of employee
+  await GetIt.I<EmployeeGeneralState>().refreshEmployee();
 
   //* Get the instance of employee
   await GetIt.I<EmployeeGeneralState>().refreshEmployee();

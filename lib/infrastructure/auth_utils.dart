@@ -18,7 +18,6 @@ class EmployeeGeneralState {
       employee = Employee.none();
       return;
     }
-
     final decodedToken = JwtDecoder.decode(AuthUtils.refreshToken!);
     final result = await _employeeService.seleccionarEmpleado(decodedToken['id']);
     if(!result.success) {
@@ -52,7 +51,6 @@ class AuthUtils{
         RequestType.post,
         body: { 'refreshToken': refreshToken }
       );
-
       if(response['message'] != null) {
         cleanUserData();
         throw HttpException(response['message']);
@@ -92,6 +90,5 @@ class AuthUtils{
     await _prefs.remove('token');
     await _prefs.remove('refreshToken');
     GetIt.I<EmployeeGeneralState>().employee = Employee.none();
-
   }
 }

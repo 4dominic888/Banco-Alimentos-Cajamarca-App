@@ -86,7 +86,7 @@ class _LoginEmpleadoScreenState extends State<LoginEmpleadoScreen> {
                     formKey: _passwordKey,
                     validator: (value) {
                       if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
-                      return null;                      
+                      return null;
                     },
                   ),
                 ),
