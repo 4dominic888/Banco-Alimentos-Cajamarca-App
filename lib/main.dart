@@ -4,7 +4,10 @@ import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/locator.dart';
+import 'package:bancalcaj_app/presentation/empleados/editar_cuenta/screens/editar_cuenta_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/login/screens/login_empleado_screen.dart';
+import 'package:bancalcaj_app/presentation/empleados/register/screens/register_empleado_screen.dart';
+import 'package:bancalcaj_app/presentation/empleados/ver_empleados/screens/ver_empleados_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/ver_entradas/screens/ver_entradas_screen.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/agregar_entrada_screen.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/screens/agregar_proveedor_screen.dart';
@@ -20,6 +23,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
   
+  //* Get the instance of employee
+  await GetIt.I<EmployeeGeneralState>().refreshEmployee();
+
   //* Get the instance of employee
   await GetIt.I<EmployeeGeneralState>().refreshEmployee();
 
@@ -61,6 +67,9 @@ class _RouterScreen extends StatefulWidget {
 class _RouterScreenState extends State<_RouterScreen> {
 
   final _fabKey =GlobalKey<AnimatedFloatingActionButtonState>();
+  bool _isLoading = false;
+
+  final _employeeGeneralState = GetIt.I<EmployeeGeneralState>();
 
   List<Widget> unregisteredOptions() => [
     FloatingActionButton(
@@ -79,13 +88,18 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Salir de la sesion',
       child: const Icon(Icons.exit_to_app),
       onPressed: () async {
+        setState(() => _isLoading = true);
         final result = await GetIt.I<EmployeeServiceBase>().logout();
         setState(() {
           if(!result.success){
             NotificationMessage.showErrorNotification(result.message);
+            _isLoading = false;
+            _fabKey.currentState?.closeFABs();
             return;
           }
           NotificationMessage.showSuccessNotification('Se ha cerrado sesion correctamente');
+          _isLoading = false;
+          _fabKey.currentState?.closeFABs();
         });
       },
     ),
@@ -95,7 +109,8 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Edita tu cuenta',
       child: const Icon(Icons.edit),
       onPressed: (){
-        //TODO vista para editar datos
+        if(AuthUtils.isNotEmployeeAuthenticate || _employeeGeneralState.employee.dni.isEmpty) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+        Navigator.push(context, MaterialPageRoute(builder: (_) => EditarCuentaScreen(employee: _employeeGeneralState.employee)));
       },
     ),
 
@@ -104,9 +119,11 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Actualiza tus datos de usuario',
       child: const Icon(Icons.refresh),
       onPressed: () async{
+        setState(() => _isLoading = true);
         await GetIt.I<EmployeeGeneralState>().refreshEmployee();
         setState(() {
           _fabKey.currentState?.closeFABs();
+          _isLoading = false;
         });
       },
     )
@@ -118,7 +135,8 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Monitorea a los empleados',
       child: const Icon(Icons.app_registration_rounded),
       onPressed: () async {
-        //TODO Vista de monitorear usuarios
+        if(AuthUtils.isNotEmployeeAuthenticate || _employeeGeneralState.employee.dni.isEmpty) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEmpleadosScreen()));
       },
     ),
 
@@ -127,7 +145,8 @@ class _RouterScreenState extends State<_RouterScreen> {
       tooltip: 'Registra nuevos usuarios',
       child: const Icon(Icons.person_add),
       onPressed: () async {
-        //TODO Vista de monitorear usuarios
+        if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterEmpleadoScreen()));
       },
     )
   ];
@@ -137,9 +156,10 @@ class _RouterScreenState extends State<_RouterScreen> {
     return Scaffold(
         appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
         persistentFooterButtons: [
-          Text(GetIt.I<EmployeeGeneralState>().employee.dni),
-          Text(GetIt.I<EmployeeGeneralState>().employee.nombre),
-          Text('[${GetIt.I<EmployeeGeneralState>().employee.typesStr}]'),
+          if(_isLoading) const CircularProgressIndicator(),
+          Text(_employeeGeneralState.employee.dni),
+          Text(_employeeGeneralState.employee.nombre),
+          Text('[${_employeeGeneralState.employee.typesStr}]'),
           // Text(AuthUtils.refreshToken ?? 'no token')
         ],
         floatingActionButton: AnimatedFloatingActionButton(

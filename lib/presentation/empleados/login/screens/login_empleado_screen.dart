@@ -1,7 +1,10 @@
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
+import 'package:bancalcaj_app/presentation/empleados/login/screens/recuperar_password.dart';
+import 'package:bancalcaj_app/presentation/widgets/dni_form_field.dart';
 import 'package:bancalcaj_app/presentation/widgets/loading_process_button.dart';
 import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
+import 'package:bancalcaj_app/presentation/widgets/password_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -18,19 +21,17 @@ class LoginEmpleadoScreen extends StatefulWidget {
 class _LoginEmpleadoScreenState extends State<LoginEmpleadoScreen> {
 
   final _formkey = GlobalKey<FormState>();
-  final _dniKey = GlobalKey<FormFieldState>();
-  final _passwordKey = GlobalKey<FormFieldState>();
+  final _dniKey = GlobalKey<FormFieldState<String>>();
+  final _passwordKey = GlobalKey<FormFieldState<String>>();
 
   final _btnController = RoundedLoadingButtonController();
 
   final _employeeService = GetIt.I<EmployeeServiceBase>();
 
-  bool _showPassword = false;
-
   Future<void> onLogin() async {
     if(_formkey.currentState!.validate()){
-      final dni = _dniKey.currentState!.value;
-      final password = _passwordKey.currentState!.value;
+      final dni = _dniKey.currentState!.value!;
+      final password = _passwordKey.currentState!.value!;
 
       final result = await _employeeService.login(dni, password);
 
@@ -74,41 +75,15 @@ class _LoginEmpleadoScreenState extends State<LoginEmpleadoScreen> {
                 //* DNI Field
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: TextFormField(
-                    key: _dniKey,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(8)
-                    ],
-                    decoration: const InputDecoration(
-                      label: Text('DNI'),
-                      icon: Icon(Icons.perm_identity)
-                    ),
-                    validator: (value) {
-                      if(value == null || value.isEmpty) return 'Se debe proporcionar el DNI';
-                      if(value.length != 8) return 'Un DNI debe tener 8 caracteres numericos';
-                      return null;
-                    },
-                  ),
+                  child: DNIFormField(formKey: _dniKey),
                 ),
 
                 //* Password field
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                  child: TextFormField(
-                    key: _passwordKey,
-                    obscureText: !_showPassword,
-                    decoration: InputDecoration(
-                      suffix: IconButton(
-                        icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off),
-                        onPressed: (){
-                          setState(() => _showPassword = !_showPassword);
-                        },
-                      ),
-                      label: const Text('Contraseña'),
-                      icon: const Icon(Icons.password)
-                    ),
+                  child: PasswordFormField(
+                    label: 'Contraseña',
+                    formKey: _passwordKey,
                     validator: (value) {
                       if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
                       return null;
@@ -124,8 +99,20 @@ class _LoginEmpleadoScreenState extends State<LoginEmpleadoScreen> {
                     color: Colors.red,
                     proccess: onLogin,
                   )
-                )
+                ),
 
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20, right: 20, left: 30),
+                  child: InkWell(
+                    child: const Text('¿Olvidaste tu contraseña?',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecuperarPassword())),
+                  ),
+                )
               ],
             ),
           ),

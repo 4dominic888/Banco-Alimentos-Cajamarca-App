@@ -16,4 +16,6 @@ abstract class EmployeeServiceBase{
   Future<Result<bool>> actualizarNombre(String dni, String nombre);
   Future<Result<bool>> actualizarRoles(String dni, List<EmployeeType> roles);
   Future<Result<bool>> actualizarPassword(String dni, String password);
+
+  Future<Result<bool>> eliminarEmpleado(String dni);
 }

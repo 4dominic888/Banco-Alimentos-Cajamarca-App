@@ -5,7 +5,6 @@ import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/repositories/employee_repository_base.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
-import 'package:get_it/get_it.dart';
 
 interface class EmployeeServiceImplement extends EmployeeServiceBase{
 
@@ -49,7 +48,6 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
         RequestType.post,
         body: {'dni': dni, 'password': password }
       );
-
       await AuthUtils.setTokens(response);
 
       return Result.success(data: response['status']);
@@ -66,13 +64,12 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
         RequestType.post,
         needPermission: true
       );
-      
-      await AuthUtils.cleanTokens();
-      GetIt.I<EmployeeGeneralState>().employee = Employee.none();
+
+      await AuthUtils.cleanUserData();
       return Result.success(data: response['status']);
 
     } catch (e) {
-      await AuthUtils.cleanTokens();
+      await AuthUtils.cleanUserData();
       return Result.onError(message: 'Ha ocurrido un error: $e');
     }
   }
@@ -80,11 +77,9 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   @override
   Future<Result<bool>> recuperarPassword(String dni, {required String newPassword, required String code}) async {
     try {
-      await AuthUtils.refreshingToken();
       final response = await ExpressBackend.solicitude('employee/recovery-password',
         RequestType.post,
         body: { 'dni': dni, 'password': newPassword, 'code': code },
-        needPermission: true
       );
       return Result.success(data: response['status']);
     } catch (e) {
@@ -96,7 +91,6 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
   Future<Result<String>> register(Employee employee, String password) async {
     try {
       final response = await repo.register(employee, password);
-      await AuthUtils.setTokens({ 'token': response['token'], 'refreshToken': response['refreshToken'] });
       return Result.success(data: response['qr']);
     } catch (e) {
       return Result.onError(message: 'Ha ocurrido un error: $e');
@@ -128,4 +122,13 @@ interface class EmployeeServiceImplement extends EmployeeServiceBase{
     }
   }
   
+  @override
+  Future<Result<bool>> eliminarEmpleado(String dni) async {
+    try {
+      final result = await repo.delete(dni);
+      return Result.success(data: result);
+    } catch (e) {
+      return Result.onError(message: 'Ha ocurrido un error: $e');
+    }
+  }
 }
