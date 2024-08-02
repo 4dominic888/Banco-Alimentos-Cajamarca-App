@@ -42,17 +42,6 @@ class ProveedorElement extends StatelessWidget {
                 title: const Text('Eliminar proveedor'),
                 content: const Text('Esta seguro que desea eliminar el proveedor'),
                 actions: [
-                  // TextButton(child: const Text('Aceptar'), onPressed: () async {
-                  //   final result = await GetIt.I<ProveedorServiceBase>().eliminarProveedor(proveedor.id);
-                  //   if(dialogContext.mounted) { Navigator.of(dialogContext).pop(); }
-                  //   if(!result.success) {
-                  //     NotificationMessage.showErrorNotification(result.message!);
-                  //     return;
-                  //   }
-                  //   NotificationMessage.showSuccessNotification('Se ha eliminado el proveedor con exito');
-                  //   onDataUpdate?.call();
-                  // }),
-                                    
                   SizedBox(
                     width: 120,
                     height: 50,

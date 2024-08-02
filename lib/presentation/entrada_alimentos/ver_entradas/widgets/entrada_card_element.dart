@@ -37,16 +37,16 @@ class EntradaCardElement extends StatelessWidget {
           ],
         ),
         subtitle: SizedBox(
-            child: Wrap(
-              direction: Axis.horizontal,
-              spacing: 10,
-              runSpacing: 10,
-              children: entradaView.productos.map((e) => InputChip(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                label: Text(e, style: const TextStyle(fontSize: 12)),
-                onPressed: () {}
-              )).toList(),
-            ),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: 10,
+            runSpacing: 10,
+            children: entradaView.productos.map((e) => InputChip(
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              label: Text(e, style: const TextStyle(fontSize: 12)),
+              onPressed: () {}
+            )).toList(),
+          ),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -77,7 +77,6 @@ class EntradaCardElement extends StatelessWidget {
                   await _excelService.printEntradaExcel(entradaResult.data!);
                   btnControllerExcel.success();
                 }
-                await Future.delayed(const Duration(seconds: 1));
                 btnControllerExcel.reset();
               },
             ),
@@ -111,7 +110,6 @@ class EntradaCardElement extends StatelessWidget {
                   await _pdfService.printEntradaPDF(entradaResult.data!);
                   btnControllerPdf.success();
                 }
-                await Future.delayed(const Duration(seconds: 1));
                 btnControllerPdf.reset();
               },
             ),
@@ -129,49 +127,48 @@ class EntradaCardElement extends StatelessWidget {
                     break;
                   }
 
-                case 1: {
-                  final RoundedLoadingButtonController btnConfirmController = RoundedLoadingButtonController();
-                  showDialog(context: context, builder: (dialogContext) => AlertDialog(
-                    title: const Text('Eliminar Entrada'),
-                    content: const Text('Esta seguro que desea eliminar esta entrada de alimentos'),
-                    actions: [
-                      SizedBox(
-                        width: 120,
-                        height: 50,
-                        child: RoundedLoadingButton(
-                          controller: btnConfirmController,
-                          child: const Text('Aceptar', style: TextStyle(color: Colors.white)),
-                          color: Colors.red,
+                  case 1: {
+                    final RoundedLoadingButtonController btnConfirmController = RoundedLoadingButtonController();
+                    showDialog(context: context, builder: (dialogContext) => AlertDialog(
+                      title: const Text('Eliminar Entrada'),
+                      content: const Text('Esta seguro que desea eliminar esta entrada de alimentos'),
+                      actions: [
+                        SizedBox(
                           width: 120,
-                          onPressed: () async {
-                            final result = await GetIt.I<EntradaAlimentosServiceBase>().eliminarEntrada(entradaView.id);
-                            if(dialogContext.mounted) { Navigator.of(dialogContext).pop(); }
-                            if(!result.success) {
-                              NotificationMessage.showErrorNotification(result.message!);
-                              return;
-                            }
-                            NotificationMessage.showSuccessNotification('Se ha eliminado el proveedor con exito');
-                            onDataUpdate?.call();
-                          },
-                        ),
-                      ),
-
-                      SizedBox(width: 120, height: 50,
-                        child: ElevatedButton(
-                          child: const Text('Cancelar'),
-                          style: const ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(Colors.white),
-                            foregroundColor: WidgetStatePropertyAll(Colors.black)
+                          height: 50,
+                          child: RoundedLoadingButton(
+                            controller: btnConfirmController,
+                            child: const Text('Aceptar', style: TextStyle(color: Colors.white)),
+                            color: Colors.red,
+                            width: 120,
+                            onPressed: () async {
+                              final result = await GetIt.I<EntradaAlimentosServiceBase>().eliminarEntrada(entradaView.id);
+                              if(dialogContext.mounted) { Navigator.of(dialogContext).pop(); }
+                              if(!result.success) {
+                                NotificationMessage.showErrorNotification(result.message!);
+                                return;
+                              }
+                              NotificationMessage.showSuccessNotification('Se ha eliminado el proveedor con exito');
+                              onDataUpdate?.call();
+                            },
                           ),
-                          onPressed: () => Navigator.of(context).pop()
                         ),
-                      ),
-                    ],
-                  ));
 
-                  break;
-                }
+                        SizedBox(width: 120, height: 50,
+                          child: ElevatedButton(
+                            child: const Text('Cancelar'),
+                            style: const ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(Colors.white),
+                              foregroundColor: WidgetStatePropertyAll(Colors.black)
+                            ),
+                            onPressed: () => Navigator.of(context).pop()
+                          ),
+                        ),
+                      ],
+                    ));
 
+                    break;
+                  }
 
                   default: break;
                 }

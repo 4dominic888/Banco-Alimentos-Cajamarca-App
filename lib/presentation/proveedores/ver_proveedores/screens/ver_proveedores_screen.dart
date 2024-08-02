@@ -129,6 +129,9 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
                   if(snapshot.hasError || snapshot.data == null){
                     return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
                   }
+                  if(!snapshot.data!.success){
+                    return BigStaticSizeBox(context, child: Center(child: Text(snapshot.data!.message!)));
+                  }
                   if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
                     return BigStaticSizeBox(context, child: const Center(child: Text('Sin proveedores a mostrar')));
                   }
