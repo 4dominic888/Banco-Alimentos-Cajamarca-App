@@ -18,7 +18,6 @@ dependencies:
   file_selector: ^1.0.3
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.6
   flutter_cors: ^1.5.0
   flutter_launcher_icons: ^0.13.1
   flutter_localization: ^0.2.0
