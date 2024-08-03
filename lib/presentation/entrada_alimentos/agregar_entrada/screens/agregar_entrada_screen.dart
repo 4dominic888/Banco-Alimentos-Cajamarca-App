@@ -57,7 +57,7 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
 
   Future<void> _onSubmit() async{
 
-    if(dni != null){
+    if(_isUpdatable && dni != null){
       _btnController.error();
       return;
     }
