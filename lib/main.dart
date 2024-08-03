@@ -169,96 +169,93 @@ class _RouterScreenState extends State<_RouterScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(28.0),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width / 1,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: IntrinsicWidth(
+                child: Row(
                   children: [
-                    const Text('Entradas de alimentos',
-                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
-                    ),
                     Expanded(
-                      child: Wrap(
-                        runSpacing: 15,
-                        spacing: 5,
-                        runAlignment: WrapAlignment.spaceBetween,
+                      child: Column(
                         children: [
-                          SizedBox(
-                            width: 300,
-                            child: Card(child: ListTile(
-                              title: const Text('Registrar Entradas de alimentos', style: TextStyle(fontSize: 16)),
-                              leading: const Icon(Icons.app_registration_rounded),
-                              onTap: () {
-                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarEntradaScreen()));
-                              }
-                            ))
+                          const Text('Entradas de alimentos',
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
                           ),
-                          SizedBox(
-                            width: 260,
-                            child: Card(child: ListTile(
-                              title: const Text('Ver Entradas de alimentos', style: TextStyle(fontSize: 16)),
-                              leading: const Icon(Icons.list),
-                              onTap: () {
-                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
-                                if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()));
-                              }
-                            ))
+                          Expanded(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: 300,
+                                  child: Card(child: ListTile(
+                                    title: const Text('Registrar Entradas de alimentos', style: TextStyle(fontSize: 16)),
+                                    leading: const Icon(Icons.app_registration_rounded),
+                                    onTap: () {
+                                      if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarEntradaScreen()));
+                                    }
+                                  ))
+                                ),
+                                SizedBox(
+                                  width: 260,
+                                  child: Card(child: ListTile(
+                                    title: const Text('Ver Entradas de alimentos', style: TextStyle(fontSize: 16)),
+                                    leading: const Icon(Icons.list),
+                                    onTap: () {
+                                      if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                      if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()));
+                                    }
+                                  ))
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                                
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text('Proveedores',
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
                           ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: 280,
+                                  child: Card(child: ListTile(
+                                    title: const Text('Registrar Proveedores', style: TextStyle(fontSize: 16)),
+                                    leading: const Icon(Icons.person_add_alt),
+                                    onTap: () {
+                                      if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                      if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarProveedorScreen()));
+                                    }
+                                  ))
+                                ),
+                                SizedBox(
+                                  width: 260,
+                                  child: Card(child: ListTile(
+                                    title: const Text('Ver proveedores', style: TextStyle(fontSize: 16)),
+                                    leading: const Icon(Icons.group),
+                                    onTap: () {
+                                      if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                      if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const VerProveedoresScreen()));
+                                    }
+                                  ))
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     )
                   ],
                 ),
-
-                const Spacer(),
-
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Text('Proveedores',
-                        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
-                      ),
-                      Wrap(
-                        runSpacing: 15,
-                        spacing: 15,
-                        runAlignment: WrapAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 280,
-                            child: Card(child: ListTile(
-                              title: const Text('Registrar Proveedores', style: TextStyle(fontSize: 16)),
-                              leading: const Icon(Icons.person_add_alt),
-                              onTap: () {
-                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
-                                if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarProveedorScreen()));
-                              }
-                            ))
-                          ),
-                          SizedBox(
-                            width: 260,
-                            child: Card(child: ListTile(
-                              title: const Text('Ver proveedores', style: TextStyle(fontSize: 16)),
-                              leading: const Icon(Icons.group),
-                              onTap: () {
-                                if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
-                                if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const VerProveedoresScreen()));
-                              }
-                            ))
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                )
-              ],
+              ),
             ),
           ),
         ),

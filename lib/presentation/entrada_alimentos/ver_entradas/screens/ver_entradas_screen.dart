@@ -99,113 +99,122 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
       
           body: Focus(
             autofocus: true,
-            child: Column(
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropDownWithExternalData<ProveedorView>(
-                            formFieldKey: _keyFieldProveedor,
-                            itemAsString: (value) => value.nombre,
-                            label: 'Proveedor',
-                            isVisible: true,
-                            icon: const Icon(Icons.delivery_dining),
-                            asyncItems: (text) async {
-                              final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
-                              if(!result.success || result.data == null) return [];
-                              return result.data!.data;                              
-                            },
-                            onChanged: () => setState(() {})
-                          )
-                        )
-                      ),
-                      const Spacer(),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropDownWithExternalData<EmployeeView>(
-                            formFieldKey: _keyFieldAlmacenero,
-                            itemAsString: (value) => value.nombre,
-                            label: 'Almaceneros',
-                            icon: const Icon(Icons.person),
-                            isVisible: true,
-                            asyncItems: (text) async {
-                              final result = await employeeService.verEmpleados(pagina: 1, limite: 8, nombre: text);
-                              if(!result.success || result.data == null) return [];
-                              return result.data!.data;                              
-                            },
-                            onChanged: () => setState(() { })
-                          )
-                        )
-                      ),
-                    ],
-                  )
-                ),
-                  
-                FutureBuilder<Result<PaginateData<EntradaView>>>(
-                  future: entradaService.verEntradas(
-                    pagina: _page,
-                    limite: _limit,
-                    proveedor: _keyFieldProveedor.currentState?.value?.nombre,
-                    almacenero: _keyFieldAlmacenero.currentState?.value?.nombre
-                  ),
-                  builder: (context, snapshot) {
-                
-                    if(snapshot.connectionState == ConnectionState.waiting){
-                      return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
-                    }
-                    if(snapshot.hasError || snapshot.data == null){
-                      return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
-                    }
-                    if(!snapshot.data!.success){
-                      return BigStaticSizeBox(context, child: Center(child: Text(snapshot.data!.message!)));
-                    }                    
-                    if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
-                      return BigStaticSizeBox(context, child: const Center(child: Text('Sin entradas a mostrar')));
-                    }
-                
-                    final currentList = snapshot.data!.data!.data; //* data data data
-                    _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
-                    
-                    return Column(
-                      children: [
-                        BigStaticSizeBox(context, child: SingleChildScrollView(
-                            child: ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: currentList.length,
-                              itemBuilder: (context, index) { 
-                                final entradaView = currentList[index];
-                                return EntradaCardElement(
-                                  entradaView: entradaView,
-                                  excelService: _excelService,
-                                  pdfService: _pdfService,
-                                  onDataUpdate: () => setState(() { }),
-                                );
-                              },
+            child: Scrollbar(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: DropDownWithExternalData<ProveedorView>(
+                                formFieldKey: _keyFieldProveedor,
+                                itemAsString: (value) => value.nombre,
+                                label: 'Proveedor',
+                                isVisible: true,
+                                icon: const Icon(Icons.delivery_dining),
+                                asyncItems: (text) async {
+                                  final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
+                                  if(!result.success || result.data == null) return [];
+                                  return result.data!.data;                              
+                                },
+                                onChanged: () => setState(() {})
+                              )
                             )
-                          )),
-                      ],
-                    );
-                  }
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: DropDownWithExternalData<EmployeeView>(
+                                formFieldKey: _keyFieldAlmacenero,
+                                itemAsString: (value) => value.nombre,
+                                label: 'Almaceneros',
+                                icon: const Icon(Icons.person),
+                                isVisible: true,
+                                asyncItems: (text) async {
+                                  final result = await employeeService.verEmpleados(pagina: 1, limite: 8, nombre: text);
+                                  if(!result.success || result.data == null) return [];
+                                  return result.data!.data;                              
+                                },
+                                onChanged: () => setState(() { })
+                              )
+                            )
+                          ),
+                        ],
+                      )
+                    ),
+                      
+                    FutureBuilder<Result<PaginateData<EntradaView>>>(
+                      future: entradaService.verEntradas(
+                        pagina: _page,
+                        limite: _limit,
+                        proveedor: _keyFieldProveedor.currentState?.value?.nombre,
+                        almacenero: _keyFieldAlmacenero.currentState?.value?.nombre
+                      ),
+                      builder: (context, snapshot) {
+                    
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
+                        }
+                        if(snapshot.hasError || snapshot.data == null){
+                          return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
+                        }
+                        if(!snapshot.data!.success){
+                          return BigStaticSizeBox(context, child: Center(child: Text(snapshot.data!.message!)));
+                        }                    
+                        if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
+                          return BigStaticSizeBox(context, child: const Center(child: Text('Sin entradas a mostrar')));
+                        }
+                    
+                        final currentList = snapshot.data!.data!.data; //* data data data
+                        _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
+                        
+                        return Column(
+                          children: [
+                            BigStaticSizeBox(context, child: SingleChildScrollView(
+                                child: ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: currentList.length,
+                                  itemBuilder: (context, index) { 
+                                    final entradaView = currentList[index];
+                                    return SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: IntrinsicWidth(
+                                        child: EntradaCardElement(
+                                          entradaView: entradaView,
+                                          excelService: _excelService,
+                                          pdfService: _pdfService,
+                                          onDataUpdate: () => setState(() { }),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              )),
+                          ],
+                        );
+                      }
+                    ),
+                      
+                    StreamBuilder<PaginateMetaData>(
+                      stream: _paginateMetadaDataController.stream,
+                      builder: (context, snapshot) {
+                        return PaginationWidget(
+                          currentPages: snapshot.data?.currentPage ?? 1,
+                          onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
+                          totalPages: snapshot.data?.totalPages ?? 1,
+                          onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
+                        );
+                      }
+                    )
+                  ],
                 ),
-                  
-                StreamBuilder<PaginateMetaData>(
-                  stream: _paginateMetadaDataController.stream,
-                  builder: (context, snapshot) {
-                    return PaginationWidget(
-                      currentPages: snapshot.data?.currentPage ?? 1,
-                      onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
-                      totalPages: snapshot.data?.totalPages ?? 1,
-                      onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-                    );
-                  }
-                )
-              ],
+              ),
             ),
           ),
       ),
