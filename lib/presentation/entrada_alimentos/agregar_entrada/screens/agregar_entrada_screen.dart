@@ -1,16 +1,21 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bancalcaj_app/domain/classes/result.dart';
+import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/classes/producto.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
+import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
+import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/select_products.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/datetime_field.dart';
 import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.dart';
 import 'package:bancalcaj_app/presentation/widgets/loading_process_button.dart';
 import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
 import 'package:dartx/dartx.dart';
+import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -34,11 +39,16 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
   final GlobalKey<FormFieldState<ProveedorView>> _keyFieldProveedor = GlobalKey();
   final GlobalKey<FormFieldState<List<TipoProductos>>> _keyFieldProductos = GlobalKey();
   final GlobalKey<FormFieldState> _keyFieldComentario = GlobalKey();
+  final GlobalKey<FormFieldState<EmployeeView>> _keyEmployeeField = GlobalKey();
+  final TextEditingController _employeeSearchController = TextEditingController();
+  
+  String? dni;
 
   final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
 
   final entradaService = GetIt.I<EntradaAlimentosServiceBase>();
   final proveedorService = GetIt.I<ProveedorServiceBase>();
+  final employeeService = GetIt.I<EmployeeServiceBase>();
 
   bool _isUpdatable = false;
   
@@ -46,6 +56,12 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
   List<String> defaultList = ["Carnes", "Frutas", "Verduras", "Abarrotes", "Embutidos"];
 
   Future<void> _onSubmit() async{
+
+    if(dni != null){
+      _btnController.error();
+      return;
+    }
+
     if(formkey.currentState!.validate()) {
 
       final DateTime fecha = _keyFieldFecha.currentState!.value!;
@@ -53,13 +69,15 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
       final List<TipoProductos> productos = _keyFieldProductos.currentState!.value!;
       final String comentario = _keyFieldComentario.currentState?.value as String? ?? '';
       final cantidad = productos.sumBy((lp) => lp.productos.sumBy((p) => p.peso));
+      final String almaceneroDni = !_isUpdatable ? 
+        GetIt.I<EmployeeGeneralState>().employee.dni : dni ?? '';
 
       final entrada = Entrada.reduced(
         fecha: fecha,
         proveedorId: proveedorView.id,
         tiposProductos: productos,
         cantidad: cantidad,
-        almaceneroId: '12345678',
+        almaceneroId: almaceneroDni,
         comentario: comentario
       );
 
@@ -114,9 +132,10 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
               if(snapEntrada.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-        
               final entrada = snapEntrada.data!.data;
               _isUpdatable = entrada != null;
+              dni = entrada?.almacenero?.nombre != '-' ? entrada?.almacenero?.dni : null;
+              _employeeSearchController.text = entrada?.almacenero?.nombre ?? '';
         
               return SingleChildScrollView(
                 child: Form(
@@ -138,7 +157,7 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: DropDownWithExternalData<ProveedorView>(
-                            initialValue: entrada?.proveedor?.proveedorView,
+                            initialValue: entrada?.proveedor?.proveedorViewReduced,
                             formFieldKey: _keyFieldProveedor,
                             itemAsString: (value) => value.nombre,
                             label: 'Proveedor',
@@ -175,6 +194,37 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
                             ),
                           ),
                         ),
+
+                        if(_isUpdatable) Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                          child: DropDownSearchFormField<EmployeeView>(
+                            key: _keyEmployeeField,
+                            textFieldConfiguration: TextFieldConfiguration(
+                              controller: _employeeSearchController,
+                              decoration: const InputDecoration(
+                                labelText: 'Almacenero',
+                                prefixIcon: Icon(Icons.person)
+                              )
+                              
+                            ),
+                            errorBuilder: (context, error) => 
+                              ExpansionTile(
+                                title: const Text('Se ha producido un error',
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                                subtitle: Text('Ha ocurrido un error de conexion: ${(error as SocketException).message}', style: const TextStyle(color: Colors.red)),
+                              ),
+                            suggestionsCallback: (pattern) => employeeService.verEmpleados(pagina: 1, limite: 8, nombre: pattern).then((value) => value.data!.data),
+                            itemBuilder: (context, itemData) => ListTile(title: Text(itemData.nombre)),
+                            transitionBuilder: (context, suggestionsBox, controller) => suggestionsBox,
+                            loadingBuilder: (context) => const ListTile(leading: CircularProgressIndicator(color: Colors.red)),
+                            noItemsFoundBuilder: (context) => const ListTile(title: Text('Empleados no encontrados...', style: TextStyle(fontWeight: FontWeight.bold)), contentPadding: EdgeInsets.only(left: 20)),
+                            displayAllSuggestionWhenTap: true,
+                            onSuggestionSelected: (suggestion) {
+                              dni = suggestion.dni;
+                              _employeeSearchController.text = suggestion.nombre;
+                            },
+                          ),
+                        ),
               
                         // Submit button
                         Padding(
@@ -195,5 +245,11 @@ class _AgregarEntradaScreenState extends State<AgregarEntradaScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _employeeSearchController.dispose();
+    super.dispose();
   }
 }

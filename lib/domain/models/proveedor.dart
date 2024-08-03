@@ -54,7 +54,7 @@ class Proveedor{
       nombre: json['nombre'],
       typeProveedor: TypeProveedor(id: '-1', name: 'unknown'),
       ubication: Ubication.fromJson(json['ubication'])
-    );    
+    );
   }
 
   factory Proveedor.fromJsonLow(Map<String, dynamic> json){
@@ -71,6 +71,13 @@ class Proveedor{
     nombre: nombre,
     typeProveedor: typeProveedor?.name,
     ubication: { "countryCode": ubication.countryCode, "type": ubication.type }
+  );
+
+  ProveedorView get proveedorViewReduced => ProveedorView(
+    id: id,
+    nombre: nombre,
+    typeProveedor: typeProveedor?.name,
+    ubication: { "countryCode": '0', "type": 'none' }
   );
 
   Map<String, dynamic> toJson(){

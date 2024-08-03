@@ -55,6 +55,7 @@ class EntradaCardElement extends StatelessWidget {
             //* Excel Export
             RoundedLoadingButton(
               color: Colors.green,
+              errorColor: Colors.green,
               controller: btnControllerExcel,
               width: 120,
               child: SizedBox(width: 70, child: Row(
@@ -74,6 +75,20 @@ class EntradaCardElement extends StatelessWidget {
                   return;
                 }
                 else{
+                  if(entradaResult.data!.proveedor == null) {
+                    NotificationMessage.showErrorNotification('La entrada tiene un proveedor que ya no existe');
+                    btnControllerExcel.error();
+                    await Future.delayed(const Duration(seconds: 3));
+                    btnControllerExcel.reset();
+                    return;
+                  }
+                  if(entradaResult.data!.almacenero == null) {
+                    NotificationMessage.showErrorNotification('La entrada tiene un almacenero que ya no existe');
+                     btnControllerExcel.error();
+                    await Future.delayed(const Duration(seconds: 3));
+                    btnControllerExcel.reset();
+                    return;
+                  }                  
                   await _excelService.printEntradaExcel(entradaResult.data!);
                   btnControllerExcel.success();
                 }
@@ -107,6 +122,20 @@ class EntradaCardElement extends StatelessWidget {
                   return;
                 }
                 else{
+                  if(entradaResult.data!.proveedor == null) {
+                    NotificationMessage.showErrorNotification('La entrada tiene un proveedor que ya no existe');
+                    btnControllerPdf.error();
+                    await Future.delayed(const Duration(seconds: 3));
+                    btnControllerPdf.reset();
+                    return;
+                  }
+                  if(entradaResult.data!.almacenero == null) {
+                    NotificationMessage.showErrorNotification('La entrada tiene un almacenero que ya no existe');
+                    btnControllerPdf.error();
+                    await Future.delayed(const Duration(seconds: 3));
+                    btnControllerPdf.reset();
+                    return;
+                  }
                   await _pdfService.printEntradaPDF(entradaResult.data!);
                   btnControllerPdf.success();
                 }

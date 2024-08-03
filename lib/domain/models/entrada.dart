@@ -67,10 +67,10 @@ class Entrada {
     return Entrada(
       fecha: DateTime.parse(json["fecha"]),
       cantidad: double.parse(json["cantidad"].toString()),
-      proveedor: json["proveedor"] != null ? Proveedor.fromJsonWithouType(json["proveedor"]) : null,
-      tiposProductos: products.map((e) => TipoProductos.fromJson(e as Map<String, dynamic>)).toList(),
+      proveedor: json["proveedor"] != null ? Proveedor.fromJsonLow(json["proveedor"]) : null,
+      tiposProductos: products.map((e) => TipoProductos.fromJson(e)).toList(),
       comentario: json["comentario"],
-      almacenero: json["almacenero"] != null ? Employee.fromJson(json["almacenero"]) : null
+      almacenero: json["almacenero"] != null ? Employee.fromJsonLow(json["almacenero"]) : null
     );
   }
 

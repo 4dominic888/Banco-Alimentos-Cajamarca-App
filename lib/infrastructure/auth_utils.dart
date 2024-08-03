@@ -37,6 +37,12 @@ class AuthUtils{
   //* Si alguno de los 2 tokens es nulo O refresh token esta expirado
   static bool get isNotEmployeeAuthenticate => (accessToken == null || refreshToken == null) || (refreshToken != null && isTokenExpired(refreshToken!));
 
+  static bool? get isNotEmployeeAsAdmin {
+    if(accessToken == null) return null;
+    final decodedToken = JwtDecoder.decode(accessToken!);
+    return !(decodedToken['roles'] as Iterable).contains(0);
+  }
+
   /// Retorna el estado del refresco, si se refresco o no
   static Future<void> refreshingToken() async {
 
