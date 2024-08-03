@@ -58,6 +58,14 @@ class Employee {
       );
     }
 
+    factory Employee.fromJsonLow(Map<String, dynamic> json){
+      return Employee(
+        nombre: json['nombre'],
+        dni: json['dni'],
+        types: []
+      );
+    }
+
     String get typesStr {
       final StringBuffer buffer = StringBuffer();
 

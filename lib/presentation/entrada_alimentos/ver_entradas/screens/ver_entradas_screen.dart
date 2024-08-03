@@ -5,6 +5,7 @@ import 'package:bancalcaj_app/domain/classes/result.dart';
 import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/models/entrada.dart';
 import 'package:bancalcaj_app/domain/models/proveedor.dart';
+import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/domain/services/proveedor_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
@@ -29,9 +30,10 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
   
   final entradaService = GetIt.I<EntradaAlimentosServiceBase>();
   final proveedorService = GetIt.I<ProveedorServiceBase>();
+  final employeeService = GetIt.I<EmployeeServiceBase>();
   
   final GlobalKey<FormFieldState<ProveedorView>> _keyFieldProveedor = GlobalKey();
-  final GlobalKey<FormFieldState<Employee>> _keyFieldAlmacenero = GlobalKey();
+  final GlobalKey<FormFieldState<EmployeeView>> _keyFieldAlmacenero = GlobalKey();
   final _paginateMetadaDataController = StreamController<PaginateMetaData>();
 
   late final PDFWritter _pdfService;
@@ -121,23 +123,22 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                           )
                         )
                       ),
-                      //const Spacer(),
-                      //TODO Proximamente sera el de almaceneros, pero tendra que esperar
+                      const Spacer(),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: DropDownWithExternalData<ProveedorView>(
+                          child: DropDownWithExternalData<EmployeeView>(
                             formFieldKey: _keyFieldAlmacenero,
                             itemAsString: (value) => value.nombre,
                             label: 'Almaceneros',
                             icon: const Icon(Icons.person),
                             isVisible: true,
                             asyncItems: (text) async {
-                              final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
+                              final result = await employeeService.verEmpleados(pagina: 1, limite: 8, nombre: text);
                               if(!result.success || result.data == null) return [];
                               return result.data!.data;                              
                             },
-                            onChanged: () => setState(() {})
+                            onChanged: () => setState(() { })
                           )
                         )
                       ),
@@ -149,7 +150,8 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                   future: entradaService.verEntradas(
                     pagina: _page,
                     limite: _limit,
-                    proveedor: _keyFieldProveedor.currentState?.value?.nombre
+                    proveedor: _keyFieldProveedor.currentState?.value?.nombre,
+                    almacenero: _keyFieldAlmacenero.currentState?.value?.nombre
                   ),
                   builder: (context, snapshot) {
                 

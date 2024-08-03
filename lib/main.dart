@@ -26,9 +26,6 @@ Future<void> main() async {
   //* Get the instance of employee
   await GetIt.I<EmployeeGeneralState>().refreshEmployee();
 
-  //* Get the instance of employee
-  await GetIt.I<EmployeeGeneralState>().refreshEmployee();
-
   runApp(const MainApp());
 }
 
@@ -208,6 +205,7 @@ class _RouterScreenState extends State<_RouterScreen> {
                               leading: const Icon(Icons.list),
                               onTap: () {
                                 if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()));
                               }
                             ))
@@ -238,6 +236,7 @@ class _RouterScreenState extends State<_RouterScreen> {
                               leading: const Icon(Icons.person_add_alt),
                               onTap: () {
                                 if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const AgregarProveedorScreen()));
                               }
                             ))
@@ -249,6 +248,7 @@ class _RouterScreenState extends State<_RouterScreen> {
                               leading: const Icon(Icons.group),
                               onTap: () {
                                 if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
+                                if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => const VerProveedoresScreen()));
                               }
                             ))

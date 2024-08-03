@@ -42,7 +42,6 @@ class ExpressBackend {
       case RequestType.delete: {  response = await http.delete( uri,   body: parseBody(body),  headers: _headers(needPermission!)).timeout(_timeLimit);   break; }
       default: throw ArgumentError('requestType no valido');
     }
-
     final responseDecoded = json.decode(response.body) as Map<String, dynamic>;
     if(response.statusCode == 200) return responseDecoded;
     
