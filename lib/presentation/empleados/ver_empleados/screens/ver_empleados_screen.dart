@@ -43,76 +43,86 @@ class _VerEmpleadosScreenState extends State<VerEmpleadosScreen> {
         ),
         body: Focus(
           autofocus: true,
-          child: Column(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: [
-                    Expanded(child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
-                          onChanged: (value) => setState(() { }),
-                        )
-                      )
-                    ),
-                  ],
-                ),
-              ),
-
-              FutureBuilder<Result<PaginateData<EmployeeView>>>(
-                future: _employeeService.verEmpleados(pagina: _page, limite: _limit, nombre: _nameController.text),
-                builder: (context, snapshot) {
-                  if(snapshot.connectionState == ConnectionState.waiting){
-                    return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
-                  }
-                  if(snapshot.hasError || snapshot.data == null){
-                    return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
-                  }
-                  if(!snapshot.data!.success){
-                    return BigStaticSizeBox(context, child: Center(child: Text(snapshot.data!.message!)));
-                  }
-                  if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
-                    return BigStaticSizeBox(context, child: const Center(child: Text('Sin proveedores a mostrar')));
-                  }
-                  final currentList = snapshot.data!.data!.data; //* data data data
-                  _paginateMetadaDataController.add(snapshot.data!.data!.metadata); 
-
-                  return Column(
-                    children: [
-                      BigStaticSizeBox(context, child: SingleChildScrollView(
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: currentList.length,
-                          itemBuilder: (context, index) {
-                            final employeeView = currentList[index];
-                            return EmployeeCardElement(
-                              employeeView: employeeView,
-                              onDataUpdate: () => setState(() { }),
-                            );
-                          },
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      children: [
+                        Expanded(child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
+                              onChanged: (value) => setState(() { }),
+                            )
+                          )
                         ),
-                      ))
-                    ],
-                  );
-                },
+                      ],
+                    ),
+                  ),
+              
+                  FutureBuilder<Result<PaginateData<EmployeeView>>>(
+                    future: _employeeService.verEmpleados(pagina: _page, limite: _limit, nombre: _nameController.text),
+                    builder: (context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));
+                      }
+                      if(snapshot.hasError || snapshot.data == null){
+                        return BigStaticSizeBox(context, child: Center(child: Text('Ha ocurrido un error al mostrar la informacion, ${snapshot.error}')));
+                      }
+                      if(!snapshot.data!.success){
+                        return BigStaticSizeBox(context, child: Center(child: Text(snapshot.data!.message!)));
+                      }
+                      if(snapshot.data!.data == null || snapshot.data!.data!.data.isEmpty){
+                        return BigStaticSizeBox(context, child: const Center(child: Text('Sin proveedores a mostrar')));
+                      }
+                      final currentList = snapshot.data!.data!.data; //* data data data
+                      _paginateMetadaDataController.add(snapshot.data!.data!.metadata); 
+              
+                      return Column(
+                        children: [
+                          BigStaticSizeBox(context, child: SingleChildScrollView(
+                            child: ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: currentList.length,
+                              itemBuilder: (context, index) {
+                                final employeeView = currentList[index];
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: IntrinsicWidth(
+                                    child: EmployeeCardElement(
+                                      employeeView: employeeView,
+                                      onDataUpdate: () => setState(() { }),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ))
+                        ],
+                      );
+                    },
+                  ),
+              
+                  StreamBuilder<PaginateMetaData>(
+                    stream: _paginateMetadaDataController.stream,
+                    builder: (context, snapshot) {
+                      return PaginationWidget(
+                        currentPages: snapshot.data?.currentPage ?? 1,
+                        onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
+                        totalPages: snapshot.data?.totalPages ?? 1,
+                        onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
+                      );
+                    }
+                  )
+                ],
               ),
-
-              StreamBuilder<PaginateMetaData>(
-                stream: _paginateMetadaDataController.stream,
-                builder: (context, snapshot) {
-                  return PaginationWidget(
-                    currentPages: snapshot.data?.currentPage ?? 1,
-                    onNextPagePressed: _page != (snapshot.data?.totalPages ?? 1) ? () => setState(() => _page++) : null,
-                    totalPages: snapshot.data?.totalPages ?? 1,
-                    onPreviousPagePressed: _page != 1 ? () => setState(() => _page--) : null
-                  );
-                }
-              )
-            ],
+            ),
           ),
         ),
       ),
