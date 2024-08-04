@@ -805,14 +805,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
-  signature:
-    dependency: "direct main"
-    description:
-      name: signature
-      sha256: "8056e091ad59c2eb5735fee975ec649d0caf8ce802bb1ffb1e0955b00a6d0daa"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.5.0"
   simple_file_saver:
     dependency: "direct main"
     description:
