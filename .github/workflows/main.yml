@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: flutter-windows-exe
-          path: build/windows/runner/Release/      
+          path: build\windows\x64\runner\Release\bacalcaj_app.exe
