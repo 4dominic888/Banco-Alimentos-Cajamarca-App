@@ -19,3 +19,8 @@ jobs:
         with:
           channel: stable
       - run: flutter build windows
+      - name: Upload .exe artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: flutter-windows-exe
+          path: build/windows/runner/Release/      
