@@ -83,10 +83,10 @@ class _VerEmpleadosScreenState extends State<VerEmpleadosScreen> {
                       final currentList = snapshot.data!.data!.data; //* data data data
                       _paginateMetadaDataController.add(snapshot.data!.data!.metadata); 
               
-                      return Column(
-                        children: [
-                          BigStaticSizeBox(context, child: SingleChildScrollView(
-                            child: ListView.builder(
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            BigStaticSizeBox(context, child: ListView.builder(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               itemCount: currentList.length,
@@ -102,9 +102,9 @@ class _VerEmpleadosScreenState extends State<VerEmpleadosScreen> {
                                   ),
                                 );
                               },
-                            ),
-                          ))
-                        ],
+                            ))
+                          ],
+                        ),
                       );
                     },
                   ),

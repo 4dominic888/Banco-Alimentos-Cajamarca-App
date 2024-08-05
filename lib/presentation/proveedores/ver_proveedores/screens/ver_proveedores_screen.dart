@@ -33,7 +33,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
 
   int _selectedIndex = -1;
   int _page = 1;
-  int _limit = 10;
+  int _limit = 8;
 
   void showProveedorDetail(Proveedor detailItem) async{
     showDialog(context: context, builder: (context) => AlertDialog(
@@ -89,7 +89,6 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
               scrollDirection: Axis.vertical,
               child: Column(
                 children: [
-                    
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Row(
@@ -141,13 +140,11 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
                       final currentList = snapshot.data!.data!.data; //* data data data
                       _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
                       
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: BigStaticSizeBox(context,
-                          child: SingleChildScrollView(
-                            physics: const ScrollPhysics(),
+                      return SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: BigStaticSizeBox(context,
                             child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               itemCount: currentList.length,

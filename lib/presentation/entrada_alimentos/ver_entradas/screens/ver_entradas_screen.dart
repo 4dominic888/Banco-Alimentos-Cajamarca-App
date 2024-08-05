@@ -41,7 +41,7 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
 
 
   int _page = 1;
-  int _limit = 10;  
+  int _limit = 5;  
 
   Future<void> _initService() async{
     _pdfService = PDFWritter();
@@ -173,30 +173,30 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                         final currentList = snapshot.data!.data!.data; //* data data data
                         _paginateMetadaDataController.add(snapshot.data!.data!.metadata);
                         
-                        return Column(
-                          children: [
-                            BigStaticSizeBox(context, child: SingleChildScrollView(
-                                child: ListView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  shrinkWrap: true,
-                                  itemCount: currentList.length,
-                                  itemBuilder: (context, index) { 
-                                    final entradaView = currentList[index];
-                                    return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: IntrinsicWidth(
-                                        child: EntradaCardElement(
-                                          entradaView: entradaView,
-                                          excelService: _excelService,
-                                          pdfService: _pdfService,
-                                          onDataUpdate: () => setState(() { }),
-                                        ),
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              BigStaticSizeBox(context, child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: currentList.length,
+                                itemBuilder: (context, index) { 
+                                  final entradaView = currentList[index];
+                                  return SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: IntrinsicWidth(
+                                      child: EntradaCardElement(
+                                        entradaView: entradaView,
+                                        excelService: _excelService,
+                                        pdfService: _pdfService,
+                                        onDataUpdate: () => setState(() { }),
                                       ),
-                                    );
-                                  },
-                                )
+                                    ),
+                                  );
+                                },
                               )),
-                          ],
+                            ],
+                          ),
                         );
                       }
                     ),
