@@ -104,80 +104,74 @@ class _RecuperarPasswordState extends State<RecuperarPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return CallbackShortcuts(
-      bindings: { const SingleActivator(LogicalKeyboardKey.escape) : Navigator.of(context).pop },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          title: const Text("Recuperar contraseña"),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        title: const Text("Recuperar contraseña"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Focus(
-          autofocus: true,
-          child: Form(
-            key: _formkey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: DNIFormField(formKey: _dniKey)
-                ),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                        child: PasswordFormField(
-                          label: 'Nueva contraseña',
-                          formKey: _passwordKey,
-                          validator: (value) {
-                            if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
-                            value = value.trim();
-                            if(value.length < 6) return 'Contraseña muy corta';
-                            return null;                            
-                          },
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                        child: VerifyPasswordFormField(
-                          formKey: _verifyPasswordKey,
-                          validator: (value) {
-                            if(value == null || value.trim().isEmpty) return 'Este campo no puede estar vacio';
-                            value = value.trim();                            
-                            if(value != _passwordKey.currentState!.value) return 'las contraseñas no coinciden';
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                  ]
-                ),
+      ),
+      body: Form(
+        key: _formkey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                  child: LoadingProcessButton(
-                    controller: _btnController,
-                    label: const Text('Actualizar contraseña', style: TextStyle(color: Colors.white)),
-                    color: Colors.red,
-                    proccess: _updatePassword,
-                  )
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: DNIFormField(formKey: _dniKey)
             ),
-          ),
+          
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+                    child: PasswordFormField(
+                      label: 'Nueva contraseña',
+                      formKey: _passwordKey,
+                      validator: (value) {
+                        if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una contraseña';
+                        value = value.trim();
+                        if(value.length < 6) return 'Contraseña muy corta';
+                        return null;                            
+                      },
+                    ),
+                  ),
+                ),
+          
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+                    child: VerifyPasswordFormField(
+                      formKey: _verifyPasswordKey,
+                      validator: (value) {
+                        if(value == null || value.trim().isEmpty) return 'Este campo no puede estar vacio';
+                        value = value.trim();                            
+                        if(value != _passwordKey.currentState!.value) return 'las contraseñas no coinciden';
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ]
+            ),
+        
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+              child: LoadingProcessButton(
+                controller: _btnController,
+                label: const Text('Actualizar contraseña', style: TextStyle(color: Colors.white)),
+                color: Colors.red,
+                proccess: _updatePassword,
+              )
+            ),
+          ],
         ),
-      )
+      ),
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:bancalcaj_app/presentation/widgets/multi_drop_down_form_field.da
 import 'package:bancalcaj_app/presentation/widgets/notification_message.dart';
 import 'package:bancalcaj_app/presentation/widgets/password_form_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
@@ -177,66 +176,60 @@ class _EditarCuentaScreenState extends State<EditarCuentaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CallbackShortcuts(
-      bindings: { const SingleActivator(LogicalKeyboardKey.escape) : Navigator.of(context).pop },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          title: const Text("Editar cuenta"),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        title: const Text("Editar cuenta"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Focus(
-          autofocus: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          //* Update Name
+          Row(
             children: [
-              //* Update Name
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: TextFormField(
-                        key: _nameKey,
-                        decoration: const InputDecoration(
-                          label: Text('Nuevo Nombre'),
-                          icon: Icon(Icons.person)
-                        ),
-                        validator: (value) {
-                          if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una nombre';
-                          value = value.trim();
-                          if(value.length <= 3) return 'El nombre es muy corto';
-                          return null;
-                        },                        
-                        initialValue: widget.employee.nombre,
-                      ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: TextFormField(
+                    key: _nameKey,
+                    decoration: const InputDecoration(
+                      label: Text('Nuevo Nombre'),
+                      icon: Icon(Icons.person)
                     ),
+                    validator: (value) {
+                      if(value == null || value.trim().isEmpty) return 'Se debe proporcionar una nombre';
+                      value = value.trim();
+                      if(value.length <= 3) return 'El nombre es muy corto';
+                      return null;
+                    },                        
+                    initialValue: widget.employee.nombre,
                   ),
-
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                      child: LoadingProcessButton(
-                        controller: _btnNameController,
-                        label: const Text('Actualizar nombre', style: TextStyle(color: Colors.white)),
-                        color: Colors.red,
-                        proccess: _updateName,
-                      )
-                    ),
-                  )
-                ],
+                ),
               ),
-
-              switcherDependingSuperEdit()
-
+          
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+                  child: LoadingProcessButton(
+                    controller: _btnNameController,
+                    label: const Text('Actualizar nombre', style: TextStyle(color: Colors.white)),
+                    color: Colors.red,
+                    proccess: _updateName,
+                  )
+                ),
+              )
             ],
           ),
-        ),
-      )
+          
+          switcherDependingSuperEdit()
+          
+        ],
+      ),
     );
   }
 }
