@@ -18,9 +18,14 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: flutter build windows
-      - name: Upload .exe artifact
+      - run: flutter build windows --release
+      - name: Create ZIP file
+        run: |
+          mkdir output
+          powershell Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath output/flutter-windows-app.zip
+
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v3
         with:
-          name: flutter-windows-exe
-          path: build\windows\x64\runner\Release\bacalcaj_app.exe
+          name: flutter-windows-app
+          path: output/flutter-windows-app.zip
