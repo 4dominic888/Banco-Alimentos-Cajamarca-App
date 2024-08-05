@@ -38,6 +38,7 @@ class MainApp extends StatelessWidget {
         constrained: true,
         child: const OverlaySupport.global(
           child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: "Banco de alimentos app",
             locale: Locale('es', 'ES'),
             localizationsDelegates: [
