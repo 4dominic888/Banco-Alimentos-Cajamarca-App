@@ -85,7 +85,7 @@ class ExcelWritter{
 
     iRowI++;
     initCell = sheet?.cell(CellIndex.indexByString('C$iRowI'));
-    initCell?.value = const TextCellValue("Total");
+    initCell?.value = TextCellValue("Total");
     initCell?.cellStyle = CellStyle(horizontalAlign: HorizontalAlign.Right);
 
     initCell = sheet?.cell(CellIndex.indexByString('D$iRowI'));

@@ -118,7 +118,7 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
               ),
                 
               FutureBuilder<Result<PaginateData<ProveedorView>>?>(
-                future: proveedorService.verProveedores(pagina: _page, limite: _limit, nombre: _nameController.text, tipoProveedor: _keyFieldTypeProveedor.currentState?.value?.name),
+                future: proveedorService.verProveedores(pagina: _page, limite: _limit, nombre: _nameController.text, tipoProveedor: _keyFieldTypeProveedor.currentState?.value?.id),
                 builder: (context, snapshot) {
                   if(snapshot.connectionState == ConnectionState.waiting){
                     return BigStaticSizeBox(context, child: const Center(child: CircularProgressIndicator()));

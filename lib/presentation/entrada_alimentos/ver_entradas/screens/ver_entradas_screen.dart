@@ -147,8 +147,8 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                   future: entradaService.verEntradas(
                     pagina: _page,
                     limite: _limit,
-                    proveedor: _keyFieldProveedor.currentState?.value?.nombre,
-                    almacenero: _keyFieldAlmacenero.currentState?.value?.nombre
+                    proveedor: _keyFieldProveedor.currentState?.value?.id,
+                    almacenero: _keyFieldAlmacenero.currentState?.value?.dni
                   ),
                   builder: (context, snapshot) {
                 
