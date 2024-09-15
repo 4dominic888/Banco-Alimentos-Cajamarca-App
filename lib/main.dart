@@ -200,7 +200,6 @@ class _RouterScreenState extends State<_RouterScreen> {
                                     leading: const Icon(Icons.list),
                                     onTap: () {
                                       if(AuthUtils.isNotEmployeeAuthenticate) {NotificationMessage.showErrorNotification('Empleado no autenticado'); return;}
-                                      if(AuthUtils.isNotEmployeeAsAdmin!) {NotificationMessage.showErrorNotification('Acceso denegado'); return;}
                                       Navigator.push(context, MaterialPageRoute(builder: (_) => const VerEntradasScreen()));
                                     }
                                   ))
