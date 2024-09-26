@@ -1,7 +1,7 @@
 name: bancalcaj_app
 description: "Banco de alimentos de Cajamarca App"
 publish_to: 'none'
-version: 0.1.2
+version: 1.0.0
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
