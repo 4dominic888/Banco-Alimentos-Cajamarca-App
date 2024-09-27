@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:animated_floating_buttons/widgets/animated_floating_action_button.dart';
 import 'package:bancalcaj_app/domain/models/employee.dart';
 import 'package:bancalcaj_app/domain/services/employee_service_base.dart';
+import 'package:bancalcaj_app/domain/services/updater_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/auth_utils.dart';
 import 'package:bancalcaj_app/locator.dart';
+import 'package:bancalcaj_app/presentation/actualizador/obtener_actualizacion/screens/updater_popup.dart';
 import 'package:bancalcaj_app/presentation/empleados/editar_cuenta/screens/editar_cuenta_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/login/screens/login_empleado_screen.dart';
 import 'package:bancalcaj_app/presentation/empleados/register/screens/register_empleado_screen.dart';
@@ -65,6 +67,18 @@ class _RouterScreenState extends State<_RouterScreen> {
   bool _isLoading = false;
 
   final _employeeGeneralState = GetIt.I<EmployeeGeneralState>();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final updaterService = GetIt.I<UpdaterServiceBase>();
+      final data = await updaterService.obtenerActualizacion();
+      if(data.success && data.data != null && mounted) {
+        showDialog(context: context, builder: (context) => UpdaterPopup(data: data.data!));
+      }
+    });
+  }
 
   List<Widget> unregisteredOptions() => [
     FloatingActionButton(
