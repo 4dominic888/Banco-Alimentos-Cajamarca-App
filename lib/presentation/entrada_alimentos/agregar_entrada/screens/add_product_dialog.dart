@@ -25,13 +25,14 @@ class _RecommendedProducts{
   ];
 
   static const List<String> _frutaRecommend = [
-    "Frutas de hueso (duraznos, ciruelas, cerezas, albaricoques)",
-    "Bayas (fresa, frambruesa, arandanos, uvas)",
-    "Citricos (naranjas, limones, limas, mandarinas, pomelos)",
-    "Frutas tropicales (piñas, mangos, papayas, platanos, kiwis)",
-    "Frutas de pepita (manzanas, peras, membrillos)",
-    "Frutas de cascara gruesa o dura (cocos, piñas, nuez de coco)",
-    "Frutas exoticas (carambola, pitahaya)"
+    "Frutas en general"
+    // "Frutas de hueso (duraznos, ciruelas, cerezas, albaricoques)",
+    // "Bayas (fresa, frambruesa, arandanos, uvas)",
+    // "Citricos (naranjas, limones, limas, mandarinas, pomelos)",
+    // "Frutas tropicales (piñas, mangos, papayas, platanos, kiwis)",
+    // "Frutas de pepita (manzanas, peras, membrillos)",
+    // "Frutas de cascara gruesa o dura (cocos, piñas, nuez de coco)",
+    // "Frutas exoticas (carambola, pitahaya)"
   ];
 
   static const List<String> _verduraRecommend = [
@@ -54,7 +55,6 @@ class _RecommendedProducts{
     "Azucar o dulce (azucar, miel, estevia, mermeladas, etc)",
     "Condimentos/especias/bebidas (sal, cafe, infusiones, canela, etc)",
     "Salsas",
-
   ];
 
   static const List<String> _embutidoRecommend = [
@@ -68,8 +68,8 @@ class _RecommendedProducts{
     "Alimentos cocidos/precocidos",
     "Bebidas (gaseosas, nectar, refrescos)",
     "Agua",
-    "Confiterias/golosinas (galletas, chocolates, caramelos, etc)"
-    "Panaderia y pasteleria (pan, pasteles, kekes, alfajores)"
+    "Confiterias/golosinas (galletas, chocolates, caramelos, etc)",
+    "Panadería"
   ];
 }
 
