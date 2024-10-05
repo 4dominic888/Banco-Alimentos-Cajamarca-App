@@ -22,17 +22,11 @@ class _RecommendedProducts{
     "Carnes blancas (aves)",
     "Menudencia",
     "Pescados y mariscos",
+    "Huevos"
   ];
 
   static const List<String> _frutaRecommend = [
-    "Frutas en general"
-    // "Frutas de hueso (duraznos, ciruelas, cerezas, albaricoques)",
-    // "Bayas (fresa, frambruesa, arandanos, uvas)",
-    // "Citricos (naranjas, limones, limas, mandarinas, pomelos)",
-    // "Frutas tropicales (piñas, mangos, papayas, platanos, kiwis)",
-    // "Frutas de pepita (manzanas, peras, membrillos)",
-    // "Frutas de cascara gruesa o dura (cocos, piñas, nuez de coco)",
-    // "Frutas exoticas (carambola, pitahaya)"
+    "Frutas"
   ];
 
   static const List<String> _verduraRecommend = [
@@ -45,31 +39,29 @@ class _RecommendedProducts{
     "Papa",
     "Yuca",
     "Camote",
-    "Harina",
-    "Quinua",
-    "Otros embutidos(Harina, quinua, maiz perla, maiz serrano, avena)",
+    "Otros almidones(Harina, quinua, maiz perla, maiz serrano, avena, etc)",
     "Menestras",
     "Semillas y frutos secos (pecanas, mani, cereales, semillas de girasol)",
-    "Leche y otros productos lácteos (leche fresca, queso, mantequilla, manjar blanco)",
+    "Leche y otros productos lácteos (leche fresca, queso, mantequilla, manjar blanco, otros)",
     "Aceite/grasas",
     "Azucar o dulce (azucar, miel, estevia, mermeladas, etc)",
     "Condimentos/especias/bebidas (sal, cafe, infusiones, canela, etc)",
     "Salsas",
+    "Bebidas (Gaseosas, néctar, refrescos)",
+    "Agua"
   ];
 
   static const List<String> _embutidoRecommend = [
-    "Embutidos frescos (salchichas, longanizas, chorizos frescos)",
-    "Embutidos curados (salami, jamón cocido)",
-    "Embutidos ahumados (salchichas ahumadas, pepperoni, salchichón)"
+    "Embutidos",
   ];
 
   static const List<String> _otroRecommend = [
-    "Huevos",
     "Alimentos cocidos/precocidos",
     "Bebidas (gaseosas, nectar, refrescos)",
     "Agua",
     "Confiterias/golosinas (galletas, chocolates, caramelos, etc)",
-    "Panadería"
+    "Panadería y pastelería (pan, pasteles, kekes, alfajores)",
+    "Alimentos cocidos/precocidos"
   ];
 }
 

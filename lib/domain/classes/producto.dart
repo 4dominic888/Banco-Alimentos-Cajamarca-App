@@ -39,6 +39,10 @@ class TipoProductos{
     );
   }
 
+  factory TipoProductos.noValue() {
+    return TipoProductos(nombre: '!', productos: []);
+  }
+
   Map<String, dynamic> toJson(){
     return{
       "nombre": nombre,
