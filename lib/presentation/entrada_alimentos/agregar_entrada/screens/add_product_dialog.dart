@@ -47,7 +47,6 @@ class _RecommendedProducts{
     "Condimentos/especias/bebidas (sal, cafe, infusiones, canela, etc)",
     "Salsas",
     "Bebidas (Gaseosas, néctar, refrescos)",
-    "Agua"
   ];
 
   static const List<String> _embutidoRecommend = [
