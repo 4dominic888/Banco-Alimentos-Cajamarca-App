@@ -1,0 +1,38 @@
+//* Sirve para el tema de excel y ver los productos comunes
+const List<List<String>> productFilterList = [
+  ['arroz'],
+  ['fideo'],
+  ['papa'],
+  ['yuca'],
+  ['camote'],
+  ['almidon', 'almidones', 'harina', 'quinua', 'quínua', 'maiz', 'maíz', 'avena'],
+  ['menestra'],
+  ['semilla', 'pecana', 'mani', 'maní', 'cereal', 'girasol'],
+  ['leche', 'lacteo', 'lácteo', 'queso', 'mantequilla', 'manjar'],
+  ['roja', 'chancho'],
+  ['blanca', 'pollo', 'ave '],
+  ['embutido'],
+  ['menudencia'],
+  ['pescado', 'marisco'],
+  ['huevo'],
+  ['vegetal', 'hoja', 'verdura', 'hongo', 'champiñon'],
+  ['fruta'],
+  ['aceite', 'grasa'],
+  ['azucar', 'azúcar', 'dulce', 'miel', 'stevia', 'mermelada'],
+  ['condimento', 'especia', 'sal ', 'sales ', 'cafe', 'café', 'infusion', 'infusión', 'canela'],
+  ['alimento', 'cocido'],
+  ['salsa'],
+  ['bebida', 'gaseosa', 'nectar', 'néctar', 'refresco'],
+  ['agua'],
+  ['confiteria', 'confitería', 'galleta', 'chocolate', 'caramelo'],
+  ['panaderia', 'panadería', 'pasteleria', 'pastelería', 'pan', 'pastel', 'keke', 'alfajor'],
+];
+
+const Map<String, List<int>> categoryProducts = {
+  'Carnes': [9, 10, 12, 13, 14],
+  'Frutas': [16],
+  'Verduras': [15],
+  'Abarrotes': [0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 21, 22],
+  'Embutidos': [11],
+  'Otros': [20, 23, 24, 25],
+};
