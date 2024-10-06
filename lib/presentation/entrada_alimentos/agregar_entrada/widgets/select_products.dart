@@ -92,7 +92,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
 
                         //* Eliminado de keywordsAlreadyUsed en base al producto seleccionado
                         final int kwi =_keywordsAlreadyUsed.indexWhere((kw) => kw.any((w) => element.nombre.toLowerCase().contains(w)));
-                        _keywordsAlreadyUsed.remove(_keywordsAlreadyUsed[kwi]);
+                        if(kwi != -1) _keywordsAlreadyUsed.remove(_keywordsAlreadyUsed[kwi]);
 
                         _listProducts[foundIndex].productos.removeAt(index);
                         formState.didChange(_listProducts);
@@ -235,7 +235,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
                   //* Lo mismo que la eliminiacion simple, pero recorriendo cada producto
                   for (final product in _listProducts[foundIndex].productos) {
                     final int kwi =_keywordsAlreadyUsed.indexWhere((kw) => kw.any((w) => product.nombre.toLowerCase().contains(w)));
-                    _keywordsAlreadyUsed.remove(_keywordsAlreadyUsed[kwi]);
+                    if(kwi != -1) _keywordsAlreadyUsed.remove(_keywordsAlreadyUsed[kwi]);
                   }
 
                   _listProducts.removeAt(foundIndex);
