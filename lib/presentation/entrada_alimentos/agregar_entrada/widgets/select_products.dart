@@ -27,7 +27,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
 
   late List<TipoProductos> _listProducts;
   late HashSet<String> _stringProducts;
-  final List<List<String>> _keywordsAlreadyUsed = [];
+  late List<List<String>> _keywordsAlreadyUsed;
 
   double _cantidadTotal = 0.00;
   double get cantidadTotal => _cantidadTotal;
@@ -35,6 +35,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
   @override
   void initState() {
     super.initState();
+    _keywordsAlreadyUsed = [];
     if(widget.initialValue == null){
       _listProducts = [];
       _stringProducts = HashSet();
@@ -43,6 +44,16 @@ class SelectProductsFieldState extends State<SelectProductsField> {
       _listProducts = widget.initialValue!;
       _stringProducts = widget.initialValue!.map((e) => e.nombre).toHashSet();
       _cantidadTotal = _listProducts.sumBy((lp) => lp.productos.sumBy((p) => p.peso));
+      
+      final allProducts = _listProducts.expand((lp) => lp.productos).toList();
+
+      for (final product in allProducts) {
+        //* Encontrar el conjunto de keywords en base al valor ingresado
+        final pflFounded = productFilterList.firstWhere((k) => k.any((w) => product.nombre.toLowerCase().contains(w)), orElse: () => []);
+        
+        //* Colocarlo a las keywords ya usadas si no esta vacio, osea si se encuentra
+        if(pflFounded.isNotEmpty) _keywordsAlreadyUsed.add(pflFounded);
+      }
     }
   }
 
