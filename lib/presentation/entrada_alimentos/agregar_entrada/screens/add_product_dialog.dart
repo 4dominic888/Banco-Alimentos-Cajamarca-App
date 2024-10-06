@@ -3,19 +3,18 @@ import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/wid
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/widgets/decimal_field.dart';
 import 'package:flutter/material.dart';
 
-//TODO Remover esta clase y cambiarla por una llamada a algun archivo o base de datos
 class _RecommendedProducts{
-  static List<String> list(String typeProduct){
-    switch (typeProduct) {
-      case "Carnes": return _carneRecommend;
-      case "Frutas": return _frutaRecommend;
-      case "Verduras": return _verduraRecommend;
-      case "Abarrotes": return _abarroteRecommend;
-      case "Embutidos": return _embutidoRecommend;
-      case "Otros": return _otroRecommend;
-      default: return _otroRecommend;
-    }
-  }
+  // static List<String> list(String typeProduct){
+  //   switch (typeProduct) {
+  //     case "Carnes": return _carneRecommend;
+  //     case "Frutas": return _frutaRecommend;
+  //     case "Verduras": return _verduraRecommend;
+  //     case "Abarrotes": return _abarroteRecommend;
+  //     case "Embutidos": return _embutidoRecommend;
+  //     case "Otros": return _otroRecommend;
+  //     default: return _otroRecommend;
+  //   }
+  // }
 
   static const List<String> _carneRecommend = [
     "Carnes rojas (res, chancho)",
@@ -57,18 +56,26 @@ class _RecommendedProducts{
 
   static const List<String> _otroRecommend = [
     "Alimentos cocidos/precocidos",
-    "Bebidas (gaseosas, nectar, refrescos)",
     "Agua",
     "Confiterias/golosinas (galletas, chocolates, caramelos, etc)",
     "Panadería y pastelería (pan, pasteles, kekes, alfajores)",
-    "Alimentos cocidos/precocidos"
+  ];
+
+  static final List<List<String>> allRecomendations = [
+    _RecommendedProducts._carneRecommend,
+    _RecommendedProducts._frutaRecommend,
+    _RecommendedProducts._verduraRecommend,
+    _RecommendedProducts._abarroteRecommend,
+    _RecommendedProducts._embutidoRecommend,
+    _RecommendedProducts._otroRecommend
   ];
 }
 
 class AddProductDialog extends StatefulWidget {
-  const AddProductDialog({super.key, required this.optionSelected});
 
-  final String optionSelected;
+  final String? Function(String?)? validateNoRepetitiveProduct;
+
+  const AddProductDialog({super.key, this.validateNoRepetitiveProduct});
 
   @override
   State<AddProductDialog> createState() => _AddProductDialogState();
@@ -78,14 +85,14 @@ class _AddProductDialogState extends State<AddProductDialog> {
   @override
   Widget build(BuildContext context) {
 
-    List<String> data = _RecommendedProducts.list(widget.optionSelected);
+    List<String> data = _RecommendedProducts.allRecomendations.expand((n) => n).toList();
 
     final GlobalKey<FormState> formKey = GlobalKey();
     final GlobalKey<AutoCompleteFieldState> keyProductName = GlobalKey();
-    final GlobalKey<DecimalFieldState> keyFieldPeso = GlobalKey();
+    final GlobalKey<DecimalFieldState> keyFieldPeso = GlobalKey();    
 
     return AlertDialog(
-        title: Text("Agrega el producto de tipo: ${widget.optionSelected}"),
+        title: const Text("Agrega producto"),
         scrollable: true,
         content: Form(
           key: formKey,
@@ -96,6 +103,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 key: keyProductName,
                 title: "Producto",
                 recommends: data,
+                validate: widget.validateNoRepetitiveProduct,
               ),
               
               DecimalField(
@@ -115,10 +123,10 @@ class _AddProductDialogState extends State<AddProductDialog> {
           TextButton(
             onPressed: () {
               if(formKey.currentState!.validate()){
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("Procuto de tipo \"${widget.optionSelected}\" agregado "),
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Procuto agregado "),
                   backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
+                  duration: Duration(seconds: 2),
                 ));
                 
                 Navigator.of(context).pop(Producto(

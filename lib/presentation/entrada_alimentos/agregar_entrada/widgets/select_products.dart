@@ -1,8 +1,10 @@
 import 'dart:collection';
 
 import 'package:bancalcaj_app/domain/classes/producto.dart';
+import 'package:bancalcaj_app/infrastructure/product_filter_list.dart';
 import 'package:bancalcaj_app/presentation/entrada_alimentos/agregar_entrada/screens/add_product_dialog.dart';
 import 'package:dartx/dartx.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SelectProductsField extends StatefulWidget {
@@ -23,9 +25,9 @@ class SelectProductsField extends StatefulWidget {
 
 class SelectProductsFieldState extends State<SelectProductsField> {
 
-  final List<String> _listSelect = [];
   late List<TipoProductos> _listProducts;
   late HashSet<String> _stringProducts;
+  final List<List<String>> _keywordsAlreadyUsed = [];
 
   double _cantidadTotal = 0.00;
   double get cantidadTotal => _cantidadTotal;
@@ -33,7 +35,6 @@ class SelectProductsFieldState extends State<SelectProductsField> {
   @override
   void initState() {
     super.initState();
-    _listSelect.addAll([...widget.defaultCommonProducts, 'Otros']);
     if(widget.initialValue == null){
       _listProducts = [];
       _stringProducts = HashSet();
@@ -42,16 +43,15 @@ class SelectProductsFieldState extends State<SelectProductsField> {
       _listProducts = widget.initialValue!;
       _stringProducts = widget.initialValue!.map((e) => e.nombre).toHashSet();
       _cantidadTotal = _listProducts.sumBy((lp) => lp.productos.sumBy((p) => p.peso));
-
     }
   }
 
-  Future<void> _showProductsAddedDialog(BuildContext context, String optionSelected, int foundIndex, FormFieldState<List<TipoProductos>> formState) async{
+  Future<void> _showProductsAddedDialog(BuildContext context, String category, int foundIndex, FormFieldState<List<TipoProductos>> formState) async{
     if(foundIndex == -1) return;
 
     return showDialog(context: context, builder: (context) => AlertDialog(
       scrollable: true,
-      title: Text("Productos agregados de tipo: $optionSelected"),
+      title: Text("Productos agregados de tipo $category"),
       content: StatefulBuilder(
         builder: (context, setState) {
           if(_listProducts[foundIndex].productos.isEmpty) return const Center(child: Text("No hay productos"));
@@ -78,6 +78,11 @@ class SelectProductsFieldState extends State<SelectProductsField> {
                           )
                         );
                         _cantidadTotal -= element.peso;
+
+                        //* Eliminado de keywordsAlreadyUsed en base al producto seleccionado
+                        final int kwi =_keywordsAlreadyUsed.indexWhere((kw) => kw.any((w) => element.nombre.toLowerCase().contains(w)));
+                        _keywordsAlreadyUsed.remove(_keywordsAlreadyUsed[kwi]);
+
                         _listProducts[foundIndex].productos.removeAt(index);
                         formState.didChange(_listProducts);
                       });
@@ -111,33 +116,69 @@ class SelectProductsFieldState extends State<SelectProductsField> {
 
   Widget _dropDownProducts(FormFieldState<List<TipoProductos>> formState) {
     return DropdownButtonFormField(
-      hint: const Text("Selecciona el tipo de producto"),
-      items: _listSelect.map<DropdownMenuItem<String>>((e) => DropdownMenuItem(value: e, child: Text("Agregar $e"))).toList(),
+      hint: const Text("Click para agregar un alimento"),
+      items:  const [DropdownMenuItem<String>(value: 'z', child: Text("Agregar alimento"))],
       validator: (value) {
         if(_listProducts.isEmpty) return "No se ha seleccionado productos";
         if(cantidadTotal <= 0.01) return 'El valor minimo aceptado es de 0.01 Kg';
         return null;
       },
       decoration: const InputDecoration(
-        label: Text("Tipo de productos"),
+        label: Text("Alimentos"),
         prefixIcon: Icon(Icons.food_bank)
       ),
-      onChanged: (value) async {
+      onChanged: (_) async {
         Producto? producto = await showDialog<Producto>(
           context: context,
-          builder: (context) => AddProductDialog(optionSelected: value.toString()),
+          builder: (context) => AddProductDialog(
+            validateNoRepetitiveProduct: (value) {
+
+              if(value == null) return 'Se debe ingresar un valor';
+
+              //* Encontrar el conjunto de keywords en base al valor ingresado
+              final pflFounded = productFilterList.firstWhere((k) => k.any((w) => value.toLowerCase().contains(w)), orElse: () => []);
+              
+              if(pflFounded.isEmpty) return 'No existe esta categoria ingresada';
+
+              //* Verificar que no se repita el conjunto de keywords al ya ingresado previamente
+              if(_keywordsAlreadyUsed.isNotEmpty){
+                if(_keywordsAlreadyUsed.any((ku) => listEquals(ku, pflFounded))) return 'Este tipo de alimento ya ha sido ingresado';
+              }
+              _keywordsAlreadyUsed.add(pflFounded);
+              return null;
+              
+            },
+          ),
         );
         if(producto != null){
           setState(() {
-            _stringProducts.add(value!);
 
-            final foundIndex = _listProducts.indexWhere((e) => e.nombre == value);
+            //* Para detener el bucle anidado
+            bool flagStop = false;
+            late String categoryFound;
+
+            //* Buscar la categoria del elemento
+            for (final catpr in categoryProducts.keys) {
+              if(flagStop) break;
+              for (final pi in categoryProducts[catpr]!) {
+                //* Buscar si hay coincidencias con el texto ingresado para encontrar la categoria
+                if(productFilterList[pi].any((w) => producto.nombre.toLowerCase().contains(w))) {
+                  _stringProducts.add(catpr);
+                  categoryFound = catpr;
+                  flagStop = true;
+                  break;
+                }
+              }
+            }
+
+            final foundIndex = _listProducts.indexWhere((e) => e.nombre == categoryFound);
             if(foundIndex == -1) {
-              _listProducts.add(TipoProductos(nombre: value, productos: [producto]));
+              _listProducts.add(TipoProductos(nombre: categoryFound, productos: [producto]));
             }
             else {
               _listProducts[foundIndex].productos.add(producto);
             }
+            
             formState.didChange(_listProducts);
             _cantidadTotal += producto.peso;
           });
@@ -179,6 +220,13 @@ class SelectProductsFieldState extends State<SelectProductsField> {
                     const Duration(seconds: 2)
                   ));
                   _cantidadTotal -= _listProducts[foundIndex].productos.fold<double>(0, (prev, product) => prev + product.peso);
+
+                  //* Lo mismo que la eliminiacion simple, pero recorriendo cada producto
+                  for (final product in _listProducts[foundIndex].productos) {
+                    final int kwi =_keywordsAlreadyUsed.indexWhere((kw) => kw.any((w) => product.nombre.toLowerCase().contains(w)));
+                    _keywordsAlreadyUsed.remove(_keywordsAlreadyUsed[kwi]);
+                  }
+
                   _listProducts.removeAt(foundIndex);
                   formState.didChange(_listProducts);
                   _stringProducts.remove(e);
