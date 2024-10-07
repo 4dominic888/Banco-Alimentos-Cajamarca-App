@@ -19,11 +19,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+String version = '';
 
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
+  version = (await PackageInfo.fromPlatform()).version;
   
   //* Get the instance of employee
   await GetIt.I<EmployeeGeneralState>().refreshEmployee();
@@ -163,14 +167,16 @@ class _RouterScreenState extends State<_RouterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Exportar entrada")),
+        appBar: AppBar(backgroundColor: Colors.red, foregroundColor: Colors.white, title: const Text("Banco de Alimentos de Cajamarca App")),
         persistentFooterButtons: [
           if(_isLoading) const CircularProgressIndicator(),
           Text(_employeeGeneralState.employee.dni),
           Text(_employeeGeneralState.employee.nombre),
-          Text('[${_employeeGeneralState.employee.typesStr}]'),
+          Text('[${_employeeGeneralState.employee.typesStr}] |'),
+          Text('version $version', style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
           // Text(AuthUtils.refreshToken ?? 'no token')
         ],
+
         floatingActionButton: AnimatedFloatingActionButton(
           key: _fabKey,
           fabButtons: AuthUtils.refreshToken == null ? 
