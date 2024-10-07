@@ -5,6 +5,7 @@ import 'package:bancalcaj_app/domain/repositories/entrada_alimentos_repository_b
 import 'package:bancalcaj_app/domain/services/entrada_alimentos_service_base.dart';
 import 'package:bancalcaj_app/infrastructure/excel_writter.dart';
 import 'package:bancalcaj_app/infrastructure/pdf_writter.dart';
+import 'package:intl/intl.dart';
 
 interface class EntradaAlimentosServiceImplement implements EntradaAlimentosServiceBase{
 
@@ -24,11 +25,13 @@ interface class EntradaAlimentosServiceImplement implements EntradaAlimentosServ
   }
 
   @override
-  Future<Result<PaginateData<EntradaView>>> verEntradas({int? pagina = 1, int? limite = 5, String? proveedor, String? almacenero}) async {
+  Future<Result<PaginateData<EntradaView>>> verEntradas({int? pagina = 1, int? limite = 5, String? proveedor, String? almacenero, DateTime? startDate, DateTime? endDate}) async {
     try {
       final paginateData = await repo.getAll(page: pagina!, limit: limite!, aditionalQueries: {
         'proveedor': proveedor ?? '',
-        'almacenero': almacenero ?? ''
+        'almacenero': almacenero ?? '',
+        'startDate': startDate != null ? DateFormat("yyyy/MM/dd").format(startDate) : '',
+        'endDate': endDate != null ? DateFormat("yyyy/MM/dd").format(endDate) : ''
       });
       return Result.success(data: paginateData);
     } catch (e) {

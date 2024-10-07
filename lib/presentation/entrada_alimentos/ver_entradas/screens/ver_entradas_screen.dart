@@ -17,6 +17,7 @@ import 'package:bancalcaj_app/presentation/widgets/drop_down_with_external_data.
 import 'package:bancalcaj_app/presentation/widgets/pagination_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 
 class VerEntradasScreen extends StatefulWidget {
   const VerEntradasScreen({super.key});
@@ -40,7 +41,9 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
 
 
   int _page = 1;
-  int _limit = 5;  
+  int _limit = 5;
+  DateTime? startDate;
+  DateTime? endDate;
 
   Future<void> _initService() async{
     _pdfService = PDFWritter();
@@ -103,7 +106,10 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
+
+                      //* Busqueda por proveedor
                       Expanded(
+                        flex: 6,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DropDownWithExternalData<ProveedorView>(
@@ -121,7 +127,10 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                           )
                         )
                       ),
+
+                      //* Busqueda por almacenero
                       Expanded(
+                        flex: 6,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DropDownWithExternalData<EmployeeView>(
@@ -139,6 +148,64 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                           )
                         )
                       ),
+                      
+                      //* Rango de fecha
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: IconButton(
+                                      onPressed: () async {
+                                        final dateRange = await showDateRangePicker(
+                                          context: context, 
+                                          firstDate: DateTime(1850),
+                                          lastDate: DateTime(3000),
+                                          confirmText: "Aceptar",
+                                          cancelText: "Cancelar",
+                                          saveText: "Guardar",
+                                          helpText: "Selecciona el rango de fechas"
+                                        );
+                                    
+                                        if(dateRange != null){
+                                          setState(() {
+                                            startDate = dateRange.start;
+                                            endDate = dateRange.end;
+                                          });
+                                        }
+                                      },
+                                      icon: const Icon(Icons.date_range_outlined),
+                                      tooltip: "Elegir rango de fechas",
+                                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.shade300)),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(
+                                      onPressed: () => setState(() { startDate = null; endDate = null;}),
+                                      icon: const Icon(Icons.cleaning_services_rounded),
+                                      tooltip: "Borrar rango de fechas",
+                                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red.shade100))  
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if(startDate != null && endDate != null)Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Text('${DateFormat("dd/MM/yyyy").format(startDate!)} -- ${DateFormat("dd/MM/yyyy").format(endDate!)}')
+                              )
+                            )
+                          ],
+                        )
+                      )
                     ],
                   )
                 ),
@@ -148,7 +215,9 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                     pagina: _page,
                     limite: _limit,
                     proveedor: _keyFieldProveedor.currentState?.value?.id,
-                    almacenero: _keyFieldAlmacenero.currentState?.value?.dni
+                    almacenero: _keyFieldAlmacenero.currentState?.value?.dni,
+                    startDate: startDate,
+                    endDate: endDate
                   ),
                   builder: (context, snapshot) {
                 
