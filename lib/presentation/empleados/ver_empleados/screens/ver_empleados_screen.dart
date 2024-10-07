@@ -43,20 +43,22 @@ class _VerEmpleadosScreenState extends State<VerEmpleadosScreen> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: [
-                    Expanded(child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
-                          onChanged: (value) => setState(() { }),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: IntrinsicWidth(
+                  child: Row(
+                    children: [
+                      Expanded(child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
+                            onChanged: (value) => setState(() { }),
+                          )
                         )
-                      )
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
           

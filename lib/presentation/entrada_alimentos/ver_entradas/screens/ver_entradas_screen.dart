@@ -102,112 +102,114 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    children: [
-
-                      //* Busqueda por proveedor
-                      Expanded(
-                        flex: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropDownWithExternalData<ProveedorView>(
-                            formFieldKey: _keyFieldProveedor,
-                            itemAsString: (value) => value.nombre,
-                            label: 'Proveedor',
-                            isVisible: true,
-                            icon: const Icon(Icons.delivery_dining),
-                            asyncItems: (text) async {
-                              final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
-                              if(!result.success || result.data == null) return [];
-                              return result.data!.data;                              
-                            },
-                            onChanged: () => setState(() {})
-                          )
-                        )
-                      ),
-
-                      //* Busqueda por almacenero
-                      Expanded(
-                        flex: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DropDownWithExternalData<EmployeeView>(
-                            formFieldKey: _keyFieldAlmacenero,
-                            itemAsString: (value) => value.nombre,
-                            label: 'Almaceneros',
-                            icon: const Icon(Icons.person),
-                            isVisible: true,
-                            asyncItems: (text) async {
-                              final result = await employeeService.verEmpleados(pagina: 1, limite: 8, nombre: text);
-                              if(!result.success || result.data == null) return [];
-                              return result.data!.data;                              
-                            },
-                            onChanged: () => setState(() { })
-                          )
-                        )
-                      ),
-                      
-                      //* Rango de fecha
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: IconButton(
-                                      onPressed: () async {
-                                        final dateRange = await showDateRangePicker(
-                                          context: context, 
-                                          firstDate: DateTime(1850),
-                                          lastDate: DateTime(3000),
-                                          confirmText: "Aceptar",
-                                          cancelText: "Cancelar",
-                                          saveText: "Guardar",
-                                          helpText: "Selecciona el rango de fechas"
-                                        );
-                                    
-                                        if(dateRange != null){
-                                          setState(() {
-                                            startDate = dateRange.start;
-                                            endDate = dateRange.end;
-                                          });
-                                        }
-                                      },
-                                      icon: const Icon(Icons.date_range_outlined),
-                                      tooltip: "Elegir rango de fechas",
-                                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.shade300)),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(
-                                      onPressed: () => setState(() { startDate = null; endDate = null;}),
-                                      icon: const Icon(Icons.cleaning_services_rounded),
-                                      tooltip: "Borrar rango de fechas",
-                                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red.shade100))  
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if(startDate != null && endDate != null)Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Text('${DateFormat("dd/MM/yyyy").format(startDate!)} -- ${DateFormat("dd/MM/yyyy").format(endDate!)}')
-                              )
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: IntrinsicWidth(
+                    child: Row(
+                      children: [
+                    
+                        //* Busqueda por proveedor
+                        Expanded(
+                          flex: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropDownWithExternalData<ProveedorView>(
+                              formFieldKey: _keyFieldProveedor,
+                              itemAsString: (value) => value.nombre,
+                              label: 'Proveedor',
+                              isVisible: true,
+                              icon: const Icon(Icons.delivery_dining),
+                              asyncItems: (text) async {
+                                final result = await proveedorService.verProveedores(pagina: 1, limite: 8, nombre: text);
+                                if(!result.success || result.data == null) return [];
+                                return result.data!.data;                              
+                              },
+                              onChanged: () => setState(() {})
                             )
-                          ],
+                          )
+                        ),
+                    
+                        //* Busqueda por almacenero
+                        Expanded(
+                          flex: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropDownWithExternalData<EmployeeView>(
+                              formFieldKey: _keyFieldAlmacenero,
+                              itemAsString: (value) => value.nombre,
+                              label: 'Almaceneros',
+                              icon: const Icon(Icons.person),
+                              isVisible: true,
+                              asyncItems: (text) async {
+                                final result = await employeeService.verEmpleados(pagina: 1, limite: 8, nombre: text);
+                                if(!result.success || result.data == null) return [];
+                                return result.data!.data;                              
+                              },
+                              onChanged: () => setState(() { })
+                            )
+                          )
+                        ),
+                        
+                        //* Rango de fecha
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          final dateRange = await showDateRangePicker(
+                                            context: context, 
+                                            firstDate: DateTime(1850),
+                                            lastDate: DateTime(3000),
+                                            confirmText: "Aceptar",
+                                            cancelText: "Cancelar",
+                                            saveText: "Guardar",
+                                            helpText: "Selecciona el rango de fechas"
+                                          );
+                                      
+                                          if(dateRange != null){
+                                            setState(() {
+                                              startDate = dateRange.start;
+                                              endDate = dateRange.end;
+                                            });
+                                          }
+                                        },
+                                        icon: const Icon(Icons.date_range_outlined),
+                                        tooltip: "Elegir rango de fechas",
+                                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.grey.shade300)),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () => setState(() { startDate = null; endDate = null;}),
+                                        icon: const Icon(Icons.cleaning_services_rounded),
+                                        tooltip: "Borrar rango de fechas",
+                                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red.shade100))  
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if(startDate != null && endDate != null)Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text('${DateFormat("dd/MM/yyyy").format(startDate!)} -- ${DateFormat("dd/MM/yyyy").format(endDate!)}')
+                                )
+                              )
+                            ],
+                          )
                         )
-                      )
-                    ],
-                  )
+                      ],
+                    )
+                  ),
                 ),
                   
                 FutureBuilder<Result<PaginateData<EntradaView>>>(

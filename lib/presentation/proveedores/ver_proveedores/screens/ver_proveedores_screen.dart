@@ -84,36 +84,38 @@ class _VerProveedoresScreenState extends State<VerProveedoresScreen> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: [
-                    Expanded(child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
-                          onChanged: (value) => setState(() { }),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: IntrinsicWidth(
+                  child: Row(
+                    children: [
+                      Expanded(child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(icon: Icon(Icons.search), hintText: 'Buscar por nombre'),
+                            onChanged: (value) => setState(() { }),
+                          )
                         )
-                      )
-                    ),
-                    Expanded(child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: DropDownWithExternalData<TypeProveedor>(
-                        formFieldKey: _keyFieldTypeProveedor,
-                        itemAsString: (value) => value.name,
-                        label: 'Tipo de proveedor',
-                        isVisible: true,
-                        icon: const Icon(Icons.category),
-                        asyncItems: (text) async {
-                          final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);
-                          if(!result.success || result.data == null) return [];
-                          return result.data!.data;                              
-                        },
-                        onChanged: () => setState(() {})                    
                       ),
-                    ))
-                  ],
+                      Expanded(child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropDownWithExternalData<TypeProveedor>(
+                          formFieldKey: _keyFieldTypeProveedor,
+                          itemAsString: (value) => value.name,
+                          label: 'Tipo de proveedor',
+                          isVisible: true,
+                          icon: const Icon(Icons.category),
+                          asyncItems: (text) async {
+                            final result = await proveedorService.verTiposDeProveedor(pagina: 1, limite: 8, nombre: text);
+                            if(!result.success || result.data == null) return [];
+                            return result.data!.data;                              
+                          },
+                          onChanged: () => setState(() {})                    
+                        ),
+                      ))
+                    ],
+                  ),
                 ),
               ),
                 
