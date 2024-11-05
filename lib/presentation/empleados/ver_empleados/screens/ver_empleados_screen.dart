@@ -91,11 +91,16 @@ class _VerEmpleadosScreenState extends State<VerEmpleadosScreen> {
                             final employeeView = currentList[index];
                             return SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
-                              child: IntrinsicWidth(
-                                child: EmployeeCardElement(
-                                  employeeView: employeeView,
-                                  onDataUpdate: () => setState(() { }),
-                                ),
+                              child: LayoutBuilder(
+                                builder: (lcontext, _) {
+                                  return SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: EmployeeCardElement(
+                                      employeeView: employeeView,
+                                      onDataUpdate: () => setState(() { }),
+                                    ),
+                                  );
+                                }
                               ),
                             );
                           },
