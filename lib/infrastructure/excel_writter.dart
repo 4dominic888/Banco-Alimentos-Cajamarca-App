@@ -54,7 +54,7 @@ class ExcelWritter{
     for (final item in allProducts) {
       dvalue = 3;
       for (final filteri in productFilterList) {
-        if(_registerKg(item: item, sheet: sheet, words: filteri, cellString: 'D$dvalue')) continue;
+        if(_registerKg(item: item, sheet: sheet, words: filteri, cellString: 'D$dvalue')) break;
         dvalue++;
       }
     }
@@ -101,6 +101,8 @@ class ExcelWritter{
     sheet?.cell(CellIndex.indexByString(cellString)).value = TextCellValue(text);
     sheet?.cell(CellIndex.indexByString(cellString)).cellStyle = CellStyle(numberFormat: (isNumber ?? false) ? NumFormat.defaultNumeric : NumFormat.standard_0);
   }
+
+  // bool _hasCellValue({required String cellString, required Sheet? sheet}) => sheet?.cell(CellIndex.indexByString(cellString)).value != null;
 
   Future<Uint8List> _readDocumentData(String name) async {
     final ByteData data = await rootBundle.load('assets/excel/$name');
