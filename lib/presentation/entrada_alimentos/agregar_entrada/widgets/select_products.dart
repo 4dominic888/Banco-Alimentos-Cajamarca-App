@@ -43,7 +43,7 @@ class SelectProductsFieldState extends State<SelectProductsField> {
     else{
       _listProducts = widget.initialValue!;
       _stringProducts = widget.initialValue!.map((e) => e.nombre).toHashSet();
-      _cantidadTotal = _listProducts.sumBy((lp) => lp.productos.sumBy((p) => p.peso));
+      _cantidadTotal = _listProducts.sumBy<double>((lp) => lp.productos.sumBy<double>((p) => p.peso));
       
       final allProducts = _listProducts.expand((lp) => lp.productos).toList();
 
