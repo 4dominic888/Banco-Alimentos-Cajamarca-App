@@ -6,25 +6,26 @@ import 'package:http/http.dart';
 
 //https://data.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-countries@kering-group/records?select=impact_country%2Ciso_numeric&where=search(impact_country%2C%22ch%22)%20or%20search(iso3%2C%22ch%22)&order_by=impact_country&limit=8&exclude=impact_country%3APeru2
 
-/// Utilidad para hacer uso de la API de OpenSoftData, exactamente con paises, departamentos o distritos
+/// Utilidad para hacer uso de la API de OpenDataSoft, exactamente con paises, departamentos o distritos
 /// nacionales de aca. La información que proporciona acerca de los lugares solo se limita a solo ID y nombre.
 abstract class UbicationAPI{
   
   /// Nombre del dominio, las urls comparten esta entre si
-  static const String _domain = "data.opendatasoft.com";
+  static const String _nationalDomain = "bogota-laburbano.opendatasoft.com";
+  static const String _internationalDomain = "public.opendatasoft.com";
 
   /// Ruta extra necesaria que hace enfasis a que se usaran datasets
   static const String _path = "api/explore/v2.1/catalog/datasets/";
 
   /// Ruta adicional para provincias, departamentos y distrintos nacionales
-  static const String _national = "distritos-peru@bogota-laburbano/records";
+  static const String _national = "distritos-peru/records";
 
   /// Ruta adicional para paises internacionales
-  static const String _international = "geonames-countries@kering-group/records";
+  static const String _international = "countries-codes/records";
 
   /// Header por defecto.
   static const Map<String, String> _headers = {
-      'Content-Type': 'application/json',
+    'Content-Type': 'application/json',
   };
 
   /// Genera una query específica para buscar paises basados en el nombre, se excluye el pais
@@ -33,15 +34,15 @@ abstract class UbicationAPI{
   /// La búsqueda del nombre es referencial y no debe ser exacta para encontrar resultados.
   static Map<String, String> _queryCountries(String? search, [int limit = -1]) {
     final query = {
-      'select': 'impact_country,iso_numeric',
-      'where': 'search(impact_country,"ch") or search(iso3,"ch")',
-      'order_by': 'impact_country',
+      'select': 'label_sp,onu_code',
+      'where': 'search(iso2_code,"J") or search(iso3_code,"J")', //* Default value in search
+      'order_by': 'label_sp',
       'limit': '$limit',
-      'exclude': 'impact_country:Peru'
+      'exclude': 'label_en:Peru'
     };
 
     if (search != null) {
-      query['where'] = 'search(impact_country,"$search") or search(iso3,"$search")'; 
+      query['where'] = 'search(label_sp,"$search") or search(label_en,"$search")'; 
     }
 
     return query;
@@ -51,9 +52,9 @@ abstract class UbicationAPI{
   /// su ID.
   static Map<String, String> _queryCountriesById(String id) {
     final query = {
-      'select': 'impact_country,iso_numeric',
-      'where': 'iso_numeric:"$id"',
-      'order_by': 'impact_country',
+      'select': 'label_sp,onu_code',
+      'where': 'onu_code:"$id"',
+      'order_by': 'label_sp',
     };
     return query;
   }
@@ -133,9 +134,12 @@ abstract class UbicationAPI{
   /// de la clase para realizar esto de manera más sencilla
   /// 
   /// `rest`: El resto de la ruta, que vendría a especificar si va a buscar en el dataset
+  /// 
+  /// `national`: Indica si debe buscar en el dataset nacional, caso contrario busca en el
+  /// internacional.
   /// nacional o internacional.
-  static Future<Result<List<dynamic>>> _getAllData(Map<String, String> query, String rest) async{
-    final uri = Uri.https(_domain, _path+rest, query);
+  static Future<Result<List<dynamic>>> _getAllData(Map<String, String> query, String rest, bool national) async{
+    final uri = Uri.https(national ? _nationalDomain : _internationalDomain, _path+rest, query);
     final response = await get(uri, headers: _headers);
 
     try {
@@ -161,10 +165,13 @@ abstract class UbicationAPI{
   /// `rest`: El resto de la ruta, que vendría a especificar si va a buscar en el dataset
   /// nacional o internacional.
   /// 
+  /// `national`: Indica si debe buscar en el dataset nacional, caso contrario busca en el
+  /// internacional.
+  /// 
   /// Pueden haber errores como [HttpException] si el error es del servidor, o [SocketException] si
   /// es un error de conexión o baja latencia.
-  static Future<Result<dynamic>> _getData(Map<String, String> query, String rest) async{
-    final uri = Uri.https(_domain, _path+rest, query);
+  static Future<Result<dynamic>> _getData(Map<String, String> query, String rest, bool national) async{
+    final uri = Uri.https(national ? _nationalDomain : _internationalDomain, _path+rest, query);
     final response = await get(uri, headers: _headers);
 
     try {
@@ -184,7 +191,7 @@ abstract class UbicationAPI{
 
   /// Obtén todos el dataset de los departamentos de Perú.
   static Future<Result<List<Map<String,String>>>> get departamentos async{
-    final result = await _getAllData(_queryDepartamentos, _national);
+    final result = await _getAllData(_queryDepartamentos, _national, true);
     if(result.success){
       return Result.success(data: result.data!.map((e) => 
         {
@@ -198,7 +205,7 @@ abstract class UbicationAPI{
 
   /// Obtención de un departamento de Perú, basado en el ID
   static Future<Result<Map<String,String>>> departamentoById(String id) async{
-    final result = await _getData(_queryDepartamentosById(id), _national);
+    final result = await _getData(_queryDepartamentosById(id), _national, true);
     if(result.success){
       return Result.success(data:
         {
@@ -212,7 +219,7 @@ abstract class UbicationAPI{
 
   /// Obten todas las provincias de un determinado departamento, pasa `ccdd` como id para este mismo
   static Future<Result<List<Map<String,String>>>> provincias(String ccdd) async{
-    final result = await _getAllData(_queryProvincias(ccdd), _national);
+    final result = await _getAllData(_queryProvincias(ccdd), _national, true);
     if(result.success){
       return Result.success(data: result.data!.map((e) => 
         {
@@ -227,7 +234,7 @@ abstract class UbicationAPI{
   /// Obten una provincia de un determinado departamento, pasa `ccdd` como id de departamento
   /// y `id` como id de la provincia.
   static Future<Result<Map<String,String>>> provinciaById(String ccdd, String id) async{
-    final result = await _getData(_queryProvinciasById(ccdd, id), _national);
+    final result = await _getData(_queryProvinciasById(ccdd, id), _national, true);
     if(result.success){
       return Result.success(data:
         {
@@ -242,7 +249,7 @@ abstract class UbicationAPI{
 /// Obten todos los distrintos de una determinada provincia, de un determinado departamento, pasa 
 /// `ccdd` como id de departamento y `ccdi` como id de provincia.
   static Future<Result<List<Map<String,String>>>> distritos(String ccdd, String ccdi) async{
-    final result = await _getAllData(_queryDistritos(ccdd, ccdi), _national);
+    final result = await _getAllData(_queryDistritos(ccdd, ccdi), _national, true);
     if(result.success){
       return Result.success(data: result.data!.map((e) => 
         {
@@ -257,7 +264,7 @@ abstract class UbicationAPI{
   /// Obten un distrinto de una determinada provincia, de un determinado departamento, pasa 
   /// `ccdd` como id de departamento, `ccdi` como id de provincia y `id` como id de distrito.
   static Future<Result<Map<String,String>>> distritoById(String ccdd, String ccdi, String id) async{
-    final result = await _getData(_queryDistritosById(ccdd, ccdi, id), _national);
+    final result = await _getData(_queryDistritosById(ccdd, ccdi, id), _national, true);
     if(result.success){
       return Result.success(data: 
         {
@@ -271,12 +278,12 @@ abstract class UbicationAPI{
 
   /// Obten todos los paises del mundo en base a una búsqueda que realices con el parámetro `search`.
   static Future<Result<List<Map<String,String>>>> paises(String? search) async {
-    final result = await _getAllData(_queryCountries(search, 7), _international);
+    final result = await _getAllData(_queryCountries(search, 7), _international, false);
     if(result.success){
       return Result.success(data: result.data!.map((e) => 
         {
-          'codigo':e['iso_numeric'] as String,
-          'nombre':e['impact_country'] as String
+          'codigo':e['onu_code'] as String,
+          'nombre':e['label_sp'] as String
         }
       ).toList());
     }
@@ -285,12 +292,12 @@ abstract class UbicationAPI{
 
   /// Obten un pais en particular en base a la `id` proporcionada.
   static Future<Result<Map<String,String>>> paisById(String id) async {
-    final result = await _getData(_queryCountriesById(id), _international);
+    final result = await _getData(_queryCountriesById(id), _international, false);
     if(result.success){
       return Result.success(data:  
         {
-          'codigo':result.data['iso_numeric'] as String,
-          'nombre':result.data['impact_country'] as String
+          'codigo':result.data['onu_code'] as String,
+          'nombre':result.data['label_sp'] as String
         }
       );
     }
