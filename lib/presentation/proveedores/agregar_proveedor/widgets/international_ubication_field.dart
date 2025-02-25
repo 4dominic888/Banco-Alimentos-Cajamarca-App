@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bancalcaj_app/domain/classes/international_ubication.dart';
 import 'package:bancalcaj_app/domain/classes/ubication.dart';
 import 'package:bancalcaj_app/presentation/proveedores/agregar_proveedor/widgets/controllers/ubication_field_controller.dart';
@@ -51,7 +49,7 @@ class _InternationalUbicationFieldState extends State<InternationalUbicationFiel
             fontWeight: FontWeight.bold,
             color: Colors.red)
           ),
-          subtitle: Text('Ha ocurrido un error de conexion: ${(error as SocketException).message}', style: const TextStyle(color: Colors.red)),
+          subtitle: Text('Ha ocurrido un error de conexion: $error', style: const TextStyle(color: Colors.red)),
         ),
       suggestionsCallback: (pattern) => UbicationAPI.paises(pattern).then((value) => value.data!),
       itemBuilder: (context, itemData) => ListTile(title: Text(itemData['nombre']!)),

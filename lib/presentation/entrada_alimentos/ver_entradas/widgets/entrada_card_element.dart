@@ -39,8 +39,8 @@ class EntradaCardElement extends StatelessWidget {
         subtitle: SizedBox(
           child: Wrap(
             direction: Axis.horizontal,
-            spacing: 10,
-            runSpacing: 10,
+            spacing: 5,
+            runSpacing: 5,
             children: entradaView.productos.map((e) => InputChip(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               label: Text(e, style: const TextStyle(fontSize: 12)),

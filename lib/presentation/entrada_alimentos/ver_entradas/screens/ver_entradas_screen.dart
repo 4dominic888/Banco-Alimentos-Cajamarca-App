@@ -251,15 +251,15 @@ class _VerEntradasScreenState extends State<VerEntradasScreen> {
                               return SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child:LayoutBuilder(
-                                  builder: (lcontext, _) {
-                                    return SizedBox(
-                                      width: MediaQuery.of(lcontext).size.width,
-                                      child: EntradaCardElement(
+                                  builder: (context, _) {
+                                    return IntrinsicWidth(
+                                      stepWidth: MediaQuery.of(context).size.width,
+                                      child:  EntradaCardElement(
                                         entradaView: entradaView,
                                         excelService: _excelService,
                                         pdfService: _pdfService,
                                         onDataUpdate: () => setState(() { }),
-                                      ),
+                                      )
                                     );
                                   }
                                 ),
