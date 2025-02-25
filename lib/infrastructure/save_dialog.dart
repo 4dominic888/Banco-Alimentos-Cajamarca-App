@@ -94,8 +94,7 @@ class SaveDialog{
         return result != null;
       }
         
-      default: throw Exception('No file selector type selected');
-    }
+      }
     
   }
 }
