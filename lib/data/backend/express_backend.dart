@@ -68,7 +68,7 @@ class ExpressBackend {
   /// 
   /// Posibles errores que pueda tener:
   /// 
-  /// `HttpException` con información del status code y respuesta especifica del backend
+  /// [HttpException] con información del status code y respuesta especifica del backend
   /// en la salida de `message`.
   static Future<Map<String, dynamic>> solicitude(String route, RequestType requestType, {Map<String, dynamic>? queryParameters, Map<String, dynamic>? body, bool? needPermission = false}) async {
     final uri = Uri.https(_domain, 'api/$route', queryParameters);

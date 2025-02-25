@@ -2,6 +2,8 @@ import 'package:bancalcaj_app/data/backend/express_backend.dart';
 import 'package:bancalcaj_app/domain/interfaces/database_interface.dart';
 import 'package:bancalcaj_app/domain/classes/paginate_data.dart';
 
+/// Proporciona métodos de CRUD ya implementados hacia el backend de Express.
+/// Tiene parámetros por defecto para temas de autorización en base a tokens.
 interface class MongoDBMapper implements DatabaseInterface {
 
   @override
