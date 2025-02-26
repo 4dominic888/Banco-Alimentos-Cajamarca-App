@@ -39,7 +39,10 @@ class ExpressBackend {
   }
 
   /// Nombre del dominio, es la URL del backend de express
-  static const String _domain = 'backend-test-bacalcaj.onrender.com';
+  // static const String _domain = 'backend-test-bacalcaj.onrender.com';
+
+  /// Ip de la PC que este ejecutando el backend, con todo y puerto
+  static const String _domain = '192.168.0.57:9000';
 
   /// Función auxiliar para hacer un encode del body o retornar null.
   /// De hecho fue creado para acortar esta lógica en términos de lineas de código, ya que se
@@ -71,7 +74,7 @@ class ExpressBackend {
   /// [HttpException] con información del status code y respuesta especifica del backend
   /// en la salida de `message`.
   static Future<Map<String, dynamic>> solicitude(String route, RequestType requestType, {Map<String, dynamic>? queryParameters, Map<String, dynamic>? body, bool? needPermission = false}) async {
-    final uri = Uri.https(_domain, 'api/$route', queryParameters);
+    final uri = Uri.http(_domain, 'api/$route', queryParameters);
     late final http.Response response;
 
     //* Código uniforme, aunque raro y repetitivo... en fin.
